@@ -1,7 +1,7 @@
 import logging
 
 from telegram import ParseMode
-from telegram.ext import Updater
+from telegram.ext import Updater, CommandHandler
 from telegram.error import InvalidToken
 from ashlee import emoji
 
@@ -25,6 +25,8 @@ class TelegramBot:
         # Handle all Telegram related errors
         self.dispatcher.add_error_handler(self._handle_tg_errors)
 
+        self.dispatcher.add_handler(CommandHandler('test', self._test_command))
+
     # Start the bot
     def bot_start_polling(self):
         self.updater.start_polling(clean=self.clean)
@@ -32,6 +34,10 @@ class TelegramBot:
     # Go in idle mode
     def bot_idle(self):
         self.updater.idle()
+
+    def _test_command(self, update, context):
+        print(update, context)
+        update.message.reply_text(text=emoji.LEMON)
 
     # Handle all telegram and telegram.ext related errors
     def _handle_tg_errors(self, bot, update, error):
