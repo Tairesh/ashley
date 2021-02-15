@@ -43,6 +43,7 @@ def _parse_args():
     parser.add_argument(
         "--clean",
         dest="clean",
+        action="store_true",
         help="clean any pending telegram updates before polling",
         required=False,
         default=False)
@@ -96,7 +97,7 @@ class Ashlee:
 
             logger.addHandler(file_log)
 
-    # Read bot token from file
+    # Read bot token from file or args
     def _get_bot_token(self):
         if self.args.token:
             return self.args.token
