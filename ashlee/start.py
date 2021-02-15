@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from logging.handlers import TimedRotatingFileHandler
 
 from ashlee import constants
+from ashlee.database import Database
 from ashlee.tgbot import TelegramBot
 
 
@@ -56,6 +57,15 @@ def _parse_args():
         required=False,
         default=None)
 
+    # Database path
+    parser.add_argument(
+        "-db",
+        dest="database",
+        help="path to SQLite database file",
+        default=constants.DATABASE_FILE,
+        required=False,
+        metavar="FILE")
+
     return parser.parse_args()
 
 
@@ -64,6 +74,7 @@ class Ashlee:
     def __init__(self):
         self.args = _parse_args()
         self._init_logger(self.args.logfile, self.args.loglevel)
+        self.db = Database(self.args.database)
         self.tgbot = TelegramBot(self._get_bot_token(), self.args.clean)
 
     # Configure logging
