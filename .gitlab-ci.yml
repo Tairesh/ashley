@@ -1,0 +1,33 @@
+image: python:latest
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+
+stages:
+    - test
+    - deploy
+
+
+test:
+    stage: test
+    cache:
+      paths:
+        - .cache/pip
+        - venv/
+    script:
+        - python -m pip install --upgrade pip
+        - pip install flake8
+        - flake8 ashlee --count --max-line-length=127 --show-source --statistics --exclude .git,__pycache__,venv
+
+deploy:
+    stage: deploy
+    script:
+        - 'which ssh-agent || ( apt-get install openssh-client -y )'
+        - eval $(ssh-agent -s)
+        - ssh-add <(echo "$SSH_PRIVATE_KEY")
+        - mkdir -p ~/.ssh
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - ssh -t $VPS_USERNAME@$VPS_ADDRESS "cd $WORKING_DIR && git checkout main && git pull && source venv/bin/activate && pip install -r requirements.txt && sudo systemctl restart $SERVICE_NAME"
+    only:
+        - prod
