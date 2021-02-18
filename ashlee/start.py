@@ -1,9 +1,9 @@
 import logging
 import os
+import json
 from argparse import ArgumentParser
 from logging.handlers import TimedRotatingFileHandler
 
-from ashlee import constants
 from ashlee.database import Database
 from ashlee.telegrambot import TelegramBot
 
@@ -17,7 +17,7 @@ def _parse_args():
         "-log",
         dest="logfile",
         help="path to logfile",
-        default=constants.LOG_FILE,
+        default=os.path.join('log', 'ashleebot.log'),
         required=False,
         metavar="FILE")
 
@@ -62,7 +62,7 @@ def _parse_args():
         "-db",
         dest="database",
         help="path to SQLite database file",
-        default=constants.DATABASE_FILE,
+        default=os.path.join('database', 'db.sqlite'),
         required=False,
         metavar="FILE")
 
@@ -74,8 +74,9 @@ class Ashlee:
     def __init__(self):
         self.args = _parse_args()
         self._init_logger(self.args.logfile, self.args.loglevel)
+        self.api_keys = self._get_api_keys()
         self.db = Database(self.args.database)
-        self.tgbot = TelegramBot(self._get_bot_token(), self.db, self.args.clean)
+        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.args.clean)
 
     # Configure logging
     def _init_logger(self, logfile, level):
@@ -114,15 +115,29 @@ class Ashlee:
             return self.args.token
 
         try:
-            if os.path.isfile(constants.TOKEN_FILE):
-                with open(constants.TOKEN_FILE, 'r') as file:
+            token_file = os.path.join('config', 'token.txt')
+            if os.path.isfile(token_file):
+                with open(token_file, 'r') as file:
                     return file.read()
             else:
-                exit(f"ERROR: No token file found at '{constants.TOKEN_FILE}'")
+                exit(f"ERROR: No token file found at '{token_file}'")
         except KeyError as e:
             cls_name = f"Class: {type(self).__name__}"
             logging.error(f"{repr(e)} - {cls_name}")
             exit("ERROR: Can't read bot token")
+
+    def _get_api_keys(self):
+        try:
+            keys_file = os.path.join('config', 'api_keys.json')
+            if os.path.isfile(keys_file):
+                with open(keys_file, 'r') as file:
+                    return json.load(file)
+            else:
+                exit(f"ERROR: No api keys file found at '{keys_file}'")
+        except json.JSONDecodeError as e:
+            cls_name = f"Class: {type(self).__name__}"
+            logging.error(f"{repr(e)} - {cls_name}")
+            exit("ERROR: Can't read api keys")
 
     def start(self):
         self.tgbot.bot_start_polling()

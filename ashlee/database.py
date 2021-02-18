@@ -1,8 +1,6 @@
 import os
 import sqlite3
 
-from ashlee import constants
-
 
 class Database:
 
@@ -50,7 +48,7 @@ class Database:
     SQL_CMD_ADD = '''INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'''
 
     # Initialize database
-    def __init__(self, db_path=constants.DATABASE_FILE):
+    def __init__(self, db_path):
         self._db_path = db_path
 
         # Create 'data' directory if not present

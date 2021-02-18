@@ -4,7 +4,7 @@ import os
 import threading
 
 from telegram import ParseMode
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater
 from telegram.error import InvalidToken
 from ashlee import emoji, constants
 
@@ -20,8 +20,9 @@ def threaded(fn):
 
 class TelegramBot:
 
-    def __init__(self, token, db, clean=False):
+    def __init__(self, token, api_keys, db, clean=False):
         self.token = token
+        self.api_keys = api_keys
         self.db = db
         self.clean = clean
         self.actions = []
@@ -56,7 +57,7 @@ class TelegramBot:
     def _load_actions(self):
         threads = list()
 
-        for _, _, files in os.walk(os.path.join(constants.SRC_DIR, constants.ACTIONS_DIR)):
+        for _, _, files in os.walk(os.path.join('ashlee', 'actions')):
             for file in files:
                 if not file.lower().endswith('.py'):
                     continue
@@ -73,7 +74,7 @@ class TelegramBot:
     def _load_action(self, file):
         try:
             module_name = file[:-3]
-            module_path = f"{constants.SRC_DIR}.{constants.ACTIONS_DIR}.{module_name}"
+            module_path = f"ashlee.actions.{module_name}"
             module = importlib.import_module(module_path)
 
             action_class = getattr(module, module_name.capitalize())
@@ -92,7 +93,7 @@ class TelegramBot:
         self.remove_action(module_name)
 
         try:
-            module_path = f"{constants.SRC_DIR}.{constants.ACTIONS_DIR}.{module_name}"
+            module_path = f"ashlee.actions.{module_name}"
             module = importlib.import_module(module_path)
 
             importlib.reload(module)
@@ -106,7 +107,6 @@ class TelegramBot:
 
     # Handle all telegram and telegram.ext related errors
     def _handle_tg_errors(self, update, error):
-        print(update, error)
         cls_name = f"Class: {type(self).__name__}"
         logging.error(f"{error} - {cls_name} - {update}")
 
