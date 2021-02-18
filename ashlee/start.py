@@ -5,7 +5,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from ashlee import constants
 from ashlee.database import Database
-from ashlee.tgbot import TelegramBot
+from ashlee.telegrambot import TelegramBot
 
 
 # Parse command line arguments
@@ -75,7 +75,7 @@ class Ashlee:
         self.args = _parse_args()
         self._init_logger(self.args.logfile, self.args.loglevel)
         self.db = Database(self.args.database)
-        self.tgbot = TelegramBot(self._get_bot_token(), self.args.clean)
+        self.tgbot = TelegramBot(self._get_bot_token(), self.db, self.args.clean)
 
     # Configure logging
     def _init_logger(self, logfile, level):
