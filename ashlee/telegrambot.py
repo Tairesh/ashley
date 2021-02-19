@@ -3,10 +3,11 @@ import logging
 import os
 import threading
 
-from telegram import ParseMode
-from telegram.ext import Updater
-from telegram.error import InvalidToken
-from ashlee import emoji, constants
+from telebot import TeleBot
+from telebot.apihelper import ApiException
+from telebot.types import Message
+
+from ashlee import emoji, constants, utils
 
 
 def threaded(fn):
@@ -27,32 +28,25 @@ class TelegramBot:
         self.clean = clean
         self.actions = []
 
-        try:
-            self.updater = Updater(token)
-        except InvalidToken as e:
-            cls_name = f"Class: {type(self).__name__}"
-            logging.error(f"{repr(e)} - {cls_name}")
-            exit("ERROR: Bot token not valid")
-
-        self.job_queue = self.updater.job_queue
-        self.dispatcher = self.updater.dispatcher
+        self.bot = TeleBot(token, skip_pending=clean)
+        self.me = self.bot.get_me()
 
         # Load classes in folder 'actions'
         self._load_actions()
 
-        # Handle all Telegram related errors
-        self.dispatcher.add_error_handler(self._handle_tg_errors)
+        self.bot.add_message_handler({'function': self._handle_text_messages, 'filters': {
+            'func': lambda m: m.text and not m.forward_from_chat,
+            'content_types': ['text'],
+        }})
 
     # Start the bot
     def bot_start_polling(self):
-        self.updater.start_polling(clean=self.clean)
-
         for admin in constants.ADMINS:
-            self.updater.bot.send_message(admin, emoji.INFO + ' I was restarted')
+            self.bot.send_message(admin, emoji.INFO + ' I was restarted')
 
     # Go in idle mode
     def bot_idle(self):
-        self.updater.idle()
+        self.bot.infinity_polling()
 
     def _load_actions(self):
         threads = list()
@@ -98,31 +92,62 @@ class TelegramBot:
 
             importlib.reload(module)
 
-            plugin_class = getattr(module, module_name.capitalize())
-            plugin_class(self)
+            action_class = getattr(module, module_name.capitalize())
+            action_class(self)
         except Exception as ex:
             msg = f"Plugin '{module_name.capitalize()}' can't be reloaded: {ex}"
             logging.warning(msg)
             raise ex
 
     # Handle all telegram and telegram.ext related errors
-    def _handle_tg_errors(self, update, error):
+    def _handle_tg_errors(self, message, exception):
         cls_name = f"Class: {type(self).__name__}"
-        logging.error(f"{error} - {cls_name} - {update}")
+        logging.error(f"{exception} - {cls_name} - {message}")
 
-        if not update:
+        if not message:
             return
 
-        error_msg = f"{emoji.ERROR} Telegram ERROR: *{error.error}*"
+        error_msg = f"{emoji.ERROR} Telegram ERROR: *{exception}*"
 
-        if update.message:
-            update.message.reply_text(
-                text=error_msg,
-                parse_mode=ParseMode.MARKDOWN)
-        elif update.callback_query:
-            update.callback_query.message.reply_text(
-                text=error_msg,
-                parse_mode=ParseMode.MARKDOWN)
+        if message:
+            self.bot.reply_to(message, text=error_msg, parse_mode='Markdown')
 
         for admin in constants.ADMINS:
-            self.updater.bot.send_message(admin, error_msg + f'\n<code>{update}</code>', parse_mode='HTML')
+            self.bot.send_message(admin, error_msg + f'\n```{message}```', parse_mode='Markdown')
+
+    # Handle text messages
+    def _handle_text_messages(self, message: Message):
+        if not message or not message.text:
+            return
+
+        if message.text.startswith('/'):
+            at_mention = utils.get_atmention(message)
+            if at_mention and at_mention != self.me.username:
+                return
+
+            cmd = utils.get_command(message)
+            for action in self.actions:
+                if cmd in action.get_cmds():
+                    self._call_action(action, message)
+                    return
+
+        if not utils.is_for_me(message, self.me):
+            return
+
+        selected_actions = []
+        for action in self.actions:
+            for keyword in action.get_keywords():
+                if keyword in message.text.lower():
+                    selected_actions.append(action)
+
+        if len(selected_actions) == 1:
+            action = selected_actions[0]
+            self._call_action(action, message)
+        elif len(selected_actions) > 1:
+            self.bot.reply_to(message, "idk idc")
+
+    def _call_action(self, action, message):
+        try:
+            action.call(message)
+        except ApiException as e:
+            self._handle_tg_errors(message, e)
