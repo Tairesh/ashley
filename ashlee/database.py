@@ -12,6 +12,7 @@ class Database:
         username TEXT,
         language TEXT,
         status INTEGER NOT NULL DEFAULT 1,
+        lemons INTEGER NOT NULL DEFAULT 0,
         date_time DATETIME DEFAULT CURRENT_TIMESTAMP
     )'''
     SQL_CREATE_CHATS = '''CREATE TABLE chats (
@@ -34,18 +35,12 @@ class Database:
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
     )'''
-    SQL_USER_ADD = '''INSERT INTO users 
-        (user_id, first_name, last_name, username, language)
-        VALUES (?, ?, ?, ?, ?)
-    '''
+    SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM chats WHERE chat_id = ?
     )'''
-    SQL_CHAT_ADD = '''INSERT INTO chats 
-        (chat_id, type, title, username)
-        VALUES (?, ?, ?, ?)
-    '''
-    SQL_CMD_ADD = '''INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'''
+    SQL_CHAT_ADD = 'INSERT INTO chats (chat_id, type, title, username) VALUES (?, ?, ?, ?)'
+    SQL_CMD_ADD = 'INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'
 
     # Initialize database
     def __init__(self, db_path):
