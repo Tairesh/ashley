@@ -49,8 +49,8 @@ class Database:
     )'''
     SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_USER_UPDATE = 'UPDATE users SET first_name = ?, last_name = ?, username = ?, language = ? WHERE user_id = ?'
-    SQL_USER_GET = '''SELECT user_id, first_name, last_name, username, language, status, lemons, date_time 
-                      FROM users WHERE user_id = ?'''
+    SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+                   'FROM users WHERE user_id = ?'
 
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM chats WHERE chat_id = ?

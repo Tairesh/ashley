@@ -42,7 +42,7 @@ class Youtube(Action):
             if message.reply_to_message and message.reply_to_message.text:
                 keyword = message.reply_to_message.text
             else:
-                self.bot.reply_to(message, f"Эту команду пока можно использовать только в ответ на другое сообщение.")
+                self.bot.reply_to(message, "Эту команду пока можно использовать только в ответ на другое сообщение.")
                 return
 
         data = json.loads(requests.get(self.API_URL.format(quote(keyword))).content.decode('utf-8'))
