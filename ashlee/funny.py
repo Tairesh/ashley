@@ -7,3 +7,10 @@ SEARCH_REQUESTS = [
     'анекдот про пупу и лупу',
     'чё там у хохлов?',
 ]
+
+YOUTUBE_REQUESTS = [
+    'rickroll',
+    'bitch lasagna',
+    'дворец путина',
+    'nude yoga',
+]
