@@ -51,6 +51,18 @@ class Action(ABC):
         return _send_typing_action
 
     @classmethod
+    def send_uploading_photo(cls, func):
+        def _send_uploading_photo_action(self, message: Message):
+            chat_id = message.chat.id
+            try:
+                self.tgb.bot.send_chat_action(chat_id=chat_id, action='upload_photo')
+            except Exception as ex:
+                logging.error(f"{ex} - {message}")
+
+            return func(self, message)
+        return _send_uploading_photo_action
+
+    @classmethod
     def save_data(cls, func):
         def _save_data(self, message: Message):
             self.tgb.db.save_cmd(message.from_user, message.chat, message.text)
