@@ -14,6 +14,9 @@ class Anime(Action):
 
     API_URL = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={}"
 
+    def get_description(self) -> str:
+        return 'случайная аниме-картинка с gelbooru.com по тегу'
+
     def get_keywords(self) -> List[str]:
         return ['аниме']
 

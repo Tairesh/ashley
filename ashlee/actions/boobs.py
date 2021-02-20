@@ -13,6 +13,9 @@ class Boobs(Action):
     API_URL = "http://api.oboobs.ru/boobs/1/1/random"
     MEDIA_SERVER = "http://media.oboobs.ru/"
 
+    def get_description(self) -> str:
+        return "случайные сиськи с oboobs.ru"
+
     def get_keywords(self) -> List[str]:
         return ['сиськи']
 

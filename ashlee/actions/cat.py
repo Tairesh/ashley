@@ -12,6 +12,9 @@ class Cat(Action):
 
     API_URL = "https://api.thecatapi.com/v1/images/search?mime_types={}"
 
+    def get_description(self) -> str:
+        return "случайное фото кота"
+
     def get_keywords(self) -> List[str]:
         return ['скинь кота', 'покажи кота']
 

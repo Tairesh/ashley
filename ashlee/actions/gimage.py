@@ -15,6 +15,9 @@ class Gimage(Action):
     API_URL = "https://www.googleapis.com/customsearch/v1" \
               "?q={}&start=1&key=%KEY%&cx=%CX%&searchType=image&gl=ru&imgSize=xxlarge"
 
+    def get_description(self) -> str:
+        return "поиск картинок в гугле"
+
     def get_keywords(self) -> List[str]:
         return ['найди картинку', 'гугл картинки']
 

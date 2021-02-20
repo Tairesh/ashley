@@ -17,6 +17,9 @@ class Meme(Action):
     r_word = re.compile(r'[\w\d\-\']+', flags=re.IGNORECASE)
     PIXABAI_API = "https://pixabay.com/api/?key=%KEY%&orientation=horizontal&min_width=700&min_height=500&q={}"
 
+    def get_description(self) -> str:
+        return "случайно сгенерированный мем"
+
     def get_name(self) -> str:
         return emoji.FUN + ' Meme'
 

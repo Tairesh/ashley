@@ -12,6 +12,9 @@ class Dog(Action):
 
     API_URL = "https://dog.ceo/api/breeds/image/random"
 
+    def get_description(self) -> str:
+        return "случайное фото собаки"
+
     def get_keywords(self) -> List[str]:
         return ['скинь собаку', 'покажи собаку']
 

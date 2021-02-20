@@ -31,6 +31,9 @@ class Action(ABC):
     @abstractmethod
     def get_keywords(self) -> List[str]: pass
 
+    @abstractmethod
+    def get_description(self) -> str: pass
+
     # Executed logic
     @abstractmethod
     def call(self, message: Message): pass

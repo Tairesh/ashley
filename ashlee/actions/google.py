@@ -10,6 +10,9 @@ from ashlee.action import Action
 
 class Google(Action):
 
+    def get_description(self) -> str:
+        return "поиск в гугле"
+
     def get_keywords(self) -> List[str]:
         return ['загугли', ]
 

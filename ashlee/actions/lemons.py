@@ -4,6 +4,9 @@ from ashlee.action import Action
 
 class Lemons(Action):
 
+    def get_description(self) -> str:
+        return "проверить количество лимонов"
+
     def get_name(self) -> str:
         return emoji.LEMON + " Лимоны"
 

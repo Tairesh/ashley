@@ -14,6 +14,9 @@ class Youtube(Action):
 
     API_URL = "https://www.googleapis.com/youtube/v3/search?q={}&key=%KEY%&cx=%CX%"
 
+    def get_description(self) -> str:
+        return "поиск на YouTube"
+
     def get_keywords(self) -> List[str]:
         return ['найди на ютубе', 'поиск на ютубе']
 
