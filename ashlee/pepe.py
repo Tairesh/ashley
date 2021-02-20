@@ -164,6 +164,7 @@ def generate_sentence_by_text(db, text: str, sentences_limit: int = 0) -> str:
         return compile_sentences(db, sentences) if len(sentences) > 1 else sentences[0]
     return generate_sentence(db)[0]
 
+
 def split_to_lines(sentence: str) -> list:
     words = sentence.split(' ')
     lines = []
