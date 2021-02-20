@@ -22,3 +22,12 @@ IMAGE_REQUESTS = [
     'big floppa',
     'не чёрные предметы не являющиеся воронами',
 ]
+
+ANIME_REQUESTS = [
+    'loli',
+    'gay',
+    'rape',
+    'guro',
+    'horse',
+    'thicc',
+]

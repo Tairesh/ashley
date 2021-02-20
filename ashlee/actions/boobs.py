@@ -20,7 +20,7 @@ class Boobs(Action):
         return ['boobs']
 
     def get_name(self) -> str:
-        return emoji.STRAWBERRY + " BOOBS"
+        return emoji.STRAWBERRY + " Boobs"
 
     @Action.save_data
     @Action.send_uploading_photo

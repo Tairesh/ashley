@@ -71,6 +71,7 @@ def _parse_args():
         "--debug",
         dest="debug",
         help="run TeleBot in debug mode",
+        action="store_true",
         required=False,
         default=False,
     )
