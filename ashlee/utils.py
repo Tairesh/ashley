@@ -1,5 +1,8 @@
+import os
 import re
+from hashlib import md5
 
+import requests
 from telebot.types import Message, User, Chat
 
 
@@ -45,3 +48,11 @@ def chunks(s, n):
 
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
+
+
+def download_file(url: str) -> str:
+    file_name = os.path.join('downloads', md5(url.encode()).hexdigest())
+    r = requests.get(url, timeout=2)
+    with open(file_name, 'wb') as f:
+        f.write(r.content)
+    return file_name

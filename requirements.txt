@@ -2,3 +2,5 @@ pyTelegramBotAPI~=3.7.6
 requests~=2.25.1
 beautifulsoup4~=4.9.3
 google~=3.0.0
+redis~=3.5.3
+wand~=0.6.5

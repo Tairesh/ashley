@@ -4,6 +4,8 @@ import json
 from argparse import ArgumentParser
 from logging.handlers import TimedRotatingFileHandler
 
+import redis
+
 from ashlee.database import Database
 from ashlee.telegrambot import TelegramBot
 
@@ -86,7 +88,8 @@ class Ashlee:
         self._init_logger(self.args.logfile, self.args.loglevel)
         self.api_keys = self._get_api_keys()
         self.db = Database(self.args.database)
-        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.args.clean, self.args.debug)
+        self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.redis, self.args.clean, self.args.debug)
 
     # Configure logging
     def _init_logger(self, logfile, level):

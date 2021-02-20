@@ -4,6 +4,7 @@ import os
 import threading
 from typing import Dict, List
 
+from redis import StrictRedis
 from telebot import TeleBot
 from telebot.apihelper import ApiException
 from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -24,10 +25,11 @@ def threaded(fn):
 
 class TelegramBot:
 
-    def __init__(self, token, api_keys, db, clean=False, debug=False):
+    def __init__(self, token, api_keys, db, redis, clean=False, debug=False):
         self.token: str = token
         self.api_keys: Dict[str, str] = api_keys
         self.db: Database = db
+        self.redis: StrictRedis = redis
         self.clean: bool = clean
         self.debug: bool = debug
         self.actions: List[Action] = []
