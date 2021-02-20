@@ -2,12 +2,15 @@ import importlib
 import logging
 import os
 import threading
+from typing import Dict, List
 
 from telebot import TeleBot
 from telebot.apihelper import ApiException
-from telebot.types import Message
+from telebot.types import Message, User
 
 from ashlee import emoji, constants, utils
+from ashlee.action import Action
+from ashlee.database import Database
 
 
 def threaded(fn):
@@ -22,14 +25,14 @@ def threaded(fn):
 class TelegramBot:
 
     def __init__(self, token, api_keys, db, clean=False):
-        self.token = token
-        self.api_keys = api_keys
-        self.db = db
-        self.clean = clean
-        self.actions = []
+        self.token: str = token
+        self.api_keys: Dict[str, str] = api_keys
+        self.db: Database = db
+        self.clean: bool = clean
+        self.actions: List[Action] = []
 
-        self.bot = TeleBot(token, skip_pending=clean)
-        self.me = self.bot.get_me()
+        self.bot: TeleBot = TeleBot(token, skip_pending=clean)
+        self.me: User = self.bot.get_me()
 
         # Load classes in folder 'actions'
         self._load_actions()
@@ -46,7 +49,7 @@ class TelegramBot:
 
     # Go in idle mode
     def bot_idle(self):
-        self.bot.infinity_polling()
+        self.bot.polling(True)
 
     def _load_actions(self):
         threads = list()
@@ -80,10 +83,10 @@ class TelegramBot:
     def remove_action(self, module_name):
         for action in self.actions:
             if type(action).__name__.lower() == module_name.lower():
-                action.remove_action()
+                self.actions.remove(action)
                 break
 
-    def reload_plugin(self, module_name):
+    def reload_action(self, module_name):
         self.remove_action(module_name)
 
         try:
@@ -95,7 +98,7 @@ class TelegramBot:
             action_class = getattr(module, module_name.capitalize())
             action_class(self)
         except Exception as ex:
-            msg = f"Plugin '{module_name.capitalize()}' can't be reloaded: {ex}"
+            msg = f"Action '{module_name.capitalize()}' can't be reloaded: {ex}"
             logging.warning(msg)
             raise ex
 

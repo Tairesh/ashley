@@ -5,15 +5,14 @@ from typing import List
 from telebot.types import Message
 
 from ashlee import constants
-from ashlee.telegrambot import TelegramBot
 
 
 class Action(ABC):
 
-    def __init__(self, telegram_bot: TelegramBot):
+    def __init__(self, telegram_bot):
         super().__init__()
 
-        self.tgb: TelegramBot = telegram_bot
+        self.tgb = telegram_bot
         self.tgb.actions.append(self)
 
     # Name of action
