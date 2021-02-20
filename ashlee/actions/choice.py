@@ -30,7 +30,7 @@ class Choice(Action):
         if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
         else:
-            keyword = message.text
+            keyword = utils.r_ashley.sub('', message.text).strip()
         if keyword[-1::] == '?':
             keyword = keyword[:-1:]
         if not keyword:
