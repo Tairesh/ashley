@@ -165,7 +165,9 @@ class TelegramBot:
 
     # handle callbacks
     def _handle_callback_queries(self, call: CallbackQuery):
-        if call.data and call.data.startswith('select_action:'):
+        if not call.data:
+            return
+        if call.data.startswith('select_action:'):
             cls = call.data.split(':')[1]
             self.bot.delete_message(call.message.chat.id, call.message.message_id)
             if call.message.reply_to_message:
@@ -173,6 +175,10 @@ class TelegramBot:
                     if action.__class__.__name__ == cls:
                         action.call(call.message.reply_to_message)
                         return
+        elif call.data.startswith('dice:'):
+            for action in self.actions:
+                if action.__class__.__name__ == 'Dice':
+                    action.btn_pressed(call.message, call.data)
 
     def _call_action(self, action, message):
         try:
