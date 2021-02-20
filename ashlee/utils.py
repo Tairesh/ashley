@@ -56,3 +56,15 @@ def download_file(url: str) -> str:
     with open(file_name, 'wb') as f:
         f.write(r.content)
     return file_name
+
+
+def user_name(user: User, with_username=False, prefer_username=False):
+    if prefer_username and user.username:
+        return '@' + user.username
+
+    name = user.first_name
+    if with_username and user.username:
+        name += ' @' + user.username
+    if user.last_name:
+        name += ' ' + user.last_name
+    return name
