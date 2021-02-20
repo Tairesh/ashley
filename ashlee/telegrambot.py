@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from telebot import TeleBot
 from telebot.apihelper import ApiException
-from telebot.types import Message, User
+from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from ashlee import emoji, constants, utils
 from ashlee.action import Action
@@ -42,6 +42,8 @@ class TelegramBot:
             'func': lambda m: m.text and not m.forward_from_chat,
             'content_types': ['text'],
         }})
+
+        self.bot.add_callback_query_handler({'function': self._handle_callback_queries, 'filters': {}})
 
     # Start the bot
     def bot_start_polling(self):
@@ -151,7 +153,24 @@ class TelegramBot:
             action = selected_actions[0]
             self._call_action(action, message)
         elif len(selected_actions) > 1:
-            self.bot.reply_to(message, "idk idc")
+            self.bot.reply_to(message,
+                              emoji.ERROR + " Я не поняла, что ты имеешь в виду, пожалуйста выбери что-то одно:",
+                              reply_markup=InlineKeyboardMarkup([[
+                                  InlineKeyboardButton(action.get_name(),
+                                                       callback_data=f"select_action:{action.__class__.__name__}")
+                                  for action in selected_actions
+                              ]]))
+
+    # handle callbacks
+    def _handle_callback_queries(self, call: CallbackQuery):
+        if call.data and call.data.startswith('select_action:'):
+            cls = call.data.split(':')[1]
+            self.bot.delete_message(call.message.chat.id, call.message.message_id)
+            if call.message.reply_to_message:
+                for action in self.actions:
+                    if action.__class__.__name__ == cls:
+                        action.call(call.message.reply_to_message)
+                        return
 
     def _call_action(self, action, message):
         try:
