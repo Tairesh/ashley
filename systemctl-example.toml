@@ -1,0 +1,18 @@
+[Unit]
+Description=Telegram bot @AshleyBot
+Requires=redis.service
+
+[Service]
+User=ashley
+Group=ashley
+WorkingDirectory=/home/ashley/ashleybot
+ExecStart=/home/ashley/ashleybot/bot.py
+Restart=always
+KillMode=process
+TimeoutSec=300
+RestartSec=30
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
