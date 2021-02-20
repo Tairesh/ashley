@@ -66,6 +66,15 @@ def _parse_args():
         required=False,
         metavar="FILE")
 
+    # Debug mode
+    parser.add_argument(
+        "--debug",
+        dest="debug",
+        help="run TeleBot in debug mode",
+        required=False,
+        default=False,
+    )
+
     return parser.parse_args()
 
 
@@ -76,7 +85,7 @@ class Ashlee:
         self._init_logger(self.args.logfile, self.args.loglevel)
         self.api_keys = self._get_api_keys()
         self.db = Database(self.args.database)
-        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.args.clean)
+        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.args.clean, self.args.debug)
 
     # Configure logging
     def _init_logger(self, logfile, level):

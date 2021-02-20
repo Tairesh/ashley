@@ -1,6 +1,4 @@
-import re
-
-from ashlee import emoji, utils
+from ashlee import emoji
 from ashlee.action import Action
 
 
@@ -12,12 +10,12 @@ class Lemons(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message):
-        user = self.tgb.db.get_user(message.from_user.id)
+        user = self.db.get_user(message.from_user.id)
         count = user.lemons
         if count == 0:
-            self.tgb.bot.reply_to(message, "У тебя нет ни одного лимона!")
+            self.bot.reply_to(message, "У тебя нет ни одного лимона!")
         else:
-            self.tgb.bot.reply_to(message, f"Вот твои лимоны, {count} штук: {emoji.LEMON * count}")
+            self.bot.reply_to(message, f"Вот твои лимоны, {count} штук: {emoji.LEMON * count}")
 
     def get_keywords(self):
         return ["лимоны"]

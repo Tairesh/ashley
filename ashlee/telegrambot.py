@@ -24,11 +24,12 @@ def threaded(fn):
 
 class TelegramBot:
 
-    def __init__(self, token, api_keys, db, clean=False):
+    def __init__(self, token, api_keys, db, clean=False, debug=False):
         self.token: str = token
         self.api_keys: Dict[str, str] = api_keys
         self.db: Database = db
         self.clean: bool = clean
+        self.debug: bool = debug
         self.actions: List[Action] = []
 
         self.bot: TeleBot = TeleBot(token, skip_pending=clean)
@@ -49,7 +50,10 @@ class TelegramBot:
 
     # Go in idle mode
     def bot_idle(self):
-        self.bot.polling(True)
+        if self.debug:
+            self.bot.polling(True)
+        else:
+            self.bot.infinity_polling()
 
     def _load_actions(self):
         threads = list()

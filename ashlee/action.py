@@ -2,9 +2,11 @@ import logging
 from abc import ABC, abstractmethod
 from typing import List
 
+from telebot import TeleBot
 from telebot.types import Message
 
 from ashlee import constants
+from ashlee.database import Database
 
 
 class Action(ABC):
@@ -14,6 +16,8 @@ class Action(ABC):
 
         self.tgb = telegram_bot
         self.tgb.actions.append(self)
+        self.bot: TeleBot = telegram_bot.bot
+        self.db: Database = telegram_bot.db
 
     # Name of action
     @abstractmethod
