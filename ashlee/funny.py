@@ -14,3 +14,11 @@ YOUTUBE_REQUESTS = [
     'дворец путина',
     'nude yoga',
 ]
+
+IMAGE_REQUESTS = [
+    'child porn',
+    'перламутровый',
+    'joseph stalin rule 34',
+    'big floppa',
+    'не чёрные предметы не являющиеся воронами',
+]
