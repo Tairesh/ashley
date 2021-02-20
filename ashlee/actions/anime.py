@@ -51,7 +51,7 @@ class Anime(Action):
                 self.bot.send_photo(message.chat.id, url, None, message.message_id)
                 return
             elif ext == 'mp4':
-                self.bot.send_video(message.chat.id, url, None, message.message_id)
+                self.bot.send_video(message.chat.id, url, None, None, message.message_id)
                 return
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
