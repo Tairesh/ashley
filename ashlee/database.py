@@ -10,8 +10,8 @@ class User:
 
 class Chat:
     def __init__(self, row):
-        self.chat_id, self.type, self.title, self.username, self.admins, self.date_time = row
-        self.admins = set(map(int, self.admins.split(',')))
+        self.chat_id, self.type, self.title, self.username, self.users, self.date_time = row
+        self.users = set(map(int, self.users.split(',')))
 
 
 class Database:
@@ -32,7 +32,7 @@ class Database:
         type TEXT NOT NULL,
         title TEXT,
         username TEXT,
-        admins TEXT DEFAULT NULL,
+        users TEXT DEFAULT NULL,
         date_time DATETIME DEFAULT CURRENT_TIMESTAMP
     )'''
     SQL_CREATE_CMD_DATA = '''CREATE TABLE cmd_data (
@@ -57,7 +57,8 @@ class Database:
     )'''
     SQL_CHAT_ADD = 'INSERT INTO chats (chat_id, type, title, username) VALUES (?, ?, ?, ?)'
     SQL_CHAT_UPDATE = 'UPDATE chats SET type = ?, title = ?, username = ? WHERE chat_id = ?'
-    SQL_CHAT_GET = 'SELECT chat_id, type, title, username, admins, date_time FROM chats WHERE chat_id = ?'
+    SQL_CHAT_GET = 'SELECT chat_id, type, title, username, users, date_time FROM chats WHERE chat_id = ?'
+    SQL_CHAT_UPDATE_USERS = 'UPDATE chats SET users = ? WHERE chat_id = ?'
 
     SQL_CMD_ADD = 'INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'
 
@@ -116,6 +117,12 @@ class Database:
                 con.commit()
             else:
                 cur.execute(self.SQL_CHAT_UPDATE, (chat.type, chat.title, chat.username, chat.id))
+                con.commit()
+
+            chat = self.get_chat(chat_id)
+            if user.id not in chat.users:
+                chat.users.add(user.id)
+                cur.execute(self.SQL_CHAT_UPDATE_USERS, [','.join((str(u) for u in chat.users)), chat_id])
                 con.commit()
 
         con.close()
