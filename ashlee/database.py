@@ -11,7 +11,7 @@ class User:
 class Chat:
     def __init__(self, row):
         self.chat_id, self.type, self.title, self.username, self.users, self.date_time = row
-        self.users = set(map(int, self.users.split(',')))
+        self.users = set(map(int, self.users.split(','))) if self.users else set()
 
 
 class Database:
