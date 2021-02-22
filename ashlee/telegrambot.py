@@ -117,7 +117,7 @@ class TelegramBot:
         if message:
             self.bot.send_sticker(message.chat.id, stickers.SOMETHING_WRONG, message.message_id)
 
-        error_msg = f"{emoji.ERROR} Exception:\n<code>{exception.with_traceback()}</code>\n\n<code>{message}</code>"
+        error_msg = f"{emoji.ERROR} Exception:\n<code>{str(exception)}</code>\n\n<code>{message}</code>"
         for admin in constants.ADMINS:
             for chunk in utils.chunks(error_msg, 3000):
                 self.bot.send_message(admin, chunk, parse_mode='HTML')

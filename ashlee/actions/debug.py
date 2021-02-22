@@ -26,7 +26,9 @@ class Debug(Action):
     def call(self, message: Message):
         if message.reply_to_message:
             text = str(message.reply_to_message)
-            for part in utils.chunks(text, 2994):
-                self.bot.reply_to(message, f"```{part}```", parse_mode='markdown')
+            for part in utils.chunks(text, 3000):
+                self.bot.reply_to(message, f"<code>{part}</code>", parse_mode='HTML')
         else:
-            self.bot.reply_to(message, f"```{str(message.chat)}```", parse_mode='markdown')
+            chat = self.bot.get_chat(message.chat.id)
+            self.bot.reply_to(message, f"Chat in DB: <code>{str(self.db.get_chat(message.chat.id).__dict__)}</code>\n\n"
+                                       f"Chat in TG: <code>{str(chat)}</code>", parse_mode='HTML')

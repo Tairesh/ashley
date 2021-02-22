@@ -147,7 +147,7 @@ class Database:
         cur.execute(self.SQL_USER_GET, (user_id, ))
         row = cur.fetchone()
         con.close()
-        return User(row)
+        return User(row) if row else None
 
     def get_chat(self, chat_id) -> Chat:
         con = sqlite3.connect(self._db_path)
@@ -155,4 +155,4 @@ class Database:
         cur.execute(self.SQL_CHAT_GET, (chat_id, ))
         row = cur.fetchone()
         con.close()
-        return Chat(row)
+        return Chat(row) if row else None
