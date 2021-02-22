@@ -110,15 +110,15 @@ class TelegramBot:
             logging.warning(msg)
             raise ex
 
-    # Handle all telegram and telegram.ext related errors
-    def _handle_tg_errors(self, message, exception):
+    # Handle all errors
+    def _handle_errors(self, message, exception):
         cls_name = f"Class: {type(self).__name__}"
         logging.error(f"{exception} - {cls_name} - {message}")
 
         if not message:
             return
 
-        error_msg = f"{emoji.ERROR} Telegram ERROR: *{exception}*"
+        error_msg = f"{emoji.ERROR} =ERROR: *{exception}*"
 
         if message:
             self.bot.reply_to(message, text=error_msg, parse_mode='Markdown')
@@ -186,5 +186,5 @@ class TelegramBot:
     def _call_action(self, action, message):
         try:
             action.call(message)
-        except ApiException as e:
-            self._handle_tg_errors(message, e)
+        except Exception as e:
+            self._handle_errors(message, e)
