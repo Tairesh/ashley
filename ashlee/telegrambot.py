@@ -6,7 +6,6 @@ from typing import Dict, List
 
 from redis import StrictRedis
 from telebot import TeleBot
-from telebot.apihelper import ApiException
 from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from ashlee import emoji, constants, utils
