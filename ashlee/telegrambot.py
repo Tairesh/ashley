@@ -8,7 +8,7 @@ from redis import StrictRedis
 from telebot import TeleBot
 from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-from ashlee import emoji, constants, utils
+from ashlee import emoji, constants, utils, stickers
 from ashlee.action import Action
 from ashlee.database import Database
 
@@ -114,16 +114,13 @@ class TelegramBot:
         cls_name = f"Class: {type(self).__name__}"
         logging.error(f"{exception} - {cls_name} - {message}")
 
-        if not message:
-            return
-
-        error_msg = f"{emoji.ERROR} =ERROR: *{exception}*"
-
         if message:
-            self.bot.reply_to(message, text=error_msg, parse_mode='Markdown')
+            self.bot.send_sticker(message.chat.id, stickers.SOMETHING_WRONG, message.message_id)
 
+        error_msg = f"{emoji.ERROR} Exception:\n<code>{exception.with_traceback()}</code>\n\n<code>{message}</code>"
         for admin in constants.ADMINS:
-            self.bot.send_message(admin, error_msg + f'\n```{message}```', parse_mode='Markdown')
+            for chunk in utils.chunks(error_msg, 3000):
+                self.bot.send_message(admin, chunk, parse_mode='HTML')
 
     # Handle text messages
     def _handle_text_messages(self, message: Message):
