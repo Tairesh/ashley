@@ -50,7 +50,7 @@ class Translate(Action):
             })
             result = json.loads(req.content.decode('utf-8'))['data']['translations'][0]
             return result['detectedSourceLanguage'], result['translatedText']
-        except requests.RequestException as e:
+        except Exception as e:
             if recursive:
                 self._authorize()
                 return self._translate(q, target_language, False)
