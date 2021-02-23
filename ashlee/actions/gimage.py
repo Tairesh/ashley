@@ -4,6 +4,7 @@ import random
 from urllib.parse import quote
 
 import requests
+from telebot.apihelper import ApiException
 from telebot.types import Message
 
 from ashlee import emoji, utils, stickers, funny
@@ -55,7 +56,10 @@ class Gimage(Action):
                 url = row['link']
                 if not url.startswith('http'):
                     continue
-                self.bot.send_photo(message.chat.id, url, None, message.message_id)
-                return
+                try:
+                    self.bot.send_photo(message.chat.id, url, None, message.message_id)
+                    return
+                except ApiException:
+                    pass
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)

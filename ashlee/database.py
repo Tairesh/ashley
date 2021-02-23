@@ -14,6 +14,13 @@ class Chat:
         self.users = set(map(int, self.users.split(','))) if self.users else set()
 
 
+class ChatSettings:
+    def __init__(self, row):
+        self.chat_id, self.language, self.enabled_porn, self.enabled_anime, self.enabled_replies, \
+            self.welcome_photo, self.welcome_message, self.welcome_buttons, self.welcome_restrict = row
+        self.welcome_buttons = self.welcome_buttons.split(',') if self.welcome_buttons else []
+
+
 class Database:
 
     SQL_DB_EXISTS = 'SELECT name FROM sqlite_master'
@@ -43,6 +50,18 @@ class Database:
         FOREIGN KEY(user_id) REFERENCES users(user_id),
         FOREIGN KEY(chat_id) REFERENCES chats(chat_id)
     )'''
+    SQL_CREATE_CHATS_SETTINGS = '''CREATE TABLE chats_settings (
+        chat_id INTEGER NOT NULL PRIMARY KEY,
+        language TEXT DEFAULT NULL,
+        enabled_porn INTEGER NOT NULL DEFAULT 1,
+        enabled_anime INTEGER NOT NULL DEFAULT 1,
+        enabled_replies INTEGER NOT NULL DEFAULT 1,
+        welcome_photo TEXT DEFAULT NULL,
+        welcome_message TEXT DEFAULT NULL,
+        welcome_buttons TEXT DEFAULT NULL,
+        welcome_restrict INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+    )'''
 
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
@@ -62,6 +81,14 @@ class Database:
 
     SQL_CMD_ADD = 'INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'
 
+    SQL_GET_CHATS_SETTINGS = 'SELECT chat_id, language, enabled_porn, enabled_anime, enabled_replies, ' \
+                             'welcome_photo, welcome_message, welcome_buttons, welcome_restrict ' \
+                             'FROM chats_settings WHERE chat_id = ?'
+    SQL_CHAT_SETTINGS_ADD = 'INSERT INTO chats_settings (chat_id, language) VALUES (?, ?)'
+    SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ?, ' \
+                               'welcome_photo = ?, welcome_message = ?, welcome_buttons = ?, welcome_restrict = ? ' \
+                               'WHERE chat_id = ?'
+
     # Initialize database
     def __init__(self, db_path):
         self._db_path = db_path
@@ -74,15 +101,21 @@ class Database:
         cur = con.cursor()
 
         # If tables don't exist, create them
-        if not cur.execute(self.SQL_DB_EXISTS).fetchone():
+        tables = set([row[0] for row in cur.execute(self.SQL_DB_EXISTS).fetchall()])
+        if 'users' not in tables:
             cur.execute(self.SQL_CREATE_USERS)
             con.commit()
+        if 'chats' not in tables:
             cur.execute(self.SQL_CREATE_CHATS)
             con.commit()
+        if 'cmd_data' not in tables:
             cur.execute(self.SQL_CREATE_CMD_DATA)
             con.commit()
+        if 'chats_settings' not in tables:
+            cur.execute(self.SQL_CREATE_CHATS_SETTINGS)
+            con.commit()
 
-            con.close()
+        con.close()
 
     # Save user and / or chat to database
     def save_user_and_chat(self, user, chat):
@@ -156,3 +189,33 @@ class Database:
         row = cur.fetchone()
         con.close()
         return Chat(row) if row else None
+
+    def get_chat_settings(self, chat_id) -> ChatSettings:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_GET_CHATS_SETTINGS, (chat_id, ))
+        row = cur.fetchone()
+        con.close()
+        return ChatSettings(row) if row else None
+
+    def add_chat_settings(self, chat_id):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_CHAT_SETTINGS_ADD, (chat_id, 'ru'))
+        con.commit()
+        con.close()
+
+    def update_chat_settings(self, chat_id, enabled_porn=1, enabled_anime=1, enabled_replies=1,
+                             welcome_photo=None, welcome_message=None, welcome_buttons=None, welcome_restrict=0):
+        if welcome_buttons is not None:
+            if len(welcome_buttons):
+                welcome_buttons = ','.join(welcome_buttons)
+            else:
+                welcome_buttons = None
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_CHAT_SETTINGS_UPDATE, (enabled_porn, enabled_anime, enabled_replies,
+                                                    welcome_photo, welcome_message, welcome_buttons, welcome_restrict,
+                                                    chat_id))
+        con.commit()
+        con.close()

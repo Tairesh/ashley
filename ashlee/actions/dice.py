@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import dice
 from telebot.apihelper import ApiException
@@ -21,6 +21,9 @@ class Dice(Action):
 
     def get_keywords(self) -> List[str]:
         return ['кинь кубик', 'кинь дайс', 'брось кубик', 'брось дайс', 'брось кости', 'кинь кости']
+
+    def get_callback_start(self) -> Optional[str]:
+        return 'dice:'
 
     def _dice_btn(self, dice_val):
         return InlineKeyboardButton(text=dice_val, callback_data='dice:' + dice_val)

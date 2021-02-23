@@ -159,13 +159,20 @@ class TelegramBot:
                                   for action in selected_actions
                               ]]))
         elif message.text and not message.text.startswith('/'):
-            action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
-            self._call_action(action, message)
+            settings = self.db.get_chat_settings(message.chat.id)
+            if settings and not settings.enabled_replies:
+                return
+            reply_action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
+            self._call_action(reply_action, message)
 
     # handle callbacks
     def _handle_callback_queries(self, call: CallbackQuery):
         if not call.data:
             return
+
+        if call.message.reply_to_message and call.message.reply_to_message.from_user.id != call.from_user.id:
+            return
+
         if call.data.startswith('select_action:'):
             cls = call.data.split(':')[1]
             self.bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -174,9 +181,10 @@ class TelegramBot:
                     if action.__class__.__name__ == cls:
                         action.call(call.message.reply_to_message)
                         return
-        elif call.data.startswith('dice:'):
+        else:
             for action in self.actions:
-                if action.__class__.__name__ == 'Dice':
+                cs = action.get_callback_start()
+                if cs and call.data.startswith(cs):
                     action.btn_pressed(call.message, call.data)
 
     def _call_action(self, action, message):

@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from telebot import TeleBot
 from telebot.types import Message
@@ -30,6 +30,12 @@ class Action(ABC):
     # List of keywords that are natural language action triggers
     @abstractmethod
     def get_keywords(self) -> List[str]: pass
+
+    def get_callback_start(self) -> Optional[str]:
+        return None
+
+    def btn_pressed(self, message, data):
+        pass
 
     @abstractmethod
     def get_description(self) -> str: pass

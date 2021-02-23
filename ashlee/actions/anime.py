@@ -29,6 +29,11 @@ class Anime(Action):
     @Action.save_data
     @Action.send_uploading_photo
     def call(self, message: Message):
+        settings = self.db.get_chat_settings(message.chat.id)
+        if settings and not settings.enabled_anime:
+            self.bot.reply_to(message, f"{emoji.ERROR} Аниме запрещено в этом чате!")
+            return
+
         if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
             if not keyword:
