@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Chat, User
 
-from ashlee import emoji, utils, constants
+from ashlee import emoji, constants
 from ashlee.action import Action
 from ashlee.database import ChatSettings
 
