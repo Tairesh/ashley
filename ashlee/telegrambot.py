@@ -2,6 +2,7 @@ import importlib
 import logging
 import os
 import threading
+import traceback
 from typing import Dict, List
 
 from redis import StrictRedis
@@ -117,10 +118,12 @@ class TelegramBot:
         if message:
             self.bot.send_sticker(message.chat.id, stickers.SOMETHING_WRONG, message.message_id)
 
-        error_msg = f"{emoji.ERROR} Exception:\n<code>{str(exception)}</code>\n\n<code>{message}</code>"
+        error_msg = f"{emoji.ERROR} Exception: <code>{utils.escape(str(exception))}</code>\n" \
+                    f"Request: <code>{utils.escape(message.text)}</code>\n" \
+                    f"\n<code>{utils.escape((traceback.format_exc()))}</code>"
         for admin in constants.ADMINS:
             for chunk in utils.chunks(error_msg, 3000):
-                self.bot.send_message(admin, utils.escape(chunk), parse_mode='HTML')
+                self.bot.send_message(admin, chunk, parse_mode='HTML')
 
     # Handle text messages
     def _handle_text_messages(self, message: Message):
