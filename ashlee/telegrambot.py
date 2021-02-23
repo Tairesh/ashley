@@ -158,7 +158,7 @@ class TelegramBot:
                                                        callback_data=f"select_action:{action.__class__.__name__}")
                                   for action in selected_actions
                               ]]))
-        else:
+        elif message.text and not message.text.startswith('/'):
             action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
             self._call_action(action, message)
 
