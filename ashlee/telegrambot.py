@@ -120,7 +120,7 @@ class TelegramBot:
         error_msg = f"{emoji.ERROR} Exception:\n<code>{str(exception)}</code>\n\n<code>{message}</code>"
         for admin in constants.ADMINS:
             for chunk in utils.chunks(error_msg, 3000):
-                self.bot.send_message(admin, chunk, parse_mode='HTML')
+                self.bot.send_message(admin, utils.escape(chunk), parse_mode='HTML')
 
     # Handle text messages
     def _handle_text_messages(self, message: Message):

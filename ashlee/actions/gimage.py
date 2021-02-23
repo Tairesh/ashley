@@ -53,6 +53,8 @@ class Gimage(Action):
         if 'items' in data:
             for row in data['items']:
                 url = row['link']
+                if not url.startswith('http'):
+                    continue
                 self.bot.send_photo(message.chat.id, url, None, message.message_id)
                 return
 

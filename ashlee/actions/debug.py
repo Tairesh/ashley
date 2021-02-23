@@ -27,7 +27,7 @@ class Debug(Action):
         if message.reply_to_message:
             text = str(message.reply_to_message)
             for part in utils.chunks(text, 3000):
-                self.bot.reply_to(message, f"<code>{part}</code>", parse_mode='HTML')
+                self.bot.reply_to(message, f"<code>{utils.escape(part)}</code>", parse_mode='HTML')
         else:
             chat_db = self.db.get_chat(message.chat.id)
             chat_tg = self.bot.get_chat(message.chat.id)

@@ -68,3 +68,8 @@ def user_name(user: User, with_username=False, prefer_username=False):
     if user.last_name:
         name += ' ' + user.last_name
     return name
+
+
+def escape(html):
+    """Returns the given HTML with ampersands, quotes and carets encoded."""
+    return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
