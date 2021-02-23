@@ -61,7 +61,7 @@ class Meme(Action):
             else:
                 for k in self.get_keywords():
                     text = text.replace(k, '')
-        1/0
+
         tries = 0
         while tries < 10:
             tries += 1
