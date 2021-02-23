@@ -8,7 +8,7 @@ from redis import StrictRedis
 from telebot import TeleBot
 from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-from ashlee import emoji, constants, utils, stickers
+from ashlee import emoji, constants, utils, stickers, pepe
 from ashlee.action import Action
 from ashlee.database import Database
 
@@ -159,6 +159,7 @@ class TelegramBot:
                                   for action in selected_actions
                               ]]))
         elif message.text and not message.text.startswith('/'):
+            pepe.train(self.redis, message.text)
             settings = self.db.get_chat_settings(message.chat.id)
             if settings and not settings.enabled_replies:
                 return
