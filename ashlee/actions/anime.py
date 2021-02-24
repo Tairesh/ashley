@@ -4,6 +4,7 @@ import urllib.request
 from urllib.parse import quote
 from xml.etree import ElementTree
 
+from telebot.apihelper import ApiException
 from telebot.types import Message
 
 from ashlee import emoji, utils, stickers, funny
@@ -55,11 +56,14 @@ class Anime(Action):
         for post in posts:
             url = post.attrib['file_url']
             ext = url.split('.').pop()
-            if ext in {'jpg', 'jpeg', 'png'}:
-                self.bot.send_photo(message.chat.id, url, None, message.message_id)
-                return
-            elif ext == 'mp4':
-                self.bot.send_video(message.chat.id, url, None, None, message.message_id)
-                return
+            try:
+                if ext in {'jpg', 'jpeg', 'png'}:
+                    self.bot.send_photo(message.chat.id, url, None, message.message_id)
+                    return
+                elif ext == 'mp4':
+                    self.bot.send_video(message.chat.id, url, None, None, message.message_id)
+                    return
+            except ApiException:
+                continue
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
