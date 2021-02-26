@@ -76,10 +76,13 @@ class Meme(Action):
                 urls = []
                 for word in words:
                     for subword in self.r_word.findall(word):
-                        data = json.loads(requests.get(self.PIXABAI_API.format(quote(subword))).content.decode('utf-8'))
-                        if data['totalHits'] > 0:
-                            for hit in data['hits']:
-                                urls.append(hit['largeImageURL'])
+                        try:
+                            data = json.loads(requests.get(self.PIXABAI_API.format(quote(subword))).content.decode('utf-8'))
+                            if data['totalHits'] > 0:
+                                for hit in data['hits']:
+                                    urls.append(hit['largeImageURL'])
+                        except json.decoder.JSONDecodeError:
+                            continue
             else:
                 urls = [file_url]
             random.shuffle(urls)
