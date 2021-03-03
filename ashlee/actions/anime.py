@@ -39,7 +39,7 @@ class Anime(Action):
                 req = random.choice(funny.ANIME_REQUESTS)
                 self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
                                   parse_mode='Markdown')
-                return
+                return False
         else:
             keyword = 'sfw'
 
@@ -53,14 +53,15 @@ class Anime(Action):
             try:
                 if ext in {'jpg', 'jpeg', 'png'}:
                     self.bot.send_photo(message.chat.id, url, None, message.message_id)
-                    return
+                    return True
                 elif ext == 'mp4':
                     self.bot.send_video(message.chat.id, url, None, None, message.message_id)
-                    return
+                    return True
             except ApiException:
                 continue
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
+        return False
 
     def btn_pressed(self, message, data):
         if data.endswith('sudo'):
@@ -80,10 +81,16 @@ class Anime(Action):
         elif data.endswith('yes'):
             if not message.reply_to_message:
                 return
-            self._try_send_photo(message.reply_to_message)
-            self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!\n"
-                                       f"Но тем у кого много лимонов закон не писан...",
-                                       message.chat.id, message.message_id, reply_markup=None)
+            user = self.db.get_user(message.from_user.id)
+            if user.lemons > 0:
+                self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!\n"
+                                           f"Но тем у кого много лимонов закон не писан...",
+                                           message.chat.id, message.message_id, reply_markup=None)
+                if self._try_send_photo(message.reply_to_message):
+                    self.db.update_user_lemons(user.id, user.lemons - 1)
+            else:
+                self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!",
+                                           message.chat.id, message.message_id, reply_markup=None)
 
     @Action.save_data
     def call(self, message: Message):
