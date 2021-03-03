@@ -70,6 +70,7 @@ def user_name(user: Union[User, DBUser], with_username=False, prefer_username=Fa
     if user.last_name:
         name += ' ' + user.last_name
 
+    name = name.replace('ᅠ', '')
     return name.strip()
 
 
