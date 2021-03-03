@@ -36,6 +36,7 @@ class TelegramBot:
 
         self.bot: TeleBot = TeleBot(token, skip_pending=clean)
         self.me: User = self.bot.get_me()
+        self.db.save_user_and_chat(self.me, None)
 
         # Load classes in folder 'actions'
         self._load_actions()
