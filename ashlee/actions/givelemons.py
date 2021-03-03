@@ -21,7 +21,7 @@ class Givelemons(Action):
 
         recipient = None
         if message.reply_to_message:
-            recipient = self.db.get_user(message.reply_to_message.user.id)
+            recipient = self.db.get_user(message.reply_to_message.from_user.id)
         else:
             for k in keyword:
                 if k.startswith('@'):
