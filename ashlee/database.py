@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from typing import List, Set
 
 
 class User:
@@ -74,6 +75,8 @@ class Database:
                    'FROM users WHERE user_id = ?'
     SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                          'FROM users WHERE lower(username) = ?'
+    SQL_USERS_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+                    'FROM users WHERE user_id IN ({})'
 
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM chats WHERE chat_id = ?
@@ -186,6 +189,17 @@ class Database:
         row = cur.fetchone()
         con.close()
         return User(row) if row else None
+
+    def get_users(self, users_ids: Set[int]) -> List[User]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_USERS_GET.format(','.join(map(str, users_ids))))
+        rows = cur.fetchall()
+        users = []
+        for row in rows:
+            users.append(User(row))
+        con.close()
+        return users
 
     def get_user_by_username(self, username) -> User:
         con = sqlite3.connect(self._db_path)

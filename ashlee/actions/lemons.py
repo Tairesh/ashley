@@ -1,4 +1,4 @@
-from ashlee import emoji, utils
+from ashlee import emoji
 from ashlee.action import Action
 
 

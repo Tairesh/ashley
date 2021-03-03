@@ -1,10 +1,12 @@
 import os
 import re
 from hashlib import md5
+from typing import Union
 
 import requests
 from telebot.types import Message, User, Chat
 
+from ashlee.database import User as DBUser
 
 r_ashley = re.compile(r'([^\w]|^)(эшли|эщли|ashley|ashlee|ashlea|ashli|єшли|ешлі|єшлі)', flags=re.IGNORECASE)
 
@@ -58,7 +60,7 @@ def download_file(url: str) -> str:
     return file_name
 
 
-def user_name(user: User, with_username=False, prefer_username=False):
+def user_name(user: Union[User, DBUser], with_username=False, prefer_username=False):
     if prefer_username and user.username:
         return '@' + user.username
 
