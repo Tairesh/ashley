@@ -69,7 +69,8 @@ def user_name(user: Union[User, DBUser], with_username=False, prefer_username=Fa
         name += ' @' + user.username
     if user.last_name:
         name += ' ' + user.last_name
-    return name
+
+    return name.strip()
 
 
 def escape(html):
