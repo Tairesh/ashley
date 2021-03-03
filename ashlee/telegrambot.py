@@ -150,6 +150,7 @@ class TelegramBot:
             for keyword in action.get_keywords():
                 if keyword in message.text.lower():
                     selected_actions.append(action)
+                    break
 
         if len(selected_actions) == 1:
             action = selected_actions[0]
