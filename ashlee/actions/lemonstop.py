@@ -27,10 +27,11 @@ class Lemonstop(Action):
         if len(users) == 0:
             self.bot.reply_to(message, f"{emoji.SEARCH} В чате ни у кого нет лимонов, лол чё за чат нищебродов!")
             return
+        users = users[:10]
 
         text = f"{emoji.INFO} <b>Топ богачей</b>:\n"
-        for user in users:
-            text += f"{utils.user_name(user)} — {user.lemons} {emoji.LEMON}\n"
+        for i, user in enumerate(users):
+            text += f"{i+1}. {utils.user_name(user)} — {user.lemons} {emoji.LEMON}\n"
         self.bot.reply_to(message, text, parse_mode='HTML')
 
     def get_keywords(self):
