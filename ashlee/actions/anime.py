@@ -28,7 +28,7 @@ class Anime(Action):
         return emoji.SEARCH + " Anime"
 
     def get_callback_start(self):
-        return 'sudo'
+        return 'anime:'
 
     @Action.send_uploading_photo
     def _try_send_photo(self, message):
@@ -63,10 +63,27 @@ class Anime(Action):
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
 
     def btn_pressed(self, message, data):
-        if not message.reply_to_message:
+        if data.endswith('sudo'):
+            kb = InlineKeyboardMarkup([[
+                InlineKeyboardButton(f"{emoji.CHECK} Да", callback_data='anime:yes'),
+                InlineKeyboardButton(f"{emoji.CANCEL} Отмена", callback_data='anime:cancel'),
+            ]])
+            self.bot.edit_message_text(
+                f"{message.text}\nВы действительно хотите потратить {emoji.LEMON} и отправить аниме?",
+                message.chat.id, message.message_id, reply_markup=kb
+            )
             return
-        message = message.reply_to_message
-        self._try_send_photo(message)
+        elif data.endswith('cancel'):
+            self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!",
+                                       message.chat.id, message.message_id, reply_markup=None)
+            return
+        elif data.endswith('yes'):
+            if not message.reply_to_message:
+                return
+            self._try_send_photo(message.reply_to_message)
+            self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!\n"
+                                       f"Но тем у кого много лимонов закон не писан...",
+                                       message.chat.id, message.message_id, reply_markup=None)
 
     @Action.save_data
     def call(self, message: Message):
@@ -76,7 +93,7 @@ class Anime(Action):
             if user.lemons > 0:
                 kb = InlineKeyboardMarkup([[
                     InlineKeyboardButton(f"{emoji.LEMON} Потратить лимон и всё равно отправить",
-                                         callback_data='sudo')
+                                         callback_data='anime:sudo')
                 ]])
             else:
                 kb = None
