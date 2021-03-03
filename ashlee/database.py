@@ -34,6 +34,7 @@ class Database:
         lemons INTEGER NOT NULL DEFAULT 0,
         date_time DATETIME DEFAULT CURRENT_TIMESTAMP
     )'''
+    SQL_CREATE_USERS_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS users_username ON users (username)'''
     SQL_CREATE_CHATS = '''CREATE TABLE chats (
         chat_id INTEGER NOT NULL PRIMARY KEY,
         type TEXT NOT NULL,
@@ -68,8 +69,11 @@ class Database:
     )'''
     SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_USER_UPDATE = 'UPDATE users SET first_name = ?, last_name = ?, username = ?, language = ? WHERE user_id = ?'
+    SQL_USER_UPDATE_LEMONS = 'UPDATE users SET lemons = ? WHERE user_id = ?'
     SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                    'FROM users WHERE user_id = ?'
+    SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+                         'FROM users WHERE lower(username) = ?'
 
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM chats WHERE chat_id = ?
@@ -105,6 +109,7 @@ class Database:
         if 'users' not in tables:
             cur.execute(self.SQL_CREATE_USERS)
             con.commit()
+        cur.execute(self.SQL_CREATE_USERS_INDEX)
         if 'chats' not in tables:
             cur.execute(self.SQL_CREATE_CHATS)
             con.commit()
@@ -182,6 +187,14 @@ class Database:
         con.close()
         return User(row) if row else None
 
+    def get_user_by_username(self, username) -> User:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_USER_GET_BY_UN, (username, ))
+        row = cur.fetchone()
+        con.close()
+        return User(row) if row else None
+
     def get_chat(self, chat_id) -> Chat:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
@@ -217,5 +230,12 @@ class Database:
         cur.execute(self.SQL_CHAT_SETTINGS_UPDATE, (enabled_porn, enabled_anime, enabled_replies,
                                                     welcome_photo, welcome_message, welcome_buttons, welcome_restrict,
                                                     chat_id))
+        con.commit()
+        con.close()
+
+    def update_user_lemons(self, user_id, lemons):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_USER_UPDATE_LEMONS, (lemons, user_id))
         con.commit()
         con.close()
