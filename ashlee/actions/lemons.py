@@ -1,4 +1,4 @@
-from ashlee import emoji
+from ashlee import emoji, utils
 from ashlee.action import Action
 
 
@@ -13,8 +13,12 @@ class Lemons(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message):
-        user = self.db.get_user(message.from_user.id)
-        count = user.lemons
+        if message.reply_to_message:
+            self.bot.reply_to(message, "Смотреть можно только свои лимоны!")
+            return
+
+        db_user = self.db.get_user(message.from_user.id)
+        count = db_user.lemons
         if count == 0:
             self.bot.reply_to(message, "У тебя нет ни одного лимона!")
         else:
