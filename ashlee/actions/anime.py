@@ -5,7 +5,7 @@ from urllib.parse import quote
 from xml.etree import ElementTree
 
 from telebot.apihelper import ApiException
-from telebot.types import Message
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from ashlee import emoji, utils, stickers, funny
 from ashlee.action import Action
@@ -27,14 +27,11 @@ class Anime(Action):
     def get_name(self) -> str:
         return emoji.SEARCH + " Anime"
 
-    @Action.save_data
-    @Action.send_uploading_photo
-    def call(self, message: Message):
-        settings = self.db.get_chat_settings(message.chat.id)
-        if settings and not settings.enabled_anime:
-            self.bot.reply_to(message, f"{emoji.ERROR} Аниме запрещено в этом чате!")
-            return
+    def get_callback_start(self):
+        return 'sudo'
 
+    @Action.send_uploading_photo
+    def _try_send_photo(self, message):
         if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
             if not keyword:
@@ -44,10 +41,7 @@ class Anime(Action):
                                   parse_mode='Markdown')
                 return
         else:
-            if message.reply_to_message and message.reply_to_message.text:
-                keyword = message.reply_to_message.text
-            else:
-                keyword = 'sfw'
+            keyword = 'sfw'
 
         request_url = self.API_URL.format(quote(keyword))
         root = ElementTree.parse(urllib.request.urlopen(request_url)).getroot()
@@ -67,3 +61,26 @@ class Anime(Action):
                 continue
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
+
+    def btn_pressed(self, message, data):
+        if not message.reply_to_message:
+            return
+        message = message.reply_to_message
+        self._try_send_photo(message)
+
+    @Action.save_data
+    def call(self, message: Message):
+        settings = self.db.get_chat_settings(message.chat.id)
+        if settings and not settings.enabled_anime:
+            user = self.db.get_user(message.from_user.id)
+            if user.lemons > 0:
+                kb = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(f"{emoji.LEMON} Потратить лимон и всё равно отправить",
+                                         callback_data='sudo')
+                ]])
+            else:
+                kb = None
+            self.bot.reply_to(message, f"{emoji.ERROR} Аниме запрещено в этом чате!", reply_markup=kb)
+            return
+
+        self._try_send_photo(message)
