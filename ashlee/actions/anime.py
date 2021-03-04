@@ -1,3 +1,4 @@
+import logging
 from typing import List
 import random
 import urllib.request
@@ -30,8 +31,12 @@ class Anime(Action):
     def get_callback_start(self):
         return 'anime:'
 
+    def after_loaded(self):
+        if self.tgb.debug:
+            self.API_URL = "http://localhost/gelbooru.xml"
+
     @Action.send_uploading_photo
-    def _try_send_photo(self, message):
+    def _try_send_photo(self, message) -> bool:
         if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
             if not keyword:
@@ -41,7 +46,7 @@ class Anime(Action):
                                   parse_mode='Markdown')
                 return False
         else:
-            keyword = 'sfw'
+            keyword = 'safe'
 
         request_url = self.API_URL.format(quote(keyword))
         root = ElementTree.parse(urllib.request.urlopen(request_url)).getroot()
@@ -81,7 +86,7 @@ class Anime(Action):
         elif data.endswith('yes'):
             if not message.reply_to_message:
                 return
-            user = self.db.get_user(message.from_user.id)
+            user = self.db.get_user(message.reply_to_message.from_user.id)
             if user.lemons > 0:
                 self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!\n"
                                            f"Но тем у кого много лимонов закон не писан...",
