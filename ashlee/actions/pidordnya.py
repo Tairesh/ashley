@@ -30,7 +30,7 @@ class Pidordnya(Action):
     @Action.send_typing
     def call(self, message: Message):
         if not message.chat or message.chat.id == message.from_user.id:
-            self.bot.reply_to(message, "Эта команда работает только в чатах")
+            self.bot.reply_to(message, "Эта команда работает только в групповых чатах")
             return
 
         now = datetime.now()
