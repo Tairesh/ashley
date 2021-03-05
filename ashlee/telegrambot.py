@@ -191,7 +191,7 @@ class TelegramBot:
             for action in self.actions:
                 cs = action.get_callback_start()
                 if cs and call.data.startswith(cs):
-                    action.btn_pressed(call.message, call.data)
+                    action.btn_pressed(call)
 
     def _call_action(self, action, message):
         try:

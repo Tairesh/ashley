@@ -35,9 +35,9 @@ class Dice(Action):
         markup.row(self._dice_btn('d100'), self._dice_btn('+1d'), self._dice_btn('-1d'))
         return markup
 
-    def btn_pressed(self, message: Message, data: str):
-        data = data[5::]
-        count = int(message.text.split(' ')[1])
+    def btn_pressed(self, call):
+        data = call.data[5::]
+        count = int(call.message.text.split(' ')[1])
         if data in {'+1d', '-1d'}:
             if data == '+1d':
                 count += 1
@@ -46,13 +46,13 @@ class Dice(Action):
                     return
                 count -= 1
 
-            self.bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id,
+            self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                        reply_markup=self._dice_markup(), text=f"Бросить {count} дайс:")
         else:
-            self.bot.send_chat_action(message.chat.id, 'typing')
-            self.try_roll_and_send(message.reply_to_message, str(count) + data)
+            self.bot.send_chat_action(call.message.chat.id, 'typing')
+            self.try_roll_and_send(call.message.reply_to_message, str(count) + data)
             try:
-                self.bot.delete_message(message.chat.id, message.message_id)
+                self.bot.delete_message(call.message.chat.id, call.message.message_id)
             except ApiException:
                 pass
 

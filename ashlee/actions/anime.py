@@ -5,7 +5,7 @@ from urllib.parse import quote
 from xml.etree import ElementTree
 
 from telebot.apihelper import ApiException
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from ashlee import emoji, utils, stickers, funny
 from ashlee.action import Action
@@ -67,34 +67,34 @@ class Anime(Action):
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
         return False
 
-    def btn_pressed(self, message, data):
-        if data.endswith('sudo'):
+    def btn_pressed(self, call: CallbackQuery):
+        if call.data.endswith('sudo'):
             kb = InlineKeyboardMarkup([[
                 InlineKeyboardButton(f"{emoji.CHECK} Да", callback_data='anime:yes'),
                 InlineKeyboardButton(f"{emoji.CANCEL} Отмена", callback_data='anime:cancel'),
             ]])
             self.bot.edit_message_text(
-                f"{message.text}\nВы действительно хотите потратить {emoji.LEMON} и отправить аниме?",
-                message.chat.id, message.message_id, reply_markup=kb
+                f"{call.message.text}\nВы действительно хотите потратить {emoji.LEMON} и отправить аниме?",
+                call.message.chat.id, call.message.message_id, reply_markup=kb
             )
             return
-        elif data.endswith('cancel'):
+        elif call.data.endswith('cancel'):
             self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!",
-                                       message.chat.id, message.message_id, reply_markup=None)
+                                       call.message.chat.id, call.message.message_id, reply_markup=None)
             return
-        elif data.endswith('yes'):
-            if not message.reply_to_message:
+        elif call.data.endswith('yes'):
+            if not call.message.reply_to_message:
                 return
-            user = self.db.get_user(message.reply_to_message.from_user.id)
+            user = self.db.get_user(call.message.reply_to_message.from_user.id)
             if user.lemons > 0:
                 self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!\n"
                                            f"Но тем у кого много лимонов закон не писан...",
-                                           message.chat.id, message.message_id, reply_markup=None)
-                if self._try_send_photo(message.reply_to_message):
+                                           call.message.chat.id, call.message.message_id, reply_markup=None)
+                if self._try_send_photo(call.message.reply_to_message):
                     self.db.update_user_lemons(user.id, user.lemons - 1)
             else:
                 self.bot.edit_message_text(f"{emoji.ERROR} Аниме запрещено в этом чате!",
-                                           message.chat.id, message.message_id, reply_markup=None)
+                                           call.message.chat.id, call.message.message_id, reply_markup=None)
 
     @Action.save_data
     def call(self, message: Message):

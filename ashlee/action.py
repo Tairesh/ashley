@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from telebot import TeleBot
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery
 
 from ashlee import constants
 from ashlee.database import Database
@@ -34,7 +34,7 @@ class Action(ABC):
     def get_callback_start(self) -> Optional[str]:
         return None
 
-    def btn_pressed(self, message, data):
+    def btn_pressed(self, call: CallbackQuery):
         pass
 
     @abstractmethod

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Chat, User
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Chat, User, CallbackQuery
 
 from ashlee import emoji, constants
 from ashlee.action import Action
@@ -86,11 +86,11 @@ class Settings(Action):
         text, keyboard = self._get_chat_text_and_keyboard(chat_settings)
         self.bot.reply_to(message, text, reply_markup=keyboard)
 
-    def btn_pressed(self, message, data):
-        chat_settings = self.db.get_chat_settings(message.chat.id)
-        key = data.split(':').pop()
+    def btn_pressed(self, call: CallbackQuery):
+        chat_settings = self.db.get_chat_settings(call.message.chat.id)
+        key = call.data.split(':').pop()
         if key == 'cancel':
-            self.bot.edit_message_text(message.text, message.chat.id, message.message_id)
+            self.bot.edit_message_text(call.message.text, call.message.chat.id, call.message.message_id)
             return
 
         elif key == 'porn':
@@ -100,9 +100,9 @@ class Settings(Action):
         elif key == 'replies':
             chat_settings.enabled_replies = not chat_settings.enabled_replies
 
-        self.db.update_chat_settings(message.chat.id, chat_settings.enabled_porn, chat_settings.enabled_anime,
+        self.db.update_chat_settings(call.message.chat.id, chat_settings.enabled_porn, chat_settings.enabled_anime,
                                      chat_settings.enabled_replies, chat_settings.welcome_photo,
                                      chat_settings.welcome_message, chat_settings.welcome_buttons,
                                      chat_settings.welcome_restrict)
         text, keyboard = self._get_chat_text_and_keyboard(chat_settings)
-        self.bot.edit_message_text(text, message.chat.id, message.message_id, reply_markup=keyboard)
+        self.bot.edit_message_text(text, call.message.chat.id, call.message.message_id, reply_markup=keyboard)
