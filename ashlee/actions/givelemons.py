@@ -22,12 +22,12 @@ class Givelemons(Action):
         recipient = None
         if message.reply_to_message:
             recipient = self.db.get_user(message.reply_to_message.from_user.id)
-        else:
-            for k in keyword:
-                if k.startswith('@'):
-                    recipient = self.db.get_user_by_username(k[1:].lower())
-                    if recipient:
-                        break
+
+        for k in keyword:
+            if k.startswith('@'):
+                recipient = self.db.get_user_by_username(k[1:].lower())
+                if recipient:
+                    break
         if not recipient:
             self.bot.reply_to(message, "Нужно указать юзернейм получателя "
                                        "или отправить эту команду ответом на его сообщение!")
