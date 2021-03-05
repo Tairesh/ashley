@@ -77,3 +77,18 @@ def user_name(user: Union[User, DBUser], with_username=False, prefer_username=Fa
 def escape(html):
     """Returns the given HTML with ampersands, quotes and carets encoded."""
     return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+
+
+def format_number(n: int, s0: str, s1: str, s2: str) -> str:
+    result = str(n) + ' '
+    if n == 0:
+        result += s0
+    elif n == 1 or (n % 10 == 1 and n != 11 and n % 100 != 11):
+        result += s1
+    elif n > 100 and 12 <= n % 100 <= 14:
+        result += s0
+    elif (2 <= n % 10 <= 4 and n > 20) or (2 <= n <= 4):
+        result += s2
+    else:
+        result += s0
+    return result

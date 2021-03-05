@@ -1,4 +1,4 @@
-from ashlee import emoji
+from ashlee import emoji, utils
 from ashlee.action import Action
 
 
@@ -22,7 +22,8 @@ class Lemons(Action):
         if count == 0:
             self.bot.reply_to(message, "У тебя нет ни одного лимона!")
         else:
-            self.bot.reply_to(message, f"Вот твои лимоны, {count} штук: {emoji.LEMON * count}")
+            self.bot.reply_to(message, f"Вот твои лимоны, "
+                                       f"{utils.format_number(count, 'штук', 'штука', 'штуки')}: {emoji.LEMON * count}")
 
     def get_keywords(self):
         return ["лимоны"]
