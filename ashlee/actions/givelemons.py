@@ -32,6 +32,10 @@ class Givelemons(Action):
             self.bot.reply_to(message, "Нужно указать юзернейм получателя "
                                        "или отправить эту команду ответом на его сообщение!")
             return
+        elif sender.id == recipient.id:
+        	self.bot.reply_to(message, "Нет никакого, совершенно никакого смысла передавать лимоны самому себе. "
+                                         "Их от этого не станет больше!")
+            return
 
         count = 0
         for k in keyword:
