@@ -29,7 +29,7 @@ class Duel(Action):
 
     def after_loaded(self):
         @Action.save_data
-        @self.bot.message_handler(content_types=['dice'])
+        @self.bot.message_handler(content_types=['dice'], func=lambda m: not m.forward_from)
         def _dice_sent(message: Message):
             if message.chat.id in self.duels:
                 user_id = message.from_user.id
