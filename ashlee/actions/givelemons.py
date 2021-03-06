@@ -19,6 +19,12 @@ class Givelemons(Action):
             return
         keyword = keyword.split(' ')
 
+        sender = self.db.get_user(message.from_user.id)
+        if count > sender.lemons and sender.id not in constants.ADMINS:
+            self.bot.reply_to(message, f"У вас {sender.lemons} {emoji.LEMON} "
+                                       f"а этого недостаточно чтобы передать {count} {emoji.LEMON}")
+            return
+
         recipient = None
         if message.reply_to_message:
             recipient = self.db.get_user(message.reply_to_message.from_user.id)
@@ -34,7 +40,7 @@ class Givelemons(Action):
             return
         elif sender.id == recipient.id:
             self.bot.reply_to(message, "Нет никакого, совершенно никакого смысла передавать лимоны самому себе. "
-                                         "Их от этого не станет больше!")
+                                        "Их от этого не станет больше!")
             return
 
         count = 0
@@ -47,13 +53,7 @@ class Givelemons(Action):
         if count <= 0:
             self.bot.reply_to(message, "Нужно указать положительное число лимонов!")
             return
-
-        sender = self.db.get_user(message.from_user.id)
-        if count > sender.lemons and sender.id not in constants.ADMINS:
-            self.bot.reply_to(message, f"У вас {sender.lemons} {emoji.LEMON} "
-                                       f"а этого недостаточно чтобы передать {count} {emoji.LEMON}")
-            return
-
+ 
         self.db.update_user_lemons(sender.id, sender.lemons - count)
         self.db.update_user_lemons(recipient.id, recipient.lemons + count)
         self.bot.reply_to(message, f"Вы передали {count} {emoji.LEMON}, "
