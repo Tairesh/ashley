@@ -50,8 +50,7 @@ class Givelemons(Action):
                                        f"а этого недостаточно чтобы передать {count} {emoji.LEMON}")
             return
 
-        if sender.id not in constants.ADMINS:
-            self.db.update_user_lemons(sender.id, sender.lemons - count)
+        self.db.update_user_lemons(sender.id, sender.lemons - count)
         self.db.update_user_lemons(recipient.id, recipient.lemons + count)
         self.bot.reply_to(message, f"Вы передали {count} {emoji.LEMON}, "
                                    f"{utils.user_name(recipient, True, True)}, проверяй!")
