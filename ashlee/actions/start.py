@@ -23,4 +23,4 @@ class Start(Action):
     @Action.send_typing
     def call(self, message: Message):
         self.bot.reply_to(message, f"{emoji.GOODBYE} Привет! Меня зовут Эшли, я умный бот-помощник.\n"
-                                   f"{emoji.INFO} Полный список моих команд доступен по команде /help")
+                                   f"Полный список моих команд доступен по команде /help")

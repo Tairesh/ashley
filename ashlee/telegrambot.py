@@ -48,6 +48,10 @@ class TelegramBot:
 
         self.bot.add_callback_query_handler({'function': self._handle_callback_queries, 'filters': {}})
 
+        self.bot.add_message_handler({'function': self._handle_new_members, 'filters': {
+            'content_types': ['new_chat_members'],
+        }})
+
     # Start the bot
     def bot_start_polling(self):
         for admin in constants.ADMINS:
@@ -119,7 +123,7 @@ class TelegramBot:
         if message:
             self.bot.send_sticker(message.chat.id, stickers.SOMETHING_WRONG, message.message_id)
 
-        error_msg = f"{emoji.ERROR} Exception: <code>{utils.escape(str(exception))}</code>\n" \
+        error_msg = f"{emoji.ERROR} Exception: <code>{exception.__class__.__name__}</code>\n" \
                     f"Request: <code>{utils.escape(message.text)}</code>\n" \
                     f"\n<code>{utils.escape((traceback.format_exc()))}</code>"
         for admin in constants.ADMINS:
@@ -192,6 +196,14 @@ class TelegramBot:
                 cs = action.get_callback_start()
                 if cs and call.data.startswith(cs):
                     action.btn_pressed(call)
+
+    def _handle_new_members(self, message: Message):
+        if message.new_chat_members:
+            for member in message.new_chat_members:
+                if member.id == self.me.id:
+                    reply_action = next(filter(lambda a: a.__class__.__name__ == 'Start', self.actions))
+                    self._call_action(reply_action, message)
+                    return
 
     def _call_action(self, action, message):
         try:

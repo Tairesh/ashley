@@ -74,7 +74,11 @@ class Action(ABC):
     @classmethod
     def save_data(cls, func):
         def _save_data(self, message: Message):
-            self.tgb.db.save_cmd(message.from_user, message.chat, message.text)
+            if message.text:
+                text = message.text
+            else:
+                text = message.content_type
+            self.tgb.db.save_cmd(message.from_user, message.chat, text)
             return func(self, message)
         return _save_data
 
