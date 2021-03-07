@@ -24,8 +24,13 @@ class Help(Action):
     @Action.send_typing
     def call(self, message: Message):
         text = f"{emoji.INFO} <b>Вот что я умею:</b>\n\n"
+        pairs = []
         for action in self.tgb.actions:
             if action.get_description():
-                text += ', '.join(map(lambda c: f"/{c}", action.get_cmds())) + \
-                        f" — <b>{action.get_description()}</b>\n"
+                pairs.append((action.get_cmds()[0], action.get_description()))
+
+        pairs.sort(key=lambda p: p[0])
+
+        for cmd, desc in pairs:
+            text += f"/{cmd} — <b>{desc}</b>\n"
         self.bot.reply_to(message, text, parse_mode="HTML")
