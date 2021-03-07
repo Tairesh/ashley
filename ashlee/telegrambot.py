@@ -168,12 +168,11 @@ class TelegramBot:
                                   for action in selected_actions
                               ]]))
         elif message.text and not message.text.startswith('/'):
-            pepe.train(self.redis, message.text)
             settings = self.db.get_chat_settings(message.chat.id)
-            if settings and not settings.enabled_replies:
-                return
-            reply_action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
-            self._call_action(reply_action, message)
+            if not settings or settings.enabled_replies:
+                reply_action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
+                self._call_action(reply_action, message)
+            pepe.train(self.redis, message.text)
 
     # handle callbacks
     def _handle_callback_queries(self, call: CallbackQuery):
