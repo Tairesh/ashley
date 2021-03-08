@@ -7,7 +7,7 @@ import requests
 from telebot.apihelper import ApiException
 from telebot.types import Message
 
-from ashlee import emoji, utils, stickers, funny
+from ashlee import emoji, utils, stickers
 from ashlee.action import Action
 
 
@@ -15,6 +15,13 @@ class Gimage(Action):
 
     API_URL = "https://www.googleapis.com/customsearch/v1" \
               "?q={}&start=1&key=%KEY%&cx=%CX%&searchType=image&gl=ru&imgSize=xxlarge"
+    FUNNY_EXAMPLES = [
+        'child porn',
+        'перламутровый',
+        'joseph stalin rule 34',
+        'big floppa',
+        'не чёрные предметы не являющиеся воронами',
+    ]
 
     def get_description(self) -> str:
         return "поиск картинок в гугле"
@@ -39,7 +46,7 @@ class Gimage(Action):
             keyword = utils.get_keyword(message)
             if not keyword:
                 cmd = utils.get_command(message)
-                req = random.choice(funny.IMAGE_REQUESTS)
+                req = random.choice(self.FUNNY_EXAMPLES)
                 self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
                                   parse_mode='Markdown')
                 return

@@ -6,13 +6,19 @@ from urllib.parse import quote
 import requests
 from telebot.types import Message
 
-from ashlee import emoji, utils, stickers, funny
+from ashlee import emoji, utils, stickers
 from ashlee.action import Action
 
 
 class Youtube(Action):
 
     API_URL = "https://www.googleapis.com/youtube/v3/search?q={}&key=%KEY%&cx=%CX%"
+    FUNNY_EXAMPLES = [
+        'rickroll',
+        'bitch lasagna',
+        'дворец путина',
+        'nude yoga',
+    ]
 
     def get_description(self) -> str:
         return "поиск на YouTube"
@@ -37,7 +43,7 @@ class Youtube(Action):
             keyword = utils.get_keyword(message)
             if not keyword:
                 cmd = utils.get_command(message)
-                req = random.choice(funny.YOUTUBE_REQUESTS)
+                req = random.choice(self.FUNNY_EXAMPLES)
                 self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
                                   parse_mode='Markdown')
                 return

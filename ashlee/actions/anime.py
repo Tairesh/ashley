@@ -6,13 +6,23 @@ from xml.etree import ElementTree
 
 from telebot.apihelper import ApiException
 
-from ashlee import emoji, utils, stickers, funny
+from ashlee import emoji, utils, stickers
 from ashlee.action import SudoAction
 
 
 class Anime(SudoAction):
 
     API_URL = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={}"
+    FUNNY_EXAMPLES = [
+        'loli',
+        'gay',
+        'rape',
+        'guro',
+        'horse',
+        'thicc',
+        'nsfw',
+        'webm',
+    ]
 
     def _get_label(self) -> str:
         return 'Аниме'
@@ -45,7 +55,7 @@ class Anime(SudoAction):
             keyword = utils.get_keyword(message)
             if not keyword:
                 cmd = utils.get_command(message)
-                req = random.choice(funny.ANIME_REQUESTS)
+                req = random.choice(self.FUNNY_EXAMPLES)
                 self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
                                   parse_mode='Markdown')
                 return False

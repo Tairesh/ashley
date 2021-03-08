@@ -4,11 +4,20 @@ import random
 import googlesearch
 from telebot.types import Message
 
-from ashlee import emoji, utils, stickers, funny
+from ashlee import emoji, utils, stickers
 from ashlee.action import Action
 
 
 class Google(Action):
+
+    FUNNY_EXAMPLES = [
+        'how to kidnap a loli',
+        'жывтоне чочо упячка!!!',
+        'а как какать?',
+        'почему путин краб',
+        'анекдот про пупу и лупу',
+        'чё там у хохлов?',
+    ]
 
     def get_description(self) -> str:
         return "поиск в гугле"
@@ -29,7 +38,7 @@ class Google(Action):
             keyword = utils.get_keyword(message)
             if not keyword:
                 cmd = utils.get_command(message)
-                req = random.choice(funny.SEARCH_REQUESTS)
+                req = random.choice(self.FUNNY_EXAMPLES)
                 self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
                                   parse_mode='Markdown')
                 return
