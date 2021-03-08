@@ -143,7 +143,7 @@ class TelegramBot:
             cmd = utils.get_command(message)
             for action in self.actions:
                 if cmd in action.get_cmds():
-                    self._call_action(action, message)
+                    action.call(message)
                     return
 
         if not utils.is_for_me(message, self.me):
@@ -158,7 +158,7 @@ class TelegramBot:
 
         if len(selected_actions) == 1:
             action = selected_actions[0]
-            self._call_action(action, message)
+            action.call(message)
         elif len(selected_actions) > 1:
             self.bot.reply_to(message,
                               emoji.ERROR + " Я не поняла, что ты имеешь в виду, пожалуйста выбери что-то одно:",
@@ -171,7 +171,7 @@ class TelegramBot:
             settings = self.db.get_chat_settings(message.chat.id)
             if not settings or settings.enabled_replies:
                 reply_action = next(filter(lambda a: a.__class__.__name__ == 'Reply', self.actions))
-                self._call_action(reply_action, message)
+                reply_action.call(message)
             pepe.train(self.redis, message.text)
 
     # handle callbacks
@@ -201,11 +201,5 @@ class TelegramBot:
             for member in message.new_chat_members:
                 if member.id == self.me.id:
                     reply_action = next(filter(lambda a: a.__class__.__name__ == 'Start', self.actions))
-                    self._call_action(reply_action, message)
+                    reply_action.call(message)
                     return
-
-    def _call_action(self, action, message):
-        try:
-            action.call(message)
-        except Exception as e:
-            self._handle_errors(message, e)
