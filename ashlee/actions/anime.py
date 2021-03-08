@@ -71,4 +71,3 @@ class Anime(SudoAction):
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
         return False
-
