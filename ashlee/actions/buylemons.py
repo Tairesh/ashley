@@ -9,6 +9,8 @@ from ashlee.action import Action
 
 class Buylemons(Action):
 
+    PAYMENT_IMPLEMENTED = False
+
     def get_description(self) -> str:
         return 'купить лимоны'
 
@@ -55,6 +57,11 @@ class Buylemons(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
+        if not self.PAYMENT_IMPLEMENTED:
+            self.bot.reply_to(message, "Чтобы купить лимоны отправь донат от ста рублей и напиши @tairesh, "
+                                       "реквизиты можно узнать по команде /donate\n")
+            return
+
         if message.chat and message.chat.id != message.from_user.id:
             self.bot.reply_to(message, f"{emoji.INFO} Платежи работают только в личных сообщениях!")
             return
