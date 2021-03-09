@@ -15,7 +15,7 @@ class Fonosemantic(Action):
     r_fonetic = re.compile(r"(?:как звучит слово|как по твоему звучит слово|как по твоему звучит|как звучит) ("
                            r"?:\"|“|”|'|‘|’|«|»)*([абвгдеёжзийёклмнопрстуфхцчшщъыьэюя\*]+)(?:\"|“|”|'|‘|’|«|»)*",
                            flags=re.IGNORECASE)
-    r_not_cyrilic = re.compile(r'([^А-Яа-яёЁ*])', flags=re.IGNORECASE)
+    r_not_cyrilic = re.compile(r'([^А-Яа-яёЁ*\s])', flags=re.IGNORECASE)
     r_glasnye = re.compile(r'([ауеоыяиэё])', flags=re.IGNORECASE)
 
     def get_description(self) -> str:
@@ -81,6 +81,8 @@ class Fonosemantic(Action):
                 return
             pos = gl.span()[1]
             keyword = keyword[:pos:] + '*' + keyword[pos::]
+        if ' ' in keyword:
+            keyword = keyword.replace(' ', '')
         keyword_label = keyword.replace('*', '')
         views = self._get_views(keyword)
 
