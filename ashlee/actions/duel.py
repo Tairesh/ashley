@@ -49,9 +49,13 @@ class Duel(Action):
         user1, user2 = duel['r'].keys()
         u1 = self.db.get_user(user1)
         u2 = self.db.get_user(user2)
-        if duel['r'][user1] > duel['r'][user2]:
+        dice1 = duel['r'][user1]
+        dice2 = duel['r'][user2]
+        result1 = dice1 + u1.lemons
+        result2 = dice2 + u2.lemons
+        if result1 > result2:
             winner, looser = u1, u2
-        elif duel['r'][user2] > duel['r'][user1]:
+        elif result2 > result1:
             winner, looser = u2, u1
         else:
             self.duels[chat_id]['r'][user1] = None
@@ -62,13 +66,16 @@ class Duel(Action):
             return
 
         self.duels.pop(chat_id)
-        mode_text = f" и отбирает {emoji.LEMON} у проигравшего" if duel['m'] else ''
+        mode_text = f" отбирает 1 {emoji.LEMON} у проигравшего" if duel['m'] else ''
         if duel['m']:
             self.db.update_user_lemons(looser.id, looser.lemons - 1)
             self.db.update_user_lemons(winner.id, winner.lemons + 1)
-        self.bot.send_message(chat_id, f"{utils.user_name(winner, True)} побеждает{mode_text}"
-                                       f" игрока {utils.user_name(looser, True)}!",
-                              reply_markup=ReplyKeyboardRemove())
+        self.bot.send_message(chat_id,
+                              "<b>Результаты:</b>\n"
+                              f"<i>{utils.user_name(u1)}:</i> {dice1} {emoji.DICE} + {u1.lemons} {emoji.LEMON}\n"
+                              f"<i>{utils.user_name(u2)}:</i> {dice2} {emoji.DICE} + {u2.lemons} {emoji.LEMON}\n"
+                              f"<b>Победитель:</b> {utils.user_name(winner, True)}{mode_text}!",
+                              reply_markup=ReplyKeyboardRemove(), parse_mode='HTML')
 
     def btn_pressed(self, call: CallbackQuery):
         if call.data.endswith('cancel'):
