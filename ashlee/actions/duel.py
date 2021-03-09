@@ -1,6 +1,7 @@
 from typing import List
 
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, \
+    ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from ashlee import emoji, utils
 from ashlee.action import Action
@@ -56,7 +57,8 @@ class Duel(Action):
             self.duels[chat_id]['r'][user1] = None
             self.duels[chat_id]['r'][user2] = None
             self.bot.send_message(chat_id, f"{utils.user_name(u1, True, True)} и {utils.user_name(u2, True, True)} "
-                                           f"у вас ничья, перебрасывайте {emoji.DICE}!")
+                                           f"у вас ничья, перебрасывайте {emoji.DICE}!",
+                                  reply_markup=ReplyKeyboardMarkup(one_time_keyboard=True).add(emoji.DICE))
             return
 
         self.duels.pop(chat_id)
@@ -65,7 +67,8 @@ class Duel(Action):
             self.db.update_user_lemons(looser.id, looser.lemons - 1)
             self.db.update_user_lemons(winner.id, winner.lemons + 1)
         self.bot.send_message(chat_id, f"{utils.user_name(winner, True)} побеждает{mode_text}"
-                                       f" игрока {utils.user_name(looser, True)}!")
+                                       f" игрока {utils.user_name(looser, True)}!",
+                              reply_markup=ReplyKeyboardRemove())
 
     def btn_pressed(self, call: CallbackQuery):
         if call.data.endswith('cancel'):
@@ -85,11 +88,14 @@ class Duel(Action):
             mode_text = f"Победитель отберёт {emoji.LEMON} у проигравшего!"
         else:
             mode_text = "У участников недостаточно лимонов для ставок"
-        self.bot.edit_message_text(f"{call.message.text}\n{emoji.CHECK} Вызов принят! "
-                                   f"{utils.user_name(sender, True, True)} и "
-                                   f"{utils.user_name(call.from_user, True, True)} "
-                                   f"отправьте в чат смайлики {emoji.DICE} чтобы сразиться в кости!\n" + mode_text,
+
+        self.bot.edit_message_text(f"{call.message.text}\n{emoji.CHECK} Вызов принят! ",
                                    call.message.chat.id, call.message.message_id, reply_markup=None)
+        self.bot.reply_to(call.message.reply_to_message,
+                          f"{utils.user_name(sender, True, True)} и "
+                          f"{utils.user_name(call.from_user, True, True)} "
+                          f"отправьте в чат дайсы {emoji.DICE} чтобы сразиться в кости!\n" + mode_text,
+                          reply_markup=ReplyKeyboardMarkup(one_time_keyboard=True).add(emoji.DICE))
 
     @Action.save_data
     @Action.send_typing
