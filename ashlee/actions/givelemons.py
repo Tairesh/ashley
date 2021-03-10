@@ -56,7 +56,7 @@ class Givelemons(Action):
 
         self.db.update_user_lemons(sender.id, sender.lemons - count)
         self.db.update_user_lemons(recipient.id, recipient.lemons + count)
-        self.bot.reply_to(message, f"Вы передали {count} {emoji.LEMON}, "
+        self.bot.reply_to(message, f"Вы передали {count} {emoji.LEMON}!\n"
                                    f"{utils.user_name(recipient, True, True)}, проверяй!")
 
     def get_keywords(self):
