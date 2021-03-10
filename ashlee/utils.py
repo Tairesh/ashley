@@ -92,3 +92,12 @@ def format_number(n: int, s0: str, s1: str, s2: str) -> str:
     else:
         result += s0
     return result
+
+
+def human_delta_t(dt):
+    if dt < 60:
+        return 'только что'
+    elif dt < 60*10:
+        return 'недавно'
+    else:
+        return 'давно'

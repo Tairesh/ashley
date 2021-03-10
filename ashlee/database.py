@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import List, Set
+from typing import List, Set, Optional
 
 
 class User:
@@ -35,7 +35,9 @@ class Database:
         lemons INTEGER NOT NULL DEFAULT 0,
         date_time DATETIME DEFAULT CURRENT_TIMESTAMP
     )'''
-    SQL_CREATE_USERS_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS users_username ON users (username)'''
+    SQL_CREATE_USERS_NAME_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS users_username ON users (username)'''
+    SQL_CREATE_USERS_LEMONS_INDEX = '''CREATE INDEX IF NOT EXISTS users_lemons ON users (lemons)'''
+    SQL_CREATE_USERS_STATUS_INDEX = '''CREATE INDEX IF NOT EXISTS users_status ON users (status)'''
     SQL_CREATE_CHATS = '''CREATE TABLE chats (
         chat_id INTEGER NOT NULL PRIMARY KEY,
         type TEXT NOT NULL,
@@ -71,6 +73,7 @@ class Database:
     SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_USER_UPDATE = 'UPDATE users SET first_name = ?, last_name = ?, username = ?, language = ? WHERE user_id = ?'
     SQL_USER_UPDATE_LEMONS = 'UPDATE users SET lemons = ? WHERE user_id = ?'
+    SQL_USER_SUM_LEMONS = 'SELECT SUM(lemons) FROM users WHERE 1'
     SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                    'FROM users WHERE user_id = ?'
     SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
@@ -112,7 +115,10 @@ class Database:
         if 'users' not in tables:
             cur.execute(self.SQL_CREATE_USERS)
             con.commit()
-        cur.execute(self.SQL_CREATE_USERS_INDEX)
+        cur.execute(self.SQL_CREATE_USERS_NAME_INDEX)
+        cur.execute(self.SQL_CREATE_USERS_LEMONS_INDEX)
+        cur.execute(self.SQL_CREATE_USERS_STATUS_INDEX)
+        con.commit()
         if 'chats' not in tables:
             cur.execute(self.SQL_CREATE_CHATS)
             con.commit()
@@ -182,7 +188,7 @@ class Database:
         con.commit()
         con.close()
 
-    def get_user(self, user_id) -> User:
+    def get_user(self, user_id) -> Optional[User]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         cur.execute(self.SQL_USER_GET, (user_id, ))
@@ -201,7 +207,7 @@ class Database:
         con.close()
         return users
 
-    def get_user_by_username(self, username) -> User:
+    def get_user_by_username(self, username) -> Optional[User]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         cur.execute(self.SQL_USER_GET_BY_UN, (username, ))
@@ -209,7 +215,7 @@ class Database:
         con.close()
         return User(row) if row else None
 
-    def get_chat(self, chat_id) -> Chat:
+    def get_chat(self, chat_id) -> Optional[Chat]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         cur.execute(self.SQL_CHAT_GET, (chat_id, ))
@@ -217,7 +223,7 @@ class Database:
         con.close()
         return Chat(row) if row else None
 
-    def get_chat_settings(self, chat_id) -> ChatSettings:
+    def get_chat_settings(self, chat_id) -> Optional[ChatSettings]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         cur.execute(self.SQL_GET_CHATS_SETTINGS, (chat_id, ))
@@ -253,3 +259,12 @@ class Database:
         cur.execute(self.SQL_USER_UPDATE_LEMONS, (lemons, user_id))
         con.commit()
         con.close()
+
+    def get_sum_lemons(self) -> Optional[int]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_USER_SUM_LEMONS)
+        row = cur.fetchone()
+        con.commit()
+        con.close()
+        return int(row[0]) if row else None
