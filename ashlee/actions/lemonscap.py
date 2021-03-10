@@ -1,7 +1,6 @@
 from time import time
 from typing import List
 
-import requests
 from telebot.types import Message
 
 from ashlee import emoji, lemons, utils
