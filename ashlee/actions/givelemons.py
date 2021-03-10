@@ -63,4 +63,4 @@ class Givelemons(Action):
         return []
 
     def get_cmds(self):
-        return ["givelemons", "give_lemons"]
+        return ["givelemons", "give_lemons", "givelemon", "give_lemon"]
