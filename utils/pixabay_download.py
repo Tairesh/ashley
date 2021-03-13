@@ -4,7 +4,7 @@ import os
 import requests
 
 
-WORD = 'frog'
+WORD = 'toad'
 FOLDER = 'frog'
 API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=" + WORD
 
@@ -30,6 +30,9 @@ if __name__ == "__main__":
     ll = len(urls)
     for i, url in enumerate(urls):
         file_name = url.split('/').pop()
+        if os.path.isfile(os.path.join('res', FOLDER, file_name)):
+            print(f"Skipping {i+1}/{ll} (already exists): {file_name}")
+            continue
         ext = file_name.split('.').pop()
         if ext not in {'jpg', 'jpeg'}:
             print(f"Skipping {i+1}/{ll} (ext is {ext}): {file_name}")
