@@ -63,7 +63,7 @@ class Asteroids(Action):
             return
 
         asteroids.sort(key=lambda r: r[6])
-        text = "<b>Астероиды, приближающиеся к земле:</b>\n\n"
+        text = "<b>Астероиды, приближающиеся к Земле:</b>\n\n"
         for row in asteroids:
             name, url, size_min, size_max, size_metrics, \
                 hazard, approach_delta, approach_distance, approach_velocity = row
