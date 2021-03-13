@@ -50,7 +50,7 @@ class Asteroids(Action):
                     size_metrics = "километров"
                 hazard = row['is_potentially_hazardous_asteroid']
                 approach = row['close_approach_data'][0]['epoch_date_close_approach']
-                approach_delta: datetime.timedelta = datetime.datetime.fromtimestamp(approach // 1000) - datetime.datetime.now()
+                approach_delta = datetime.datetime.fromtimestamp(approach // 1000) - datetime.datetime.now()
                 approach_distance = round(float(row['close_approach_data'][0]['miss_distance']['kilometers']))
                 approach_velocity = round(float(row['close_approach_data'][0]['relative_velocity']['kilometers_per_second']))
                 if approach_delta.total_seconds() > 0 and approach_delta.days < 1:
@@ -75,5 +75,3 @@ class Asteroids(Action):
             text += f"на скорости {approach_velocity} км/с\n\n"
 
         self.bot.reply_to(message, text, parse_mode='HTML', disable_web_page_preview=True)
-
-
