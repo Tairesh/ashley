@@ -1,10 +1,12 @@
 
 INFO = "ℹ"
 ERROR = "‼"
+WARNING = "⚠️"
 WAIT = "⏳"
 NOTIFY = "🔔"
 TOP = "👍"
 GOODBYE = "👋"
+SARCASM = "🙃"
 CHECK = "✅"
 NO_ENTRY = "🚫"
 CANCEL = "❌"

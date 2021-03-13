@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 from hashlib import md5
@@ -94,10 +95,29 @@ def format_number(n: int, s0: str, s1: str, s2: str) -> str:
     return result
 
 
-def human_delta_t(dt):
-    if dt < 60:
-        return 'только что'
-    elif dt < 60*10:
-        return 'недавно'
+def human_delta_t(dt: datetime.timedelta):
+    if dt.total_seconds() <= 0:
+        if dt.total_seconds() > -60:
+            return 'только что'
+        elif dt.total_seconds() > -60*10:
+            return 'недавно'
+        else:
+            return 'давно'
     else:
-        return 'давно'
+        hours = dt.seconds // (60*60)
+        minutes = (dt.seconds - (hours * 60 * 60)) // 60
+        seconds = dt.seconds - (hours * 60 * 60) - (minutes * 60)
+        if dt.days > 0:
+            return f"через: {format_number(dt.days, 'дней', 'день', 'дня')} " \
+                   f"{format_number(hours, 'часов', 'час', 'часа')} " \
+                   f"{format_number(minutes, 'минут', 'минута', 'минуты')} " \
+                   f"{format_number(seconds, 'секунд', 'секунда', 'секунды')}"
+        elif dt.seconds > 60*60:
+            return f"через: {format_number(hours, 'часов', 'час', 'часа')} " \
+                   f"{format_number(minutes, 'минут', 'минута', 'минуты')} " \
+                   f"{format_number(seconds, 'секунд', 'секунда', 'секунды')}"
+        elif dt.seconds > 60:
+            return f"через: {format_number(minutes, 'минут', 'минута', 'минуты')} " \
+                   f"{format_number(seconds, 'секунд', 'секунда', 'секунды')}"
+        else:
+            return f"через: {format_number(seconds, 'секунд', 'секунда', 'секунды')}"
