@@ -3,7 +3,10 @@ import os
 
 import requests
 
-API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=goose"
+
+WORD = 'frog'
+FOLDER = 'frog'
+API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=" + WORD
 
 
 if __name__ == "__main__":
@@ -27,11 +30,16 @@ if __name__ == "__main__":
     ll = len(urls)
     for i, url in enumerate(urls):
         file_name = url.split('/').pop()
-        with open(os.path.join('res', 'goose', file_name), 'wb') as fp:
-            print(f"Downloading {i}/{ll}: {file_name}... ", end='')
-            response = requests.get(url, stream=True)
-            if not response.ok:
-                print(response)
-            else:
+        ext = file_name.split('.').pop()
+        if ext not in {'jpg', 'jpeg'}:
+            print(f"Skipping {i+1}/{ll} (ext is {ext}): {file_name}")
+            continue
+        print(f"Downloading {i+1}/{ll}: {file_name}... ", end='')
+        response = requests.get(url, stream=True)
+        if not response.ok:
+            print(response)
+        else:
+            with open(os.path.join('res', FOLDER, file_name), 'wb') as fp:
                 fp.write(response.content)
                 print('Done!')
+
