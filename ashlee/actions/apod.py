@@ -31,5 +31,4 @@ class Apod(Action):
     @Action.send_uploading_photo
     def call(self, message: Message):
         data = json.loads(requests.get(self.API_URL).content.decode('utf-8'))
-        url = data['hdurl']
-        self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
+        self.bot.send_photo(message.chat.id, data['hdurl'], data['explanation'], reply_to_message_id=message.message_id)
