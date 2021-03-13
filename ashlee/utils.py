@@ -1,5 +1,6 @@
 import datetime
 import os
+import random
 import re
 from hashlib import md5
 from typing import Union
@@ -121,3 +122,9 @@ def human_delta_t(dt: datetime.timedelta):
                    f"{format_number(seconds, 'секунд', 'секунда', 'секунды')}"
         else:
             return f"через: {format_number(seconds, 'секунд', 'секунда', 'секунды')}"
+
+
+def random_file(files_dir):
+    files = [os.path.join(files_dir, f) for f in os.listdir(files_dir)
+             if os.path.isfile(os.path.join(files_dir, f)) and not f.startswith('.')]
+    return random.choice(files)
