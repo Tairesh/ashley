@@ -1,31 +1,25 @@
 import json
 import os
+import urllib.request
+from xml.etree import ElementTree
 
 import requests
 
 
 WORD = 'horse'
 FOLDER = 'horse'
-API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=" + WORD
+API_URL = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags=" + WORD
 
 
 if __name__ == "__main__":
-    with open(os.path.join('config', 'api_keys.json'), 'r') as fp:
-        secrets = json.load(fp)
-        API_URL = API_URL.replace('%KEY%', secrets['pixabay_apikey'])
-
     urls = []
-    page = 1
-    pages = 1
-    while page <= pages:
-        print(f'Loading page {page}...', end='')
-        data = json.loads(requests.get(API_URL.format(page)).content.decode('utf-8'))
-        if data['totalHits'] > 0:
-            for hit in data['hits']:
-                urls.append(hit['largeImageURL'])
-            pages = data['totalHits'] // 200 + 1
-        print('Done!')
-        page += 1
+    print("Loading gelbooru.com...")
+
+    root = ElementTree.parse(urllib.request.urlopen(API_URL)).getroot()
+    posts = root.findall('post')
+    for post in posts:
+        url = post.attrib['file_url']
+        urls.append(url)
 
     ll = len(urls)
     for i, url in enumerate(urls):
