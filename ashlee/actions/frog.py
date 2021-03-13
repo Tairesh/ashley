@@ -6,7 +6,7 @@ import requests
 from telebot.apihelper import ApiException
 from telebot.types import Message
 
-from ashlee import emoji
+from ashlee import emoji, stickers
 from ashlee.action import Action
 
 
@@ -45,6 +45,10 @@ class Frog(Action):
         if data['totalHits'] > 0:
             for hit in data['hits']:
                 urls.append(hit['largeImageURL'])
+        else:
+            self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
+            return
+
         random.shuffle(urls)
         for url in urls:
             try:
