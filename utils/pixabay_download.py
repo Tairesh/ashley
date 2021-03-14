@@ -45,4 +45,3 @@ if __name__ == "__main__":
             with open(os.path.join('res', FOLDER, file_name), 'wb') as fp:
                 fp.write(response.content)
                 print('Done!')
-
