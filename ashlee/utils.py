@@ -128,3 +128,7 @@ def random_file(files_dir):
     files = [os.path.join(files_dir, f) for f in os.listdir(files_dir)
              if os.path.isfile(os.path.join(files_dir, f)) and not f.startswith('.')]
     return random.choice(files)
+
+
+def unique(ar: list) -> list:
+    return list(set(ar))

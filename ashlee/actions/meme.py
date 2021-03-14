@@ -10,6 +10,7 @@ from telebot.types import Message
 
 from ashlee import emoji, utils, pepe, stickers
 from ashlee.action import Action
+from ashlee.utils import unique
 
 
 class Meme(Action):
@@ -69,7 +70,7 @@ class Meme(Action):
             for ch in (',', '.', '..', '...', '*'):
                 if ch in sentence:
                     sentence = sentence.split(ch)[0]
-            words = sentence.split(' ')
+            words = unique(sentence.split(' '))
             random.shuffle(words)
 
             if file_url is None:
