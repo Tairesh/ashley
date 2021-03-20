@@ -1,5 +1,6 @@
 from time import time
 import math
+from typing import Tuple
 
 import requests
 
@@ -13,7 +14,7 @@ cache = {
 }
 
 
-def get_price(count: int) -> int:
+def get_price(count: int) -> Tuple[int, float]:
     """
     Calculates lemon price
     :param count: Lemons capitalisation
@@ -27,7 +28,8 @@ def get_price(count: int) -> int:
         cache['doge_price'] = doge_price * rub_price
         cache['updated_at'] = time()
     k = math.log2(count) + 14.88
-    price = round(cache['doge_price'] * k)
+    real_price = cache['doge_price'] * k
+    price = round(real_price)
     if price < 100:
         price = 100
-    return price
+    return price, real_price

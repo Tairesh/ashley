@@ -26,11 +26,11 @@ class Lemonscap(Action):
     @Action.send_typing
     def call(self, message: Message):
         lemons_count = self.db.get_sum_lemons()
-        price = lemons.get_price(lemons_count)
+        price, real_price = lemons.get_price(lemons_count)
         delta_t = datetime.timedelta(seconds=lemons.cache['updated_at'] - time())
         self.bot.reply_to(message,
                           f"Общее число лимонов в сети: <b>{lemons_count} {emoji.LEMON}</b>\n"
                           f"Стоимость DOGE в рублях: <b>{lemons.cache['doge_price']:.2f}</b> ₽ "
                           f"<i>(обновлено {utils.human_delta_t(delta_t)})</i>\n\n"
-                          f"Текущая стоимость {emoji.LEMON}: <b>{price}</b> ₽",
+                          f"Текущая стоимость {emoji.LEMON}: <b>{real_price:.2f}</b> ₽ (продажа по <b>{price}</b> ₽)",
                           parse_mode='HTML')
