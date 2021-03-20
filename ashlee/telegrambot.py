@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from redis import StrictRedis
 from telebot import TeleBot
-from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, BotCommand
 
 from ashlee import emoji, constants, utils, stickers, pepe
 from ashlee.action import Action
@@ -79,6 +79,13 @@ class TelegramBot:
         # Make sure that all plugins are loaded
         for thread in threads:
             thread.join()
+
+        commands = []
+        for action in self.actions:
+            if len(action.get_cmds()) == 0 or not action.get_description():
+                continue
+            commands.append(BotCommand(action.get_cmds()[0], action.get_description()))
+        self.bot.set_my_commands(commands)
 
     @threaded
     def _load_action(self, file):
