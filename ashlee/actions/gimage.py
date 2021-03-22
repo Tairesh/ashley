@@ -42,15 +42,16 @@ class Gimage(Action):
     @Action.save_data
     @Action.send_uploading_photo
     def call(self, message: Message):
-        chat = self.db.get_chat(message.chat.id)
-        vip_chat = False
-        for admin in constants.ADMINS:
-            if admin in chat.users:
-                vip_chat = True
-                break
-        if not vip_chat:
-            self.bot.reply_to(message, "Эта команда работает только в моих любимых чатах!")
-            return
+        if message.chat.id != message.from_user.id:
+            chat = self.db.get_chat(message.chat.id)
+            vip_chat = False
+            for admin in constants.ADMINS:
+                if admin in chat.users:
+                    vip_chat = True
+                    break
+            if not vip_chat:
+                self.bot.reply_to(message, "Эта команда работает только в моих любимых чатах!")
+                return
 
         if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
