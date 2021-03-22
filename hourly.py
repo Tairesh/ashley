@@ -1,10 +1,9 @@
 import os
-import re
 
 from telebot import TeleBot
 from bleach import clean
 
-from ashlee import feedparser, emoji, utils
+from ashlee import emoji, utils
 from ashlee.database import Database
 
 
@@ -17,11 +16,11 @@ def _get_bot_token():
         exit(f"ERROR: No token file found at '{token_file}'")
 
 
-def subscribes():
+def run_subscribes():
     db = Database(os.path.join('database', 'db.sqlite'))
     bot = TeleBot(_get_bot_token())
     for sub in db.get_all_subscribes():
-        d = feedparser.parse(sub.url)
+        d = utils.feed_parse(sub.url)
         if not d:
             db.delete_subscribe(sub.chat_id, sub.url)
             bot.send_message(sub.chat_id, f"{emoji.CANCEL} Подписка на {sub.url} была отменена!")
@@ -46,4 +45,4 @@ def subscribes():
 
 
 if __name__ == '__main__':
-    subscribes()
+    run_subscribes()
