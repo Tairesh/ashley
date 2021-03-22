@@ -66,6 +66,12 @@ class Database:
         welcome_restrict INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
+    SQL_CREATE_SUBSCRIBES = '''CREATE TABLE subscribes (
+        chat_id INTEGER NOT NULL,
+        url TEXT NOT NULL, 
+        last_post TEXT DEFAULT NULL,
+        FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+    )'''
 
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
@@ -98,6 +104,7 @@ class Database:
     SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ?, ' \
                                'welcome_photo = ?, welcome_message = ?, welcome_buttons = ?, welcome_restrict = ? ' \
                                'WHERE chat_id = ?'
+    SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, last_post) VALUES (?, ?, ?)'
 
     # Initialize database
     def __init__(self, db_path):
@@ -127,6 +134,9 @@ class Database:
             con.commit()
         if 'chats_settings' not in tables:
             cur.execute(self.SQL_CREATE_CHATS_SETTINGS)
+            con.commit()
+        if 'subscribes' not in tables:
+            cur.execute(self.SQL_CREATE_SUBSCRIBES)
             con.commit()
 
         con.close()
@@ -268,3 +278,10 @@ class Database:
         con.commit()
         con.close()
         return int(row[0]) if row else None
+
+    def add_subscribe(self, chat_id, url, last_post):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, last_post))
+        con.commit()
+        con.close()

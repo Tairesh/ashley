@@ -34,6 +34,10 @@ class Kick(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
+        if message.chat.id == message.from_user.id:
+            self.bot.reply_to(message, f"Эта команда работает только в групповых чатах")
+            return
+
         if not self._can_kick(message.chat, message.from_user):
             return
 
