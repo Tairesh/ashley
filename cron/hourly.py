@@ -1,6 +1,8 @@
 import os
+import re
 
 from telebot import TeleBot
+from bleach import clean
 
 from ashlee import feedparser, emoji, utils
 from ashlee.database import Database
@@ -30,7 +32,12 @@ def subscribes():
                 break
             text = entry['summary']
             text = text.replace('\t', '').replace('\n', '')\
+                .replace('<strong>', '<b>').replace('</strong>', '</b>')\
+                .replace('<em>', '<i>').replace('</em>', '</i>')\
                 .replace('<br>', '\n').replace('<br />', '\n').replace('<br/>', '\n')
+            if 'class="bb_h3"' in text:
+                text = text.replace('<div class="bb_h3">', '<b>').replace('</div>', '</b>\n\n')
+            text = clean(text, tags=['a', 'b', 'i'], strip=True, strip_comments=True).strip()
             text = f"<b><a href=\"{entry['link']}\">{utils.escape(entry['title'])}</a></b>\n" + text
             for piece in utils.chunks(text, 3000):
                 bot.send_message(sub.chat_id, piece, parse_mode='HTML')

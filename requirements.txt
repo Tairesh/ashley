@@ -6,3 +6,4 @@ redis~=3.5.3
 wand~=0.6.6
 dice~=3.1.1
 feedparser~=6.0.2
+bleach~=3.3.0
