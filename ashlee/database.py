@@ -22,6 +22,11 @@ class ChatSettings:
         self.welcome_buttons = self.welcome_buttons.split(',') if self.welcome_buttons else []
 
 
+class Subscribe:
+    def __init__(self, row):
+        self.chat_id, self.url, self.last_post = row
+
+
 class Database:
 
     SQL_DB_EXISTS = 'SELECT name FROM sqlite_master'
@@ -105,6 +110,7 @@ class Database:
                                'welcome_photo = ?, welcome_message = ?, welcome_buttons = ?, welcome_restrict = ? ' \
                                'WHERE chat_id = ?'
     SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, last_post) VALUES (?, ?, ?)'
+    SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, last_post FROM subscribes WHERE chat_id = ?'
 
     # Initialize database
     def __init__(self, db_path):
@@ -285,3 +291,14 @@ class Database:
         cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, last_post))
         con.commit()
         con.close()
+
+    def get_subscribes(self, chat_id: int) -> List[Subscribe]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_GET, (chat_id, ))
+        rows = cur.fetchall()
+        subscribes = []
+        for row in rows:
+            subscribes.append(Subscribe(row))
+        con.close()
+        return subscribes

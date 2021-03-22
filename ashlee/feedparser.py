@@ -2,7 +2,7 @@ import feedparser
 import urllib.error
 
 
-def parse_link(url):
+def parse(url):
     try:
         return feedparser.parse(url)
     except urllib.error.URLError:

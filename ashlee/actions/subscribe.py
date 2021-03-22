@@ -2,7 +2,7 @@ from typing import List
 
 from telebot.types import Message, Chat, User
 
-from ashlee import emoji, constants, utils, subscribes
+from ashlee import emoji, constants, utils, feedparser
 from ashlee.action import Action
 
 
@@ -57,7 +57,7 @@ class Subscribe(Action):
                               parse_mode='Markdown')
             return
 
-        d = subscribes.parse_link(url)
+        d = feedparser.parse(url)
         if not d:
             self.bot.reply_to(message, f"Не могу распарсить RSS-ленту по этой ссылке! {emoji.SAD}")
             return
