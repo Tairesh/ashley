@@ -77,6 +77,7 @@ class Database:
         last_post TEXT DEFAULT NULL,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
+    SQL_CREATE_SUBSCRIBES_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS subscribes_index ON subscribes (chat_id, url)'''
 
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
@@ -144,6 +145,8 @@ class Database:
         if 'subscribes' not in tables:
             cur.execute(self.SQL_CREATE_SUBSCRIBES)
             con.commit()
+        cur.execute(self.SQL_CREATE_SUBSCRIBES_INDEX)
+        con.commit()
 
         con.close()
 
@@ -285,12 +288,17 @@ class Database:
         con.close()
         return int(row[0]) if row else None
 
-    def add_subscribe(self, chat_id, url, last_post):
+    def add_subscribe(self, chat_id, url, last_post) -> bool:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, last_post))
-        con.commit()
+        try:
+            cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, last_post))
+            con.commit()
+            success = True
+        except sqlite3.IntegrityError:
+            success = False
         con.close()
+        return success
 
     def get_subscribes(self, chat_id: int) -> List[Subscribe]:
         con = sqlite3.connect(self._db_path)

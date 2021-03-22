@@ -59,13 +59,16 @@ class Subscribe(Action):
 
         d = feedparser.parse(url)
         if not d:
-            self.bot.reply_to(message, f"Не могу распарсить RSS-ленту по этой ссылке! {emoji.SAD}")
+            self.bot.reply_to(message, f"{emoji.SAD} Не могу распарсить RSS-ленту по этой ссылке!")
             return
 
         entry = d['entries'][0] if len(d['entries']) > 0 else None
-        guid = entry['id'] if entry else None
-        self.db.add_subscribe(message.chat.id, url, guid)
-
         title = d['feed']['title'] if 'title' in d['feed'] else url
-        self.bot.reply_to(message, f"{emoji.CHECK} Подписка на <b>{utils.escape(title)}</b> активирована!",
-                          parse_mode='HTML')
+        guid = entry['id'] if entry else None
+        if self.db.add_subscribe(message.chat.id, url, guid):
+            self.bot.reply_to(message, f"{emoji.CHECK} Подписка на <b>{utils.escape(title)}</b> активирована!",
+                              parse_mode='HTML')
+        else:
+            self.bot.reply_to(message,
+                              f"{emoji.CANCEL} Подписка на <b>{utils.escape(title)}</b> уже существует в этом чате!",
+                              parse_mode='HTML')
