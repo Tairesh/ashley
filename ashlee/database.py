@@ -73,11 +73,11 @@ class Database:
     )'''
     SQL_CREATE_SUBSCRIBES = '''CREATE TABLE subscribes (
         chat_id INTEGER NOT NULL,
-        url TEXT NOT NULL, 
+        url TEXT NOT NULL,
         last_post TEXT DEFAULT NULL,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
-    SQL_CREATE_SUBSCRIBES_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS subscribes_index ON subscribes (chat_id, url)'''
+    SQL_CREATE_SUBSCRIBES_INDEX = 'CREATE UNIQUE INDEX IF NOT EXISTS subscribes_index ON subscribes (chat_id, url)'
 
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
@@ -112,7 +112,9 @@ class Database:
                                'WHERE chat_id = ?'
     SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, last_post) VALUES (?, ?, ?)'
     SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, last_post FROM subscribes WHERE chat_id = ?'
+    SQL_SUBSCRIBES_GET_ALL = 'SELECT chat_id, url, last_post FROM subscribes WHERE 1'
     SQL_SUBSCRIBES_DELETE = 'DELETE FROM subscribes WHERE chat_id = ? AND url = ?'
+    SQL_SUBSCRIBES_UPDATE = 'UPDATE subscribes SET last_post = ? WHERE chat_id = ? AND url = ?'
 
     # Initialize database
     def __init__(self, db_path):
@@ -312,9 +314,27 @@ class Database:
         con.close()
         return subscribes
 
+    def get_all_subscribes(self) -> List[Subscribe]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_GET_ALL)
+        rows = cur.fetchall()
+        subscribes = []
+        for row in rows:
+            subscribes.append(Subscribe(row))
+        con.close()
+        return subscribes
+
     def delete_subscribe(self, chat_id, url):
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         cur.execute(self.SQL_SUBSCRIBES_DELETE, (chat_id, url))
+        con.commit()
+        con.close()
+
+    def update_subscribe(self, last_post, chat_id, url):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_UPDATE, (last_post, chat_id, url))
         con.commit()
         con.close()

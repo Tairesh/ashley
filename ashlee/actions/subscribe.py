@@ -54,7 +54,7 @@ class Subscribe(Action):
 
         url = utils.get_keyword(message)
         if not url:
-            self.bot.reply_to(message, f"Пример использования команды:\n`/subscribe https://link.to/rss`",
+            self.bot.reply_to(message, "Пример использования команды:\n`/subscribe https://link.to/rss`",
                               parse_mode='Markdown')
             return
 
