@@ -112,6 +112,7 @@ class Database:
                                'WHERE chat_id = ?'
     SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, last_post) VALUES (?, ?, ?)'
     SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, last_post FROM subscribes WHERE chat_id = ?'
+    SQL_SUBSCRIBES_DELETE = 'DELETE FROM subscribes WHERE chat_id = ? AND url = ?'
 
     # Initialize database
     def __init__(self, db_path):
@@ -310,3 +311,10 @@ class Database:
             subscribes.append(Subscribe(row))
         con.close()
         return subscribes
+
+    def delete_subscribe(self, chat_id, url):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_DELETE, (chat_id, url))
+        con.commit()
+        con.close()

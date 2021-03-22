@@ -49,6 +49,7 @@ class Subscribe(Action):
                 return
 
         if not self._can_subscribe(message.chat, message.from_user):
+            self.bot.reply_to(message, f"{emoji.CANCEL} Только админы могут управлять подписками чата!")
             return
 
         url = utils.get_keyword(message)
