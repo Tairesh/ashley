@@ -63,10 +63,10 @@ class Subscribe(Action):
             self.bot.reply_to(message, f"{emoji.SAD} Не могу распарсить RSS-ленту по этой ссылке!")
             return
 
-        entry = d['entries'][0] if len(d['entries']) > 0 else None
         title = d['feed']['title'] if 'title' in d['feed'] else url
-        guid = entry['id'] if entry else None
-        if self.db.add_subscribe(message.chat.id, url, guid):
+        if self.db.add_subscribe(message.chat.id, url, title):
+            for entry in d['entries']:
+                self.db.save_subscribe_post(message.chat.id, entry['id'])
             self.bot.reply_to(message, f"{emoji.CHECK} Подписка на <b>{utils.escape(title)}</b> активирована!",
                               parse_mode='HTML')
         else:

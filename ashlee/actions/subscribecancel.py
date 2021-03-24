@@ -80,7 +80,7 @@ class Subscribecancel(Action):
         btns = []
         text = "<b>Список рассылок, на которые подписан этот чат:</b>\n\n"
         for i, sub in enumerate(subscribes):
-            text += f"{i+1}. {sub.url}\n"
+            text += f"{i+1}. <a href=\"{sub.url}\">{sub.title}</a>\n"
             btns.append(InlineKeyboardButton(self.NUMBERS_EMOJI[i+1] if i < 10 else str(i+1),
                                              callback_data='sc:' + sub.url))
         markup.add(*btns)

@@ -27,9 +27,12 @@ def run_subscribes():
             bot.send_message(sub.chat_id, f"{emoji.CANCEL} Подписка на {sub.url} была отменена!")
             continue
 
+        guids = list(map(lambda e: e['id'], d['entries']))
+        published = db.get_subscribe_posts(sub.chat_id, guids)
+
         for entry in d['entries']:
-            if entry['id'] == sub.last_post:
-                break
+            if entry['id'] in published:
+                continue
             text = entry['summary']
             text = text.replace('\t', '').replace('\n', '')\
                 .replace('<strong>', '<b>').replace('</strong>', '</b>')\
@@ -41,8 +44,7 @@ def run_subscribes():
             text = f"<b><a href=\"{entry['link']}\">{utils.escape(entry['title'])}</a></b>\n" + text
             for piece in utils.chunks(text, 3000):
                 bot.send_message(sub.chat_id, piece, parse_mode='HTML')
-        if len(d['entries']) > 0:
-            db.update_subscribe(d['entries'][0]['id'], sub.chat_id, sub.url)
+            db.save_subscribe_post(sub.chat_id, entry['id'])
 
 
 if __name__ == '__main__':

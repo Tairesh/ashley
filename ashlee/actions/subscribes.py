@@ -45,5 +45,5 @@ class Subscribes(Action):
 
         text = "<b>Список рассылок, на которые подписан этот чат:</b>\n\n"
         for i, sub in enumerate(subscribes):
-            text += f"{i+1}. {sub.url}\n"
+            text += f"{i+1}. <a href=\"{sub.url}\">{sub.title}</a>\n"
         self.bot.reply_to(message, text, parse_mode='HTML')

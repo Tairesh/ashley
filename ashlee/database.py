@@ -24,7 +24,7 @@ class ChatSettings:
 
 class Subscribe:
     def __init__(self, row):
-        self.chat_id, self.url, self.last_post = row
+        self.chat_id, self.url, self.title = row
 
 
 class Database:
@@ -74,10 +74,16 @@ class Database:
     SQL_CREATE_SUBSCRIBES = '''CREATE TABLE subscribes (
         chat_id INTEGER NOT NULL,
         url TEXT NOT NULL,
-        last_post TEXT DEFAULT NULL,
+        title TEXT DEFAULT NULL,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
     SQL_CREATE_SUBSCRIBES_INDEX = 'CREATE UNIQUE INDEX IF NOT EXISTS subscribes_index ON subscribes (chat_id, url)'
+    SQL_CREATE_SUBSCRIBES_POSTS = '''CREATE TABLE subscribes_posts (
+        chat_id INTEGER NOT NULL,
+        post_id TEXT NOT NULL,
+        FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+    )'''
+    SQL_CREATE_SUBP_INDEX = 'CREATE UNIQUE INDEX IF NOT EXISTS subp_index ON subscribes_posts (chat_id, post_id)'
 
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
@@ -110,11 +116,12 @@ class Database:
     SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ?, ' \
                                'welcome_photo = ?, welcome_message = ?, welcome_buttons = ?, welcome_restrict = ? ' \
                                'WHERE chat_id = ?'
-    SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, last_post) VALUES (?, ?, ?)'
-    SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, last_post FROM subscribes WHERE chat_id = ?'
-    SQL_SUBSCRIBES_GET_ALL = 'SELECT chat_id, url, last_post FROM subscribes WHERE 1'
+    SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, title) VALUES (?, ?, ?)'
+    SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, title FROM subscribes WHERE chat_id = ?'
+    SQL_SUBSCRIBES_GET_ALL = 'SELECT chat_id, url, title FROM subscribes WHERE 1'
     SQL_SUBSCRIBES_DELETE = 'DELETE FROM subscribes WHERE chat_id = ? AND url = ?'
-    SQL_SUBSCRIBES_UPDATE = 'UPDATE subscribes SET last_post = ? WHERE chat_id = ? AND url = ?'
+    SQL_SUBSCRIBES_POSTS_ADD = 'INSERT INTO subscribes_posts (chat_id, post_id) VALUES (?, ?)'
+    SQL_SUBSCRIBES_POSTS_GET = 'SELECT post_id FROM subscribes_posts WHERE chat_id = ? AND post_id IN ({})'
 
     # Initialize database
     def __init__(self, db_path):
@@ -149,6 +156,10 @@ class Database:
             cur.execute(self.SQL_CREATE_SUBSCRIBES)
             con.commit()
         cur.execute(self.SQL_CREATE_SUBSCRIBES_INDEX)
+        if 'subscribes_posts' not in tables:
+            cur.execute(self.SQL_CREATE_SUBSCRIBES_POSTS)
+            con.commit()
+        cur.execute(self.SQL_CREATE_SUBP_INDEX)
         con.commit()
 
         con.close()
@@ -291,11 +302,11 @@ class Database:
         con.close()
         return int(row[0]) if row else None
 
-    def add_subscribe(self, chat_id, url, last_post) -> bool:
+    def add_subscribe(self, chat_id, url, title) -> bool:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
         try:
-            cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, last_post))
+            cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, title))
             con.commit()
             success = True
         except sqlite3.IntegrityError:
@@ -332,9 +343,22 @@ class Database:
         con.commit()
         con.close()
 
-    def update_subscribe(self, last_post, chat_id, url):
+    def save_subscribe_post(self, chat_id, post_id) -> bool:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_UPDATE, (last_post, chat_id, url))
-        con.commit()
+        try:
+            cur.execute(self.SQL_SUBSCRIBES_POSTS_ADD, (chat_id, post_id))
+            con.commit()
+            success = True
+        except sqlite3.IntegrityError:
+            success = False
         con.close()
+        return success
+
+    def get_subscribe_posts(self, chat_id: int, guids: List[str]) -> Set[str]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_SUBSCRIBES_POSTS_GET.format(','.join(map(lambda g: f"'{g}'", guids))), (chat_id, ))
+        rows = set(map(lambda row: row[0], cur.fetchall()))
+        con.close()
+        return rows
