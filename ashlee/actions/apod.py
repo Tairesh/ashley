@@ -31,13 +31,13 @@ class Apod(Action):
     @Action.send_uploading_photo
     def call(self, message: Message):
         data = json.loads(requests.get(self.API_URL).content.decode('utf-8'))
-        text = f"<a href=\"{data['hdurl']}\"><b>{data['title']}</b></a>\n\n{data['explanation']}"\
+        text = f"<a href=\"{data['url']}\"><b>{data['title']}</b></a>\n\n{data['explanation']}"\
             .replace('   ', '\n\n').replace('--', '—').split('APOD via')[0].strip()
         if len(text) <= 1024:
-            self.bot.send_photo(message.chat.id, data['hdurl'], text,
+            self.bot.send_photo(message.chat.id, data['url'], text,
                                 reply_to_message_id=message.message_id, parse_mode='HTML')
         elif len(text) <= 4096:
             self.bot.reply_to(message, text, parse_mode='HTML')
         else:
-            self.bot.send_photo(message.chat.id, data['hdurl'], data['title'],
+            self.bot.send_photo(message.chat.id, data['url'], data['title'],
                                 reply_to_message_id=message.message_id)
