@@ -4,7 +4,7 @@ from typing import List
 import requests
 from telebot.types import Message
 
-from ashlee import emoji, utils, stickers
+from ashlee import emoji, utils
 from ashlee.action import Action
 
 
