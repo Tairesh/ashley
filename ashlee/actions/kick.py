@@ -48,9 +48,8 @@ class Kick(Action):
             user = message.reply_to_message.from_user
             name = 'Psy-op' if message.text.startswith('/psyop') else utils.user_name(user, True)
             self.bot.kick_chat_member(message.chat.id, user.id)
-            if not message.text.startswith('/kick'):
-                self.bot.restrict_chat_member(message.chat.id, user.id, None,
-                                              False, False, False, False, False, False, False, False)
+            if message.text.startswith('/kick'):
+                self.bot.unban_chat_member(message.chat.id, user.id)
             self.bot.reply_to(message, f"{name} был забанен")
         except ApiException:
             self.bot.send_sticker(message.chat.id, stickers.CANT_DO, message.message_id)
