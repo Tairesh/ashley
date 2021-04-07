@@ -4,7 +4,7 @@ from typing import List
 import requests
 from telebot.types import Message
 
-from ashlee import emoji, utils
+from ashlee import emoji, utils, stickers
 from ashlee.action import Action
 
 
@@ -28,5 +28,9 @@ class Gpt(Action):
     @Action.send_typing
     def call(self, message: Message):
         text = utils.get_keyword(message)
-        data = json.loads(requests.post(self.API_URL, json={'text': text}).content.decode('utf-8'))
-        self.bot.reply_to(message, data['predictions'])
+        data = requests.post(self.API_URL, json={'text': text}).content.decode('utf-8')
+        try:
+            data = json.loads(data)
+            self.bot.reply_to(message, data['predictions'])
+        except json.JSONDecodeError:
+            self.bot.reply_to(message, f"{emoji.ERROR} API ruGPT3 временно недоступно!")
