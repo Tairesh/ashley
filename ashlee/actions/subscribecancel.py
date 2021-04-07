@@ -28,7 +28,8 @@ class Subscribecancel(Action):
         return emoji.INFO + ' RSS'
 
     def get_cmds(self) -> List[str]:
-        return ['subscribe_cancel', 'subscribes_cancel', 'subscribecancel', 'subscribescancel',
+        return ['unsubscribe',
+                'subscribe_cancel', 'subscribes_cancel', 'subscribecancel', 'subscribescancel',
                 'cancel_subscribe', 'cancel_subscribes', 'cancelsubscribe', 'cancelsubscribes']
 
     def get_keywords(self) -> List[str]:
