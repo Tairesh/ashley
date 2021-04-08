@@ -28,9 +28,19 @@ class Gpt(Action):
     @Action.send_typing
     def call(self, message: Message):
         text = utils.get_keyword(message)
-        data = requests.post(self.API_URL, json={'text': text}).content.decode('utf-8')
-        try:
-            data = json.loads(data)
-            self.bot.reply_to(message, data['predictions'])
-        except json.JSONDecodeError:
-            self.bot.reply_to(message, f"{emoji.ERROR} API ruGPT3 временно недоступно!")
+        error_message = None
+        for tries in range(10):
+            data = requests.post(self.API_URL, json={'text': text}).content.decode('utf-8')
+            try:
+                data = json.loads(data)
+                self.bot.reply_to(message, data['predictions'])
+                if error_message:
+                    self.bot.delete_message(error_message.chat.id, error_message.message_id)
+                return
+            except json.JSONDecodeError:
+                if error_message is None:
+                    error_message = self.bot.reply_to(message,
+                                                      f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова...")
+                else:
+                    self.bot.edit_message_text(error_message.chat.id, error_message.message_id,
+                                               f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова (x{tries})...")
