@@ -43,8 +43,10 @@ def run_subscribes():
                 text = text.replace('<div class="bb_h3">', '<b>').replace('</div>', '</b>\n\n')
             text = clean(text, tags=['a', 'b', 'i'], strip=True, strip_comments=True).strip()
             text = f"<b><a href=\"{entry['link']}\">{utils.escape(entry['title'])}</a></b>\n" + text
-            for piece in utils.chunks(text, 3000):
-                bot.send_message(sub.chat_id, piece, parse_mode='HTML')
+            if len(text) > 4096:
+                text = text.split('\n')[0]
+            bot.send_message(sub.chat_id, text, parse_mode='HTML')
+
             db.save_subscribe_post(sub.chat_id, entry['id'])
 
 
