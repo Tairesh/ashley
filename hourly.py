@@ -1,5 +1,6 @@
 #!venv/bin/python
 import os
+import re
 
 from telebot import TeleBot
 from bleach import clean
@@ -37,8 +38,10 @@ def run_subscribes():
             text = text.replace('\t', '').replace('\n', '')\
                 .replace('<strong>', '<b>').replace('</strong>', '</b>')\
                 .replace('<em>', '<i>').replace('</em>', '</i>')\
-                .replace('<br>', '\n').replace('<br />', '\n').replace('<br/>', '\n')\
-                .replace('&nbsp;', ' ').replace('</p>', '</p>\n').replace('\n\n\n', '\n\n')
+                .replace('<br><br>', '\n').replace('<br>', '\n').replace('<br />', '\n').replace('<br/>', '\n')\
+                .replace('&nbsp;', ' ').replace('</p>', '</p>\n')
+            text = re.sub(r'\n\n+', '\n\n', text)
+            text = re.sub(r'\[url=(.+)\](.+)\[/url\]', r'<a href="\1">\2</a>', text)
             if 'class="bb_h3"' in text:
                 text = text.replace('<div class="bb_h3">', '<b>').replace('</div>', '</b>\n\n')
             text = clean(text, tags=['a', 'b', 'i'], strip=True, strip_comments=True).strip()
