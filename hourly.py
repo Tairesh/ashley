@@ -37,7 +37,8 @@ def run_subscribes():
             text = text.replace('\t', '').replace('\n', '')\
                 .replace('<strong>', '<b>').replace('</strong>', '</b>')\
                 .replace('<em>', '<i>').replace('</em>', '</i>')\
-                .replace('<br>', '\n').replace('<br />', '\n').replace('<br/>', '\n')
+                .replace('<br>', '\n').replace('<br />', '\n').replace('<br/>', '\n')\
+                .replace('&nbsp;', ' ').replace('</p>', '</p>\n').replace('\n\n\n', '\n\n')
             if 'class="bb_h3"' in text:
                 text = text.replace('<div class="bb_h3">', '<b>').replace('</div>', '</b>\n\n')
             text = clean(text, tags=['a', 'b', 'i'], strip=True, strip_comments=True).strip()
