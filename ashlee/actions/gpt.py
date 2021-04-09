@@ -35,12 +35,12 @@ class Gpt(Action):
                 data = json.loads(data)
                 self.bot.reply_to(message, data['predictions'])
                 if error_message:
-                    self.bot.delete_message(error_message.chat.id, error_message.message_id)
+                    self.bot.delete_message(message.chat.id, error_message.message_id)
                 return
             except json.JSONDecodeError:
                 if error_message is None:
                     error_message = self.bot.reply_to(message,
                                                       f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова...")
                 else:
-                    self.bot.edit_message_text(error_message.chat.id, error_message.message_id,
+                    self.bot.edit_message_text(message.chat.id, error_message.message_id,
                                                f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова (x{tries})...")
