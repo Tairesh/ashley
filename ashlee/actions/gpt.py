@@ -42,5 +42,5 @@ class Gpt(Action):
                     error_message = self.bot.reply_to(message,
                                                       f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова...")
                 else:
-                    self.bot.edit_message_text(message.chat.id, error_message.message_id,
-                                               f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова (x{tries})...")
+                    self.bot.edit_message_text(chat_id = message.chat.id, message_id = error_message.message_id,
+                                               text = f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова (x{tries})...")
