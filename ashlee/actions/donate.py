@@ -9,7 +9,8 @@ from ashlee.action import Action
 class Donate(Action):
 
     TEXT = '''PayPal: https://paypal.me/tairesh
-Sberbank Online: `+79826151298`
+DonationAlerts: https://www.donationalerts.com/r/tairesh
+Sberbank: `+79826151298`
 YooMoney: https://sobe.ru/na/ashleybot
 Monero: `4A2CkxBUVNGDSNb94FhTkpexG3evMpeVWJ4tsBDy4TLXiqTQ1Jh1CVCHUojYzHbgad7cmBphtxKW8eRVorvK5FPu4K8UhaB`
 or text me @tairesh'''
