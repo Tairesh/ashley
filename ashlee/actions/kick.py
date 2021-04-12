@@ -35,17 +35,25 @@ class Kick(Action):
     @Action.send_typing
     def call(self, message: Message):
         if message.chat.id == message.from_user.id:
-            self.bot.reply_to(message, "Эта команда работает только в групповых чатах")
+            self.bot.reply_to(message, f"{emoji.ERROR} Эта команда работает только в групповых чатах!")
             return
 
         if not self._can_kick(message.chat, message.from_user):
             return
 
         if not message.reply_to_message:
+            self.bot.reply_to(
+                message,
+                f"{emoji.INFO} Чтобы забанить пользователя, используй эту команду ответом на его сообщение!"
+            )
+            return
+
+        user = message.reply_to_message.from_user
+        if user.id in constants.ADMINS:
+            self.bot.reply_to(message, f"{emoji.ERROR} Этого пользователя нельзя забанить!")
             return
 
         try:
-            user = message.reply_to_message.from_user
             name = 'Psy-op' if message.text.startswith('/psyop') else utils.user_name(user, True)
             self.bot.kick_chat_member(message.chat.id, user.id)
             if message.text.startswith('/kick'):
