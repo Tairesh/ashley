@@ -1,4 +1,6 @@
 from typing import List
+from threading import Timer
+from time import time
 
 from telebot.types import Message
 
@@ -23,6 +25,7 @@ class Reply(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
+        start_time = time()
         if message.text.startswith('/'):
             if message.reply_to_message:
                 text = message.reply_to_message.text
@@ -41,5 +44,11 @@ class Reply(Action):
             sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, sentences_limit=sl)
         if not sentence:
             sentence = pepe.generate_sentence(self.tgb.redis)[0]
+        sentence = pepe.capitalise(sentence)
 
-        self.bot.reply_to(message, pepe.capitalise(sentence))
+        consumed_time = time() - start_time
+        dt = 2.0 - consumed_time
+        if dt >= 0:
+            Timer(dt, lambda: self.bot.reply_to(message, sentence)).start()
+        else:
+            self.bot.reply_to(message, sentence)
