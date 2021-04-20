@@ -51,8 +51,8 @@ class Duel(Action):
         u2 = self.db.get_user(user2)
         dice1 = duel['r'][user1]
         dice2 = duel['r'][user2]
-        result1 = dice1 + u1.lemons
-        result2 = dice2 + u2.lemons
+        result1 = dice1
+        result2 = dice2
         if result1 > result2:
             winner, looser = u1, u2
         elif result2 > result1:
@@ -72,8 +72,8 @@ class Duel(Action):
             self.db.update_user_lemons(winner.id, winner.lemons + 1)
         self.bot.send_message(chat_id,
                               "<b>Результаты:</b>\n"
-                              f"<i>{utils.user_name(u1)}:</i> {dice1} {emoji.DICE} + {u1.lemons} {emoji.LEMON}\n"
-                              f"<i>{utils.user_name(u2)}:</i> {dice2} {emoji.DICE} + {u2.lemons} {emoji.LEMON}\n"
+                              f"<i>{utils.user_name(u1)}:</i> {dice1}\n"
+                              f"<i>{utils.user_name(u2)}:</i> {dice2}\n"
                               f"<b>Победитель:</b> {utils.user_name(winner, True)}{mode_text}!",
                               reply_markup=ReplyKeyboardRemove(), parse_mode='HTML')
 
