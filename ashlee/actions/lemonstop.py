@@ -38,4 +38,4 @@ class Lemonstop(Action):
         return ["топ по лимонам", "кто самый богатый"]
 
     def get_cmds(self):
-        return ["lemonstop", "lemons_top", "toplemons", "top_lemons", "lemon_top", "lemontop"]
+        return ["lemons_top", "lemonstop", "toplemons", "top_lemons", "lemon_top", "lemontop"]
