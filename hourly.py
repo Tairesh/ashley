@@ -34,6 +34,8 @@ def run_subscribes():
         for entry in d['entries']:
             if entry['id'] in published:
                 continue
+            if ': You can find the details for this event on the announcement page' in entry['summary']:
+                continue  # skip steamcommunity dublicates
             text = entry['summary']
             text = text.replace('\t', '').replace('\n', '')\
                 .replace('<strong>', '<b>').replace('</strong>', '</b>')\
