@@ -24,8 +24,8 @@ def run_subscribes():
     for sub in db.get_all_subscribes():
         d = utils.feed_parse(sub.url)
         if not d:
-            db.delete_subscribe(sub.chat_id, sub.url)
-            bot.send_message(sub.chat_id, f"{emoji.CANCEL} Подписка на {sub.url} была отменена!")
+            # db.delete_subscribe(sub.chat_id, sub.url)
+            # bot.send_message(sub.chat_id, f"{emoji.CANCEL} Подписка на {sub.url} была отменена!")
             continue
 
         guids = list(map(lambda e: e['id'], d['entries']))
