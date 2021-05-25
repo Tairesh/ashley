@@ -36,9 +36,13 @@ class Choice(Action):
         if not keyword:
             self.bot.reply_to(message, "Пример использования \n`/choice быть или не быть?`", parse_mode='markdown')
             return
-        variants = self.r_or.split(keyword)
-        for var in variants:
-            if self.r_or.search(f" {var} "):
-                variants.remove(var)
+        variants = []
+        for var in self.r_or.split(keyword):
+            if var.strip().lower() == 'или':
+                continue
+            elif ',' in var:
+                variants.append(var.split(',')[-1].strip())
+            else:
+                variants.append(var)
         sel = random.choice(variants)
         self.bot.reply_to(message, sel)
