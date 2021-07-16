@@ -210,3 +210,6 @@ class TelegramBot:
                     reply_action = next(filter(lambda a: a.__class__.__name__ == 'Start', self.actions))
                     reply_action.call(message)
                     return
+        if message.chat.id == -1001323036018:  # Dwarf Fortress
+            self.bot.reply_to(message, "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости",
+                              parse_mode="HTML")
