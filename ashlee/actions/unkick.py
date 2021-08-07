@@ -50,6 +50,9 @@ class Unkick(Action):
 
         user = message.reply_to_message.from_user
 
+        if user.id == self.tgb.me.id:
+            return
+
         try:
             name = utils.user_name(user, True)
             self.bot.unban_chat_member(message.chat.id, user.id)
