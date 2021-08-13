@@ -16,10 +16,10 @@ class Unkick(Action):
         return emoji.CHECK + ' Разбан'
 
     def get_cmds(self) -> List[str]:
-        return ['unkick', 'unban', 'nekick', 'neban']
+        return ['unkick', 'unban', 'nekick', 'razban']
 
     def get_keywords(self) -> List[str]:
-        return ['разбань', 'верни', 'разбанить', 'вернуть']
+        return ['разбань', 'разбанить']
 
     def _can_do(self, chat: Chat, admin: User):
         if admin.id in constants.ADMINS:
@@ -49,6 +49,9 @@ class Unkick(Action):
             return
 
         user = message.reply_to_message.from_user
+
+        if user.id == self.tgb.me.id:
+            return
 
         try:
             name = utils.user_name(user, True)
