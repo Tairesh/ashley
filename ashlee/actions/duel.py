@@ -30,7 +30,7 @@ class Duel(Action):
 
     def after_loaded(self):
         @Action.save_data
-        @self.bot.message_handler(content_types=['dice'], func=lambda m: not m.forward_from)
+        @self.bot.message_handler(content_types=['dice'], func=lambda m: not m.forward_from and m.dice and m.dice.emoji == '🎲')
         def _dice_sent(message: Message):
             if message.chat.id in self.duels:
                 user_id = message.from_user.id
