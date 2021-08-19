@@ -47,6 +47,9 @@ class Action(ABC):
     # Execute logic after the action is loaded
     def after_loaded(self): pass
 
+    # Execute logic after the action is unloaded
+    def after_unload(self): pass
+
     @classmethod
     def send_typing(cls, func):
         def _send_typing_action(self, message: Message):

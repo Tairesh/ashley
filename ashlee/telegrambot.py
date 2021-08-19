@@ -100,27 +100,11 @@ class TelegramBot:
             msg = f"File '{file}' can't be loaded as an action: {ex}"
             logging.warning(msg)
 
-    def remove_action(self, module_name):
+    def reload_actions(self):
         for action in self.actions:
-            if type(action).__name__.lower() == module_name.lower():
-                self.actions.remove(action)
-                break
-
-    def reload_action(self, module_name):
-        self.remove_action(module_name)
-
-        try:
-            module_path = f"ashlee.actions.{module_name}"
-            module = importlib.import_module(module_path)
-
-            importlib.reload(module)
-
-            action_class = getattr(module, module_name.capitalize())
-            action_class(self)
-        except Exception as ex:
-            msg = f"Action '{module_name.capitalize()}' can't be reloaded: {ex}"
-            logging.warning(msg)
-            raise ex
+            action.after_unload()
+        self.actions.clear()
+        self._load_actions()
 
     # Handle all errors
     def _handle_errors(self, message, exception):

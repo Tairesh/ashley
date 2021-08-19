@@ -39,6 +39,12 @@ class Buylemons(Action):
                 self.db.update_user_lemons(user.id, user.lemons + lemons)
                 self.bot.reply_to(message, f"Спасибо за покупку! Теперь у тебя {user.lemons + lemons} {emoji.LEMON}")
 
+    def after_unload(self):
+        for i, handler in enumerate(self.bot.message_handlers):
+            if 'content_types' in handler and 'dice' in handler['successful_payment']:
+                self.bot.message_handlers.pop(i)
+        self.bot.pre_checkout_query_handlers.clear()
+
     def btn_pressed(self, call: CallbackQuery):
         amount = call.data.split(':').pop()
         if amount != 'cancel':

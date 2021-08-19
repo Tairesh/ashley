@@ -44,6 +44,11 @@ class Duel(Action):
                         if all(duel['r'].values()):
                             self._duel_check(message.chat.id)
 
+    def after_unload(self):
+        for i, handler in enumerate(self.bot.message_handlers):
+            if 'content_types' in handler and 'dice' in handler['content_types']:
+                self.bot.message_handlers.pop(i)
+
     def _duel_check(self, chat_id):
         duel = self.duels[chat_id]
         user1, user2 = duel['r'].keys()
