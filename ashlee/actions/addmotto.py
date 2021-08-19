@@ -35,4 +35,7 @@ class Addmotto(Action):
         with open(file_path, "a") as file:
             file.write('\n' + text)
 
+        text_without_carpets = text.replace('"', '\\"')
+        os.system(f"cd {os.path.dirname(file_path)} && git commit -a -m \"added motto {text_without_carpets}\" && git push")
+
         self.bot.reply_to(message, f"Added: `{text}`", parse_mode='Markdown')
