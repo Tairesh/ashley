@@ -26,8 +26,10 @@ def get_atmention(message: Message):
     return None
 
 
-def get_keyword(message: Message, with_reply=True) -> str:
-    keyword = message.text[len(message.text.split(' ')[0]) + 1::].replace(',', '').strip()
+def get_keyword(message: Message, with_reply=True, remove_commas_idk_why=True) -> str:
+    keyword = message.text[len(message.text.split(' ')[0]) + 1::].strip()
+    if remove_commas_idk_why:
+        keyword = keyword.replace(',', '')
     if with_reply and not keyword and message.reply_to_message:
         rm = message.reply_to_message
         keyword = rm.caption if rm.caption else rm.text
