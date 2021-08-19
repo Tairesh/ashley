@@ -32,6 +32,7 @@ class Addmotto(Action):
             return
 
         file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'tairesh.github.io', 'mottos.txt')
+        os.system(f"cd {os.path.dirname(file_path)} && git pull")
         with open(file_path, "a") as file:
             file.write('\n' + text)
 
