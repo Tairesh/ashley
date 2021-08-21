@@ -216,8 +216,9 @@ class TelegramBot:
                            f"{utils.user_name(member, True, True)} отправьте любое сообщение в чат в течение" \
                            f" 60 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
                 elif message.chat.id == -1001150487023:  # Cataclysm DDA
-                    text = f"{utils.user_name(member, True, True)} ты зашёл в чат Cataclysm DDA. " \
-                           f"Перед тобой <code>soap (10)</code> со стола и <code>flat bread (filthy)</code> с параши. " \
+                    text = f"{utils.user_name(member, True, True)} ты зашёл в чат Cataclysm DDA, " \
+                           f"перед тобой {emoji.BREAD} <code>soap (10)</code> со стола и " \
+                           f"{emoji.SOAP} <code>flat bread (filthy)</code> с параши. " \
                            f"Что выберешь? На размышление 60 секунд а затем бан."
                 elif message.chat.id == -1001298015134:  # Peerojoque
                     text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 60 секунд " \
