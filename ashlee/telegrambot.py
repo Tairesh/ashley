@@ -3,10 +3,11 @@ import logging
 import os
 import threading
 import traceback
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from redis import StrictRedis
 from telebot import TeleBot
+from telebot.apihelper import ApiException
 from telebot.types import Message, User, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, BotCommand
 
 from ashlee import emoji, constants, utils, stickers, pepe
@@ -33,6 +34,7 @@ class TelegramBot:
         self.clean: bool = clean
         self.debug: bool = debug
         self.actions: List[Action] = []
+        self.welcomes: List[Tuple[threading.Timer, int, int, int]] = []
 
         self.bot: TeleBot = TeleBot(token, skip_pending=clean)
         self.me: User = self.bot.get_me()
@@ -123,6 +125,17 @@ class TelegramBot:
 
     # Handle text messages
     def _handle_text_messages(self, message: Message):
+        if message and message.from_user:
+            for w in self.welcomes:
+                timer, chat_id, message_id, member_id = w
+                if chat_id == message.chat.id and member_id == message.from_user.id:
+                    timer.cancel()
+                    try:
+                        self.bot.delete_message(chat_id, message_id)
+                    except ApiException:
+                        pass
+                    self.welcomes.remove(w)
+
         if not message or not message.text:
             return
 
@@ -193,7 +206,28 @@ class TelegramBot:
                 if member.id == self.me.id:
                     reply_action = next(filter(lambda a: a.__class__.__name__ == 'Start', self.actions))
                     reply_action.call(message)
-                    return
-        if message.chat.id == -1001323036018:  # Dwarf Fortress
-            self.bot.reply_to(message, "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости",
-                              parse_mode="HTML")
+                    continue
+                if message.from_user and message.from_user.id != member.id:
+                    continue
+
+                text = None
+                if message.chat.id == -1001323036018:  # Dwarf Fortress
+                    text = "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости\n\n" \
+                           f"{utils.user_name(member, True, True)} отправьте любое сообщение в чат в течение" \
+                           f" 60 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
+                elif message.chat.id == -1001298015134:
+                    text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 60 секунд " \
+                           f"чтобы не получить бан нахуй"
+                if text:
+                    msg = self.bot.reply_to(message, text, parse_mode="HTML")
+
+                    def ban_user():
+                        try:
+                            self.bot.delete_message(msg.chat.id, msg.message_id)
+                        except ApiException:
+                            pass
+                        self.bot.kick_chat_member(msg.chat_id, member.id)
+
+                    t = threading.Timer(60.0, ban_user)
+                    t.start()
+                    self.welcomes.append((t, msg.chat.id, msg.message_id, member.id))

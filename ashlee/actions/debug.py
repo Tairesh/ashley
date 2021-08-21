@@ -31,5 +31,6 @@ class Debug(Action):
         else:
             chat_db = self.db.get_chat(message.chat.id)
             chat_tg = self.bot.get_chat(message.chat.id)
-            self.bot.reply_to(message, f"Chat in DB: <code>{str(chat_db.__dict__ if chat_db else None)}</code>\n\n"
-                                       f"Chat in TG: <code>{str(chat_tg)}</code>", parse_mode='HTML')
+            self.bot.reply_to(message, f"Chat in DB: "
+                                       f"<code>{utils.escape(str(chat_db.__dict__)) if chat_db else 'None'}</code>\n\n"
+                                       f"Chat in TG: <code>{utils.escape(str(chat_tg))}</code>", parse_mode='HTML')
