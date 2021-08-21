@@ -215,7 +215,10 @@ class TelegramBot:
                     text = "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости\n\n" \
                            f"{utils.user_name(member, True, True)} отправьте любое сообщение в чат в течение" \
                            f" 60 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
-                elif message.chat.id == -1001298015134:
+                elif message.chat.id == -1001150487023:  # Cataclysm DDA
+                    text = f"{utils.user_name(member, True, True)} добро пожаловать в чат Cataclysm DDA. " \
+                           f"Отправь любое сообщение в течении 60 секунд иначе получишь бан"
+                elif message.chat.id == -1001298015134:  # Peerojoque
                     text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 60 секунд " \
                            f"чтобы не получить бан нахуй"
                 if text:
@@ -224,6 +227,10 @@ class TelegramBot:
                     def ban_user():
                         try:
                             self.bot.delete_message(msg.chat.id, msg.message_id)
+                        except ApiException:
+                            pass
+                        try:
+                            self.bot.delete_message(message.chat.id, message.message_id)
                         except ApiException:
                             pass
                         self.bot.kick_chat_member(msg.chat_id, member.id)

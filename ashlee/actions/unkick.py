@@ -55,7 +55,7 @@ class Unkick(Action):
 
         try:
             name = utils.user_name(user, True)
-            self.bot.unban_chat_member(message.chat.id, user.id)
+            self.bot.unban_chat_member(message.chat.id, user.id, True)
             self.bot.reply_to(message, f"{name} был разбанен")
         except ApiException:
             self.bot.send_sticker(message.chat.id, stickers.CANT_DO, message.message_id)
