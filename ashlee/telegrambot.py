@@ -242,7 +242,7 @@ class TelegramBot:
                             self.bot.delete_message(message.chat.id, message.message_id)
                         except ApiException:
                             pass
-                        self.bot.kick_chat_member(msg.chat_id, member.id)
+                        self.bot.kick_chat_member(msg.chat.id, member.id)
 
                     t = threading.Timer(60.0, ban_user)
                     t.start()
