@@ -53,6 +53,9 @@ class TelegramBot:
         self.bot.add_message_handler({'function': self._handle_new_members, 'filters': {
             'content_types': ['new_chat_members'],
         }})
+        self.bot.add_message_handler({'function': self._process_welcomes, 'filters': {
+            'content_types': ['sticker'],
+        }})
 
     # Start the bot
     def bot_start_polling(self):
@@ -123,8 +126,7 @@ class TelegramBot:
             for chunk in utils.chunks(error_msg, 3000):
                 self.bot.send_message(admin, chunk, parse_mode='HTML')
 
-    # Handle text messages
-    def _handle_text_messages(self, message: Message):
+    def _process_welcomes(self, message: Message):
         if message and message.from_user:
             for w in self.welcomes:
                 timer, chat_id, message_id, member_id = w
@@ -135,6 +137,10 @@ class TelegramBot:
                     except ApiException:
                         pass
                     self.welcomes.remove(w)
+
+    # Handle text messages
+    def _handle_text_messages(self, message: Message):
+        self._process_welcomes(message)
 
         if not message or not message.text:
             return
