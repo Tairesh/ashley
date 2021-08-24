@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from telebot import TeleBot
+from telebot.apihelper import ApiException
 from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
 from ashlee import constants, emoji
@@ -21,15 +22,18 @@ class Action(ABC):
 
     # Name of action
     @abstractmethod
-    def get_name(self) -> str: pass
+    def get_name(self) -> str:
+        pass
 
     # List of command strings that trigger the action
     @abstractmethod
-    def get_cmds(self) -> List[str]: pass
+    def get_cmds(self) -> List[str]:
+        pass
 
     # List of keywords that are natural language action triggers
     @abstractmethod
-    def get_keywords(self) -> List[str]: pass
+    def get_keywords(self) -> List[str]:
+        pass
 
     def get_callback_start(self) -> Optional[str]:
         return None
@@ -38,17 +42,21 @@ class Action(ABC):
         pass
 
     @abstractmethod
-    def get_description(self) -> str: pass
+    def get_description(self) -> str:
+        pass
 
     # Executed logic
     @abstractmethod
-    def call(self, message: Message): pass
+    def call(self, message: Message):
+        pass
 
     # Execute logic after the action is loaded
-    def after_loaded(self): pass
+    def after_loaded(self):
+        pass
 
     # Execute logic after the action is unloaded
-    def after_unload(self): pass
+    def after_unload(self):
+        pass
 
     @classmethod
     def send_typing(cls, func):
@@ -56,7 +64,7 @@ class Action(ABC):
             chat_id = message.chat.id
             try:
                 self.tgb.bot.send_chat_action(chat_id=chat_id, action='typing')
-            except Exception as ex:
+            except ApiException as ex:
                 logging.error(f"{ex} - {message}")
 
             return func(self, message)
@@ -68,7 +76,7 @@ class Action(ABC):
             chat_id = message.chat.id
             try:
                 self.tgb.bot.send_chat_action(chat_id=chat_id, action='upload_photo')
-            except Exception as ex:
+            except ApiException as ex:
                 logging.error(f"{ex} - {message}")
 
             return func(self, message)
@@ -97,13 +105,16 @@ class Action(ABC):
 class SudoAction(Action, ABC):
 
     @abstractmethod
-    def _get_label(self) -> str: pass
+    def _get_label(self) -> str:
+        pass
 
     @abstractmethod
-    def _get_settings_attr(self) -> str: pass
+    def _get_settings_attr(self) -> str:
+        pass
 
     @abstractmethod
-    def _try_process_action(self, message: Message) -> bool: pass
+    def _try_process_action(self, message: Message) -> bool:
+        pass
 
     def btn_pressed(self, call: CallbackQuery):
         if call.data.endswith('sudo'):

@@ -70,7 +70,7 @@ class TelegramBot:
             self.bot.infinity_polling()
 
     def _load_actions(self):
-        threads = list()
+        threads = []
 
         for _, _, files in os.walk(os.path.join('ashlee', 'actions')):
             for file in files:
@@ -92,6 +92,7 @@ class TelegramBot:
             commands.append(BotCommand(action.get_cmds()[0], action.get_description()))
         self.bot.set_my_commands(commands)
 
+    # pylint: disable=W0703
     @threaded
     def _load_action(self, file):
         try:

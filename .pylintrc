@@ -1,0 +1,4 @@
+[MASTER]
+disable=
+    C0103,C0114,C0115,C0116,C0301,C0415,R0902,R0911,R0912,R0913,R1705,W0611,W0221,W1201,E0401
+ignored-modules=pygame,pygame.rect,pygame.surface,pygame.color

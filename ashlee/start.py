@@ -130,27 +130,27 @@ class Ashlee:
         try:
             token_file = os.path.join('config', 'token.txt')
             if os.path.isfile(token_file):
-                with open(token_file, 'r') as file:
+                with open(token_file, 'r', encoding='utf-8') as file:
                     return file.read()
             else:
-                exit(f"ERROR: No token file found at '{token_file}'")
+                raise SystemExit(f"ERROR: No token file found at '{token_file}'")
         except KeyError as e:
             cls_name = f"Class: {type(self).__name__}"
             logging.error(f"{repr(e)} - {cls_name}")
-            exit("ERROR: Can't read bot token")
+            raise SystemExit("ERROR: Can't read bot token")
 
     def _get_api_keys(self):
         try:
             keys_file = os.path.join('config', 'api_keys.json')
             if os.path.isfile(keys_file):
-                with open(keys_file, 'r') as file:
+                with open(keys_file, 'r', encoding='utf-8') as file:
                     return json.load(file)
             else:
-                exit(f"ERROR: No api keys file found at '{keys_file}'")
+                raise SystemExit(f"ERROR: No api keys file found at '{keys_file}'")
         except json.JSONDecodeError as e:
             cls_name = f"Class: {type(self).__name__}"
             logging.error(f"{repr(e)} - {cls_name}")
-            exit("ERROR: Can't read api keys")
+            raise SystemExit("ERROR: Can't read api keys")
 
     def start(self):
         self.tgbot.bot_start_polling()
