@@ -100,9 +100,7 @@ class Settings(Action):
         elif key == 'replies':
             chat_settings.enabled_replies = not chat_settings.enabled_replies
 
-        self.db.update_chat_settings(call.message.chat.id, chat_settings.enabled_porn, chat_settings.enabled_anime,
-                                     chat_settings.enabled_replies, chat_settings.welcome_photo,
-                                     chat_settings.welcome_message, chat_settings.welcome_buttons,
-                                     chat_settings.welcome_restrict)
+        self.db.update_chat_settings(call.message.chat.id, chat_settings.enabled_porn,
+                                     chat_settings.enabled_anime, chat_settings.enabled_replies)
         text, keyboard = self._get_chat_text_and_keyboard(chat_settings)
         self.bot.edit_message_text(text, call.message.chat.id, call.message.message_id, reply_markup=keyboard)

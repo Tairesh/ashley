@@ -17,9 +17,7 @@ class Chat:
 
 class ChatSettings:
     def __init__(self, row):
-        self.chat_id, self.language, self.enabled_porn, self.enabled_anime, self.enabled_replies, \
-            self.welcome_photo, self.welcome_message, self.welcome_buttons, self.welcome_restrict = row
-        self.welcome_buttons = self.welcome_buttons.split(',') if self.welcome_buttons else []
+        self.chat_id, self.language, self.enabled_porn, self.enabled_anime, self.enabled_replies = row
 
 
 class Subscribe:
@@ -65,26 +63,8 @@ class Database:
         enabled_porn INTEGER NOT NULL DEFAULT 1,
         enabled_anime INTEGER NOT NULL DEFAULT 1,
         enabled_replies INTEGER NOT NULL DEFAULT 1,
-        welcome_photo TEXT DEFAULT NULL,
-        welcome_message TEXT DEFAULT NULL,
-        welcome_buttons TEXT DEFAULT NULL,
-        welcome_restrict INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
-    SQL_CREATE_SUBSCRIBES = '''CREATE TABLE subscribes (
-        chat_id INTEGER NOT NULL,
-        url TEXT NOT NULL,
-        title TEXT DEFAULT NULL,
-        FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
-    )'''
-    SQL_CREATE_SUBSCRIBES_INDEX = 'CREATE UNIQUE INDEX IF NOT EXISTS subscribes_index ON subscribes (chat_id, url)'
-    SQL_CREATE_SUBSCRIBES_POSTS = '''CREATE TABLE subscribes_posts (
-        chat_id INTEGER NOT NULL,
-        post_id TEXT NOT NULL,
-        FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
-    )'''
-    SQL_CREATE_SUBP_INDEX = 'CREATE UNIQUE INDEX IF NOT EXISTS subp_index ON subscribes_posts (chat_id, post_id)'
-
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
     )'''
@@ -109,19 +89,11 @@ class Database:
 
     SQL_CMD_ADD = 'INSERT INTO cmd_data (user_id, chat_id, command) VALUES (?, ?, ?)'
 
-    SQL_GET_CHATS_SETTINGS = 'SELECT chat_id, language, enabled_porn, enabled_anime, enabled_replies, ' \
-                             'welcome_photo, welcome_message, welcome_buttons, welcome_restrict ' \
+    SQL_GET_CHATS_SETTINGS = 'SELECT chat_id, language, enabled_porn, enabled_anime, enabled_replies ' \
                              'FROM chats_settings WHERE chat_id = ?'
     SQL_CHAT_SETTINGS_ADD = 'INSERT INTO chats_settings (chat_id, language) VALUES (?, ?)'
-    SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ?, ' \
-                               'welcome_photo = ?, welcome_message = ?, welcome_buttons = ?, welcome_restrict = ? ' \
+    SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ? ' \
                                'WHERE chat_id = ?'
-    SQL_SUBSCRIBES_ADD = 'INSERT INTO subscribes (chat_id, url, title) VALUES (?, ?, ?)'
-    SQL_SUBSCRIBES_GET = 'SELECT chat_id, url, title FROM subscribes WHERE chat_id = ?'
-    SQL_SUBSCRIBES_GET_ALL = 'SELECT chat_id, url, title FROM subscribes WHERE 1'
-    SQL_SUBSCRIBES_DELETE = 'DELETE FROM subscribes WHERE chat_id = ? AND url = ?'
-    SQL_SUBSCRIBES_POSTS_ADD = 'INSERT INTO subscribes_posts (chat_id, post_id) VALUES (?, ?)'
-    SQL_SUBSCRIBES_POSTS_GET = 'SELECT post_id FROM subscribes_posts WHERE chat_id = ? AND post_id IN ({})'
 
     # Initialize database
     def __init__(self, db_path):
@@ -152,14 +124,6 @@ class Database:
         if 'chats_settings' not in tables:
             cur.execute(self.SQL_CREATE_CHATS_SETTINGS)
             con.commit()
-        if 'subscribes' not in tables:
-            cur.execute(self.SQL_CREATE_SUBSCRIBES)
-            con.commit()
-        cur.execute(self.SQL_CREATE_SUBSCRIBES_INDEX)
-        if 'subscribes_posts' not in tables:
-            cur.execute(self.SQL_CREATE_SUBSCRIBES_POSTS)
-            con.commit()
-        cur.execute(self.SQL_CREATE_SUBP_INDEX)
         con.commit()
 
         con.close()
@@ -271,18 +235,10 @@ class Database:
         con.commit()
         con.close()
 
-    def update_chat_settings(self, chat_id, enabled_porn=1, enabled_anime=1, enabled_replies=1,
-                             welcome_photo=None, welcome_message=None, welcome_buttons=None, welcome_restrict=0):
-        if welcome_buttons is not None:
-            if len(welcome_buttons):
-                welcome_buttons = ','.join(welcome_buttons)
-            else:
-                welcome_buttons = None
+    def update_chat_settings(self, chat_id, enabled_porn=1, enabled_anime=1, enabled_replies=1):
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_CHAT_SETTINGS_UPDATE, (enabled_porn, enabled_anime, enabled_replies,
-                                                    welcome_photo, welcome_message, welcome_buttons, welcome_restrict,
-                                                    chat_id))
+        cur.execute(self.SQL_CHAT_SETTINGS_UPDATE, (enabled_porn, enabled_anime, enabled_replies, chat_id))
         con.commit()
         con.close()
 
@@ -301,64 +257,3 @@ class Database:
         con.commit()
         con.close()
         return int(row[0]) if row else None
-
-    def add_subscribe(self, chat_id, url, title) -> bool:
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        try:
-            cur.execute(self.SQL_SUBSCRIBES_ADD, (chat_id, url, title))
-            con.commit()
-            success = True
-        except sqlite3.IntegrityError:
-            success = False
-        con.close()
-        return success
-
-    def get_subscribes(self, chat_id: int) -> List[Subscribe]:
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_GET, (chat_id, ))
-        rows = cur.fetchall()
-        subscribes = []
-        for row in rows:
-            subscribes.append(Subscribe(row))
-        con.close()
-        return subscribes
-
-    def get_all_subscribes(self) -> List[Subscribe]:
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_GET_ALL)
-        rows = cur.fetchall()
-        subscribes = []
-        for row in rows:
-            subscribes.append(Subscribe(row))
-        con.close()
-        return subscribes
-
-    def delete_subscribe(self, chat_id, url):
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_DELETE, (chat_id, url))
-        con.commit()
-        con.close()
-
-    def save_subscribe_post(self, chat_id, post_id) -> bool:
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        try:
-            cur.execute(self.SQL_SUBSCRIBES_POSTS_ADD, (chat_id, post_id))
-            con.commit()
-            success = True
-        except sqlite3.IntegrityError:
-            success = False
-        con.close()
-        return success
-
-    def get_subscribe_posts(self, chat_id: int, guids: List[str]) -> Set[str]:
-        con = sqlite3.connect(self._db_path)
-        cur = con.cursor()
-        cur.execute(self.SQL_SUBSCRIBES_POSTS_GET.format(','.join(map(lambda g: f"'{g}'", guids))), (chat_id, ))
-        rows = set(map(lambda row: row[0], cur.fetchall()))
-        con.close()
-        return rows
