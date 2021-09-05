@@ -19,7 +19,7 @@ class Del(Action):
         return ['del']
 
     def get_keywords(self) -> List[str]:
-        return ['удали', 'удоли']
+        return []
 
     @Action.save_data
     def call(self, message: Message):

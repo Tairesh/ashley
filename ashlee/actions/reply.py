@@ -47,7 +47,7 @@ class Reply(Action):
         sentence = pepe.capitalise(sentence)
 
         consumed_time = time() - start_time
-        dt = 2.0 - consumed_time
+        dt = 1.0 - consumed_time
         if dt >= 0:
             Timer(dt, lambda: self.bot.reply_to(message, sentence)).start()
         else:
