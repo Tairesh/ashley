@@ -5,8 +5,8 @@ Requires=redis.service
 [Service]
 User=ashley
 Group=ashley
-WorkingDirectory=/home/ashley/ashleybot
-ExecStart=/home/ashley/ashleybot/bot.py
+WorkingDirectory=/home/ashley/ashlee
+ExecStart=/home/ashley/ashlee/venv/bin/python -m ashlee
 Restart=always
 KillMode=process
 TimeoutSec=300
