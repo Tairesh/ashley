@@ -46,7 +46,7 @@ class Gpt(Action):
         error_message = None
         for tries in range(10):
             try:
-                data = json.loads(requests.post(self.API_URL, json={'text': text}, timeout=5).content.decode('utf-8'))
+                data = json.loads(requests.post(self.API_URL, json={'text': text}, timeout=60).content.decode('utf-8'))
                 result = data['predictions'].strip()
                 if not result or result == text:
                     raise InvalidResult()
