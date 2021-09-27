@@ -6,6 +6,7 @@ from telebot.types import Message
 
 from ashlee import emoji, utils
 from ashlee.action import Action
+from ashlee.constants import ADMINS
 
 
 class InvalidResult(Exception):
@@ -45,7 +46,7 @@ class Gpt(Action):
         error_message = None
         for tries in range(10):
             try:
-                data = json.loads(requests.post(self.API_URL, json={'text': text}, timeout=60).content.decode('utf-8'))
+                data = json.loads(requests.post(self.API_URL, json={'text': text}, timeout=5).content.decode('utf-8'))
                 result = data['predictions'].strip()
                 if not result or result == text:
                     raise InvalidResult()
@@ -58,7 +59,7 @@ class Gpt(Action):
                 if error_message is None:
                     error_message = self.bot.reply_to(message,
                                                       f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова...")
-                else:
+                elif message.from_user.id in ADMINS:
                     self.bot.edit_message_text(
                         chat_id=message.chat.id, message_id=error_message.message_id,
                         text=f"{emoji.ERROR} API ruGPT3 временно недоступно! Попробую снова (x{tries+1})..."
