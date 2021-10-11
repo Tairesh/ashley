@@ -221,14 +221,14 @@ class TelegramBot:
                 if message.chat.id == -1001323036018:  # Dwarf Fortress
                     text = "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости\n\n" \
                            f"{utils.user_name(member, True, True)} отправьте любое сообщение в чат в течение" \
-                           f" 60 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
+                           f" 120 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
                 elif message.chat.id == -1001150487023:  # Cataclysm DDA
                     text = f"{utils.user_name(member, True, True)} ты зашёл в чат Cataclysm DDA, " \
-                           f"перед тобой {emoji.BREAD} <code>soap (10)</code> со стола и " \
-                           f"{emoji.SOAP} <code>flat bread (filthy)</code> с параши. " \
-                           f"Что выберешь? На размышление 60 секунд а затем бан."
+                           f"перед тобой {emoji.SOAP} <code>soap (10)</code> со стола и " \
+                           f"{emoji.BREAD} <code>flat bread (filthy)</code> с параши. " \
+                           f"Что выберешь? На размышление 120 секунд а затем бан."
                 elif message.chat.id == -1001298015134:  # Peerojoque
-                    text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 60 секунд " \
+                    text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 120 секунд " \
                            f"чтобы не получить бан нахуй"
                 if text:
                     msg = self.bot.reply_to(message, text, parse_mode="HTML")
@@ -244,6 +244,6 @@ class TelegramBot:
                             pass
                         self.bot.kick_chat_member(msg.chat.id, member.id)
 
-                    t = threading.Timer(60.0, ban_user)
+                    t = threading.Timer(120.0, ban_user)
                     t.start()
                     self.welcomes.append((t, msg.chat.id, msg.message_id, member.id))
