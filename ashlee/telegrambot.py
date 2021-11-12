@@ -54,7 +54,8 @@ class TelegramBot:
             'content_types': ['new_chat_members'],
         }})
         self.bot.add_message_handler({'function': self._process_welcomes, 'filters': {
-            'content_types': ['sticker'],
+            'content_types': [ 'animation', 'audio', 'contact', 'dice', 'document', 'location', 'photo',
+                               'poll', 'sticker', 'venue', 'video', 'video_note', 'voice' ],
         }})
 
     # Start the bot
