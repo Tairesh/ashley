@@ -67,6 +67,8 @@ class Anime(SudoAction):
         posts = root.findall('post')
         random.shuffle(posts)
         for post in posts:
+            if 'file_url' not in post.attrib:
+                continue
             url = post.attrib['file_url']
             ext = url.split('.').pop()
             try:
