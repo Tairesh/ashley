@@ -231,7 +231,7 @@ class TelegramBot:
                 elif message.chat.id == -1001298015134:  # Peerojoque
                     text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 120 секунд " \
                            f"чтобы не получить бан нахуй"
-                elif message.chat.id == -1001395369125: #old cdda
+                elif message.chat.id == -1001395369125:  # old cdda
                     text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 120 секунд " \
                            f"чтобы не получить бан нахуй"
                 if text:
