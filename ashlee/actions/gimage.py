@@ -50,7 +50,7 @@ class Gimage(Action):
                     vip_chat = True
                     break
             if not vip_chat:
-                self.bot.reply_to(message, "Эта команда работает только в моих любимых чатах!")
+                # self.bot.reply_to(message, "Эта команда работает только в моих любимых чатах!")
                 return
 
         if message.text.startswith('/'):
