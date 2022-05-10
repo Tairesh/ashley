@@ -19,6 +19,9 @@ class Google(Action):
         'чё там у хохлов?',
     ]
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return "поиск в гугле"
 

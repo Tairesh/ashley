@@ -23,6 +23,9 @@ class Wiki(Action):
     def get_description(self) -> str:
         return 'поиск в википедии'
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_name(self) -> str:
         return emoji.SEARCH + ' Википедия'
 

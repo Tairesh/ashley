@@ -23,6 +23,9 @@ class Gimage(Action):
         'не чёрные предметы не являющиеся воронами',
     ]
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return "поиск картинок в гугле"
 

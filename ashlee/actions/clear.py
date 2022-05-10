@@ -8,6 +8,9 @@ from ashlee.action import Action
 
 class Clear(Action):
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return 'очистить чат от клавиатур'
 

@@ -13,6 +13,9 @@ class Boobs(SudoAction):
     API_URL = "http://api.oboobs.ru/boobs/1/1/random"
     MEDIA_SERVER = "http://media.oboobs.ru/"
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def _get_label(self) -> str:
         return 'Порно'
 

@@ -24,6 +24,9 @@ class Anime(SudoAction):
         'webm',
     ]
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def _get_label(self) -> str:
         return 'Аниме'
 

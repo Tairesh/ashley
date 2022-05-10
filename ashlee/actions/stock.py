@@ -14,6 +14,9 @@ from ashlee.action import Action
 class Stock(Action):
     PIXABAI_API = "https://pixabay.com/api/?key=%KEY%&orientation=horizontal&min_width=400&min_height=300&q={}"
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return "поиск картинок по pixabay"
 

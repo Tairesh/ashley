@@ -20,6 +20,9 @@ class Youtube(Action):
         'nude yoga',
     ]
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return "поиск на YouTube"
 

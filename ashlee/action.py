@@ -25,6 +25,9 @@ class Action(ABC):
     def get_name(self) -> str:
         pass
 
+    def is_not_flood(self) -> bool:
+        return False
+
     # List of command strings that trigger the action
     @abstractmethod
     def get_cmds(self) -> List[str]:

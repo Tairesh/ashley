@@ -153,8 +153,9 @@ class TelegramBot:
                 return
 
             cmd = utils.get_command(message)
+            settings = self.db.get_chat_settings(message.chat.id)
             for action in self.actions:
-                if cmd in action.get_cmds():
+                if cmd in action.get_cmds() and (action.is_not_flood() or not settings or settings.enabled_replies):
                     action.call(message)
                     return
 

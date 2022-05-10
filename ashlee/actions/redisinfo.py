@@ -9,6 +9,9 @@ from ashlee.action import Action
 
 class Redisinfo(Action):
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self):
         return None
 

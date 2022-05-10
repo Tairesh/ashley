@@ -26,6 +26,9 @@ class Readonly(Action):
     }
     r_time_interval = re.compile(r"^(\d+)\s*(s|m|h|d|w|y|с|м|ч|д|н|л|)", flags=re.IGNORECASE)
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return 'временный ридонли'
 

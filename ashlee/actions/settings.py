@@ -9,6 +9,9 @@ from ashlee.database import ChatSettings
 
 class Settings(Action):
 
+    def is_not_flood(self) -> bool:
+        return True
+
     def get_description(self) -> str:
         return 'настройки работы бота в чате'
 
