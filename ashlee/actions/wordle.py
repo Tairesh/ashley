@@ -1,3 +1,4 @@
+import re
 import subprocess
 from typing import List
 
@@ -22,11 +23,12 @@ class Wordle(Action):
 
     @Action.save_data
     @Action.send_typing
-    @Action.only_master
     def call(self, message: Message):
-        keyword = utils.get_keyword(message)
+        keyword = utils.get_keyword(message).lower().replace('ё', 'е').replace('\n', '').strip()
         if not keyword:
             return
+
+        keyword = re.sub(r"[^А-яёЁ]", "", keyword)
 
         result = subprocess.run(['bin/wordle_simulator', keyword], stdout=subprocess.PIPE)
         self.bot.reply_to(
