@@ -26,7 +26,11 @@ class Wordle(Action):
     def call(self, message: Message):
         keyword = utils.get_keyword(message).lower().replace('ё', 'е').replace('\n', '').strip()
         if not keyword:
-            return
+            return self.bot.reply_to(
+                message,
+                "Нужно указать слово для угадывания, например `/wordle тоска`",
+                parse_mode='markdownv2'
+            )
 
         keyword = re.sub(r"[^А-яёЁ]", "", keyword)
 
