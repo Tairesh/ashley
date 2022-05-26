@@ -24,9 +24,12 @@ class Viktordle(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
+        keyword = int(utils.get_keyword(message))
+
         day = 24 + (int(time()) - 1653073200) // (24*60*60)
-        attempts = random.randint(2, 6)
-        text = f"Игра Viktordle (RU) День #{day} {attempts}/6\n\n"
+        attempts = keyword if 0 < keyword else random.randint(2, 6)
+        attempts_displ = attempts if attempts <= 6 else 'x'
+        text = f"Игра Viktordle (RU) День #{day} {attempts_displ}/6\n\n"
 
         line = "⭕⭕⭕⭕⭕"
         lines = [line]
@@ -36,7 +39,7 @@ class Viktordle(Action):
                 j = random.randint(0, 4)
                 line[j] = '❌'
             lines.append(''.join(line))
-        text += '\n'.join(reversed(lines))
+        text += '\n'.join(reversed(lines)[:6])
         text += "\n\n#виктордли\n\nОтгадайте слово на  https://viktordle.nikolaev.one/"
 
         self.bot.reply_to(message, text)
