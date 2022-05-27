@@ -26,5 +26,6 @@ class Lemonscap(Action):
         used, total = self.db.get_sum_lemons()
         self.bot.reply_to(message,
                           f"Общее число лимонов в сети: <b>{total} {emoji.LEMON}</b>\n"
-                          f"Имеет владельцев: <b>{used} {emoji.LEMON}</b>\n",
+                          f"Имеет владельцев: <b>{used} {emoji.LEMON}</b>\n"
+                          f"Список лимонов доступных для покупки: /free_lemons",
                           parse_mode='HTML')
