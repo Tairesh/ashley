@@ -1,6 +1,6 @@
 from telebot.types import Message
 
-from ashlee import emoji, utils, stickers
+from ashlee import emoji, utils, stickers, constants
 from ashlee.action import Action
 
 
@@ -44,7 +44,7 @@ class Givelemon(Action):
         if not lemon:
             return self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
 
-        if lemon.owner_id != message.from_user.id:
+        if lemon.owner_id != message.from_user.id and message.from_user.id not in constants.ADMINS:
             return self.bot.send_sticker(message.chat.id, stickers.CANT_DO, message.message_id)
 
         recipient = None
