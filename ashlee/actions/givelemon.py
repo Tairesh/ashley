@@ -64,6 +64,7 @@ class Givelemon(Action):
         self.db.update_lemon_owner(lemon_id, recipient.id)
         self.bot.reply_to(
             message,
-            f"{emoji.LEMON} LMN #{lemon_id} успешно передан! {utils.user_name(recipient, mention=True)}, проверяй!",
+            f"{emoji.LEMON} LMN #{lemon_id} успешно передан! "
+            f"{utils.user_name(recipient, mention=True)}, проверяй!",
             parse_mode='Markdown'
         )

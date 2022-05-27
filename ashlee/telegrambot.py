@@ -220,20 +220,21 @@ class TelegramBot:
                     continue
 
                 text = None
+                user_name = utils.user_name(member, True, True, True, 'HTML')
                 if message.chat.id == -1001323036018:  # Dwarf Fortress
                     text = "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости\n\n" \
-                           f"{utils.user_name(member, True, True)} отправьте любое сообщение в чат в течение" \
+                           f"{user_name} отправьте любое сообщение в чат в течение" \
                            f" 120 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
                 elif message.chat.id == -1001150487023:  # Cataclysm DDA
-                    text = f"{utils.user_name(member, True, True)} ты зашёл в чат Cataclysm DDA, " \
+                    text = f"{user_name} ты зашёл в чат Cataclysm DDA, " \
                            f"перед тобой {emoji.SOAP} <code>soap (10)</code> со стола и " \
                            f"{emoji.BREAD} <code>flat bread (filthy)</code> с параши. " \
                            f"Что выберешь? На размышление 120 секунд а затем бан."
                 elif message.chat.id == -1001298015134:  # Peerojoque
-                    text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 120 секунд " \
+                    text = f"{user_name} отправьте любое сообщение в течении 120 секунд " \
                            f"чтобы не получить бан нахуй"
                 elif message.chat.id == -1001395369125:  # old cdda
-                    text = f"{utils.user_name(member, True, True)} отправьте любое сообщение в течении 120 секунд " \
+                    text = f"{user_name} отправьте любое сообщение в течении 120 секунд " \
                            f"чтобы не получить бан нахуй"
                 if text:
                     msg = self.bot.reply_to(message, text, parse_mode="HTML")

@@ -79,11 +79,15 @@ def user_name(user: Union[User, DBUser], with_username=False, prefer_username=Fa
     name = name.replace('ᅠ', '').strip()
     if mention:
         if mention_type.lower().startswith('markdown'):
-            name = f"[{name}](tg://user?id={user.id})"
+            name = f"[{markdown_escape(name)}](tg://user?id={user.id})"
         else:
             name = f"<a href=\"tg://user?id={user.id}\">{escape(name)}</a>"
 
     return name.strip()
+
+
+def markdown_escape(text: str) -> str:
+    return text.replace('_', '\\_').replace('*', '\\*').replace('-', '\\-')
 
 
 def escape(html):

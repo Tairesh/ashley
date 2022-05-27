@@ -35,11 +35,11 @@ class Lemons(Action):
                     message.chat.id,
                     open(join(self.DIR, lemon.image), 'rb'),
                     f"{emoji.LEMON} LMN #{lemon.id}\n" + (
-                        f"PWNED by {utils.user_name(self.db.get_user(lemon.owner_id), True, True, True)}"
-                        if lemon.owner_id else "*Free*"
+                        f"PWNED by {utils.user_name(self.db.get_user(lemon.owner_id), True, True, True, 'HTML')}"
+                        if lemon.owner_id else "<b>Free</b>"
                     ),
                     message.message_id,
-                    parse_mode='Markdown'
+                    parse_mode='HTML'
                 )
                 return
 

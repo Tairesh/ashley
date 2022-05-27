@@ -106,7 +106,7 @@ class Database:
     SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ? ' \
                                'WHERE chat_id = ?'
     SQL_LEMONS_ADD = 'INSERT INTO lemons (image, owner_id) VALUES (?, NULL) ON CONFLICT DO NOTHING'
-    SQL_LEMONS_GET_ALL = 'SELECT id, image, owner_id FROM lemons'
+    SQL_LEMONS_GET_FREE = 'SELECT id, image, owner_id FROM lemons WHERE owner_id IS NULL'
     SQL_LEMONS_GET = 'SELECT id, image, owner_id FROM lemons WHERE owner_id = ? ORDER BY id'
     SQL_LEMON_GET = 'SELECT id, image, owner_id FROM lemons WHERE id = ?'
     SQL_UPDATE_LEMON_OWNER = 'UPDATE lemons SET owner_id = ? WHERE id = ?'
@@ -301,10 +301,10 @@ class Database:
         con.commit()
         con.close()
 
-    def get_all_lemons(self) -> List[Lemon]:
+    def get_free_lemons(self) -> List[Lemon]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_LEMONS_GET_ALL)
+        cur.execute(self.SQL_LEMONS_GET_FREE)
         rows = cur.fetchall()
         con.close()
         return [Lemon(row) for row in rows]
