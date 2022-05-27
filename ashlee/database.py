@@ -109,7 +109,8 @@ class Database:
                                'WHERE chat_id = ?'
     SQL_LEMONS_ADD = 'INSERT INTO lemons (image, owner_id) VALUES (?, NULL) ON CONFLICT DO NOTHING'
     SQL_LEMONS_GET_ALL = 'SELECT id, image, owner_id FROM lemons'
-    SQL_LEMONS_GET_NTH = 'SELECT id, image, owner_id FROM lemons WHERE owner_id = ? ORDER BY id LIMIT 1 OFFSET ?'
+    SQL_LEMONS_GET = 'SELECT id, image, owner_id FROM lemons WHERE owner_id = ? ORDER BY id'
+    SQL_LEMON_GET = 'SELECT id, image, owner_id FROM lemons WHERE id = ?'
     SQL_UPDATE_LEMON_OWNER = 'UPDATE lemons SET owner_id = ? WHERE id = ?'
     SQL_COUNT_USED_LEMONS = 'SELECT COUNT(id) FROM lemons WHERE owner_id IS NOT NULL'
     SQL_COUNT_LEMONS = 'SELECT COUNT(id) FROM lemons WHERE 1'
@@ -311,13 +312,21 @@ class Database:
         con.close()
         return [Lemon(row) for row in rows]
 
-    def get_nth_user_lemon(self, user_id: int, n: int) -> Optional[Lemon]:
+    def get_lemon(self, lemon_id: int) -> Optional[Lemon]:
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_LEMONS_GET_NTH, (user_id, n))
+        cur.execute(self.SQL_LEMON_GET, (lemon_id, ))
         row = cur.fetchone()
         con.close()
         return Lemon(row) if row else None
+
+    def get_user_lemons(self, user_id: int) -> List[Lemon]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_LEMONS_GET, (user_id, ))
+        rows = cur.fetchall()
+        con.close()
+        return [Lemon(row) for row in rows]
 
     def update_lemon_owner(self, lemon_id: int, user_id: int):
         con = sqlite3.connect(self._db_path)

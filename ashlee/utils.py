@@ -49,7 +49,7 @@ def is_for_me(message: Message, me: User):
 
 
 def chunks(s, n):
-    """Produce `n`-character chunks from `s`."""
+    """Produce `n`-long chunks from `s`."""
     for start in range(0, len(s), n):
         yield s[start:start + n]
 
@@ -66,7 +66,7 @@ def download_file(url: str) -> str:
     return file_name
 
 
-def user_name(user: Union[User, DBUser], with_username=False, prefer_username=False):
+def user_name(user: Union[User, DBUser], with_username=False, prefer_username=False, mention=False, mention_type='Markdown'):
     if prefer_username and user.username:
         return '@' + user.username
 
@@ -76,7 +76,13 @@ def user_name(user: Union[User, DBUser], with_username=False, prefer_username=Fa
     if user.last_name:
         name += ' ' + user.last_name
 
-    name = name.replace('ᅠ', '')
+    name = name.replace('ᅠ', '').strip()
+    if mention:
+        if mention_type.lower().startswith('markdown'):
+            name = f"[{name}](tg://user?id={user.id})"
+        else:
+            name = f"<a href=\"tg://user?id={user.id}\">{escape(name)}</a>"
+
     return name.strip()
 
 
