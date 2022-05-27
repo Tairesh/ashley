@@ -38,7 +38,7 @@ class Lemons(Action):
                         f"PWNED by {utils.user_name(self.db.get_user(lemon.owner_id), True, True, True, 'HTML')}"
                         if lemon.owner_id else "<b>Free</b>"
                     ),
-                    message.message_id,
+                    reply_to_message_id=message.message_id,
                     parse_mode='HTML'
                 )
                 return

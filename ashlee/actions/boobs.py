@@ -28,7 +28,7 @@ class Boobs(SudoAction):
         url = self.MEDIA_SERVER + data['preview']
         caption = data['model']
 
-        self.bot.send_photo(message.chat.id, url, caption, message.message_id)
+        self.bot.send_photo(message.chat.id, url, caption, reply_to_message_id=message.message_id)
         return True
 
     def get_description(self) -> str:

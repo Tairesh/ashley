@@ -74,10 +74,10 @@ class Anime(SudoAction):
             ext = url.split('.').pop()
             try:
                 if ext in {'jpg', 'jpeg', 'png'}:
-                    self.bot.send_photo(message.chat.id, url, None, message.message_id)
+                    self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
                     return True
                 elif ext == 'mp4':
-                    self.bot.send_video(message.chat.id, url, None, None, message.message_id)
+                    self.bot.send_video(message.chat.id, url, reply_to_message_id=message.message_id)
                     return True
             except ApiException:
                 continue

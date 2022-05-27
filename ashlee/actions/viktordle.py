@@ -9,6 +9,8 @@ from ashlee.action import Action
 
 
 class Viktordle(Action):
+    MAX_ATTEMPTS = 6
+
     def get_description(self):
         return None
 
@@ -24,12 +26,12 @@ class Viktordle(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
-        keyword = int(utils.get_keyword(message))
+        keyword = utils.get_keyword(message)
 
-        day = 24 + (int(time()) - 1653073200) // (24*60*60)
-        attempts = keyword if 0 < keyword else random.randint(2, 6)
-        attempts_displ = attempts if attempts <= 6 else 'x'
-        text = f"Игра Viktordle (RU) День #{day} {attempts_displ}/6\n\n"
+        day = 24 + (int(time()) - 1653073200) // (24 * 60 * 60)
+        attempts = max(1, int(keyword)) if keyword else random.randint(2, self.MAX_ATTEMPTS + 1)
+        attempts_displ = attempts if attempts <= self.MAX_ATTEMPTS else 'x'
+        text = f"Игра Viktordle (RU) День #{day} {attempts_displ}/{self.MAX_ATTEMPTS}\n\n"
 
         line = "⭕⭕⭕⭕⭕"
         lines = [line]
@@ -39,7 +41,7 @@ class Viktordle(Action):
                 j = random.randint(0, 4)
                 line[j] = '❌'
             lines.append(''.join(line))
-        text += '\n'.join(reversed(lines)[:6])
+        text += '\n'.join(list(reversed(lines))[:self.MAX_ATTEMPTS])
         text += "\n\n#виктордли\n\nОтгадайте слово на  https://viktordle.nikolaev.one/"
 
         self.bot.reply_to(message, text)

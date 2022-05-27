@@ -78,7 +78,7 @@ class Gimage(Action):
                 if not url.startswith('http'):
                     continue
                 try:
-                    self.bot.send_photo(message.chat.id, url, None, message.message_id)
+                    self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
                     return
                 except ApiException:
                     pass

@@ -9,7 +9,6 @@ from ashlee.action import Action
 
 
 class Wiki(Action):
-
     FUNNY_EXAMPLES = [
         'искуственный интеллект',
         'русско-украинская война (2022)',
@@ -50,7 +49,7 @@ class Wiki(Action):
 
         if not keyword:
             self.bot.reply_to(message, f"{emoji.INFO} Пример использования команды: "
-                                       f"`{command} {random.choice(self.FUNNY_EXAMPLES)}`", parse_mode='Markdown')
+                                       f"`/{command} {random.choice(self.FUNNY_EXAMPLES)}`", parse_mode='Markdown')
             return
 
         wikipedia.set_lang('ru')

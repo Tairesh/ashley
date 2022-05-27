@@ -46,17 +46,17 @@ class TelegramBot:
         self.bot.add_message_handler({'function': self._handle_text_messages, 'filters': {
             'func': lambda m: m.text and not m.forward_from_chat,
             'content_types': ['text'],
-        }})
+        }, 'pass_bot': False})
 
-        self.bot.add_callback_query_handler({'function': self._handle_callback_queries, 'filters': {}})
+        self.bot.add_callback_query_handler({'function': self._handle_callback_queries, 'filters': {}, 'pass_bot': False})
 
         self.bot.add_message_handler({'function': self._handle_new_members, 'filters': {
             'content_types': ['new_chat_members'],
-        }})
+        }, 'pass_bot': False})
         self.bot.add_message_handler({'function': self._process_welcomes, 'filters': {
             'content_types': ['animation', 'audio', 'contact', 'dice', 'document', 'location', 'photo',
                               'poll', 'sticker', 'venue', 'video', 'video_note', 'voice'],
-        }})
+        }, 'pass_bot': False})
 
     # Start the bot
     def bot_start_polling(self):
@@ -66,7 +66,7 @@ class TelegramBot:
     # Go in idle mode
     def bot_idle(self):
         if self.debug:
-            self.bot.polling(True)
+            self.bot.polling(True, True)
         else:
             self.bot.infinity_polling()
 
