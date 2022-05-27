@@ -11,7 +11,6 @@ from ashlee.database import Database
 
 
 class Action(ABC):
-
     def __init__(self, telegram_bot):
         super().__init__()
 
