@@ -2,11 +2,9 @@ import datetime
 import os
 import random
 import re
-import urllib.error
 from hashlib import md5
 from typing import Union
 
-import feedparser
 import requests
 from telebot.types import Message, User, Chat
 
@@ -146,10 +144,3 @@ def random_file(files_dir):
 
 def unique(ar: list) -> list:
     return list(set(ar))
-
-
-def feed_parse(url):
-    try:
-        return feedparser.parse(url)
-    except urllib.error.URLError:
-        return None

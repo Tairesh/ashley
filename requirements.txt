@@ -1,10 +1,7 @@
 pyTelegramBotAPI~=3.7.7
 requests~=2.25.1
-beautifulsoup4~=4.9.3
 google~=3.0.0
 redis~=3.5.3
 wand~=0.6.6
 dice~=3.1.2
-feedparser~=6.0.2
-bleach~=3.3.0
 wikipedia~=1.4.0
