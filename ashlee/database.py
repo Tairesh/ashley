@@ -25,6 +25,11 @@ class Subscribe:
         self.chat_id, self.url, self.title = row
 
 
+class Lemon:
+    def __init__(self, row):
+        self.id, self.image, self.owner_id = row
+
+
 class Database:
 
     SQL_DB_EXISTS = 'SELECT name FROM sqlite_master'
@@ -65,19 +70,27 @@ class Database:
         enabled_replies INTEGER NOT NULL DEFAULT 1,
         FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
     )'''
+    SQL_CREATE_LEMONS = '''CREATE TABLE lemons (
+        id integer primary key autoincrement,
+        image TEXT,
+        owner_id INTEGER DEFAULT NULL REFERENCES users ON UPDATE CASCADE ON DELETE CASCADE
+    )'''
+    SQL_CREATE_LEMONS_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS lemons_image_index ON lemons (image)'''
+    SQL_TRUNCATE_LEMONS = 'DELETE FROM lemons'
     SQL_USER_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM users WHERE user_id = ?
     )'''
     SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_USER_UPDATE = 'UPDATE users SET first_name = ?, last_name = ?, username = ?, language = ? WHERE user_id = ?'
     SQL_USER_UPDATE_LEMONS = 'UPDATE users SET lemons = ? WHERE user_id = ?'
-    SQL_USER_SUM_LEMONS = 'SELECT SUM(lemons) FROM users WHERE 1'
     SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                    'FROM users WHERE user_id = ?'
     SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                          'FROM users WHERE lower(username) = ?'
     SQL_USERS_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
                     'FROM users WHERE user_id IN ({})'
+    SQL_USERS_GET_ALL = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+                        'FROM users WHERE status=1'
 
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
         SELECT 1 FROM chats WHERE chat_id = ?
@@ -94,6 +107,12 @@ class Database:
     SQL_CHAT_SETTINGS_ADD = 'INSERT INTO chats_settings (chat_id, language) VALUES (?, ?)'
     SQL_CHAT_SETTINGS_UPDATE = 'UPDATE chats_settings SET enabled_porn = ?, enabled_anime = ?, enabled_replies = ? ' \
                                'WHERE chat_id = ?'
+    SQL_LEMONS_ADD = 'INSERT INTO lemons (image, owner_id) VALUES (?, NULL) ON CONFLICT DO NOTHING'
+    SQL_LEMONS_GET_ALL = 'SELECT id, image, owner_id FROM lemons'
+    SQL_LEMONS_GET_NTH = 'SELECT id, image, owner_id FROM lemons WHERE owner_id = ? ORDER BY id LIMIT 1 OFFSET ?'
+    SQL_UPDATE_LEMON_OWNER = 'UPDATE lemons SET owner_id = ? WHERE id = ?'
+    SQL_COUNT_USED_LEMONS = 'SELECT COUNT(id) FROM lemons WHERE owner_id IS NOT NULL'
+    SQL_COUNT_LEMONS = 'SELECT COUNT(id) FROM lemons WHERE 1'
 
     # Initialize database
     def __init__(self, db_path):
@@ -123,6 +142,10 @@ class Database:
             con.commit()
         if 'chats_settings' not in tables:
             cur.execute(self.SQL_CREATE_CHATS_SETTINGS)
+            con.commit()
+        if 'lemons' not in tables:
+            cur.execute(self.SQL_CREATE_LEMONS)
+            cur.execute(self.SQL_CREATE_LEMONS_INDEX)
             con.commit()
         con.commit()
 
@@ -198,11 +221,16 @@ class Database:
         cur = con.cursor()
         cur.execute(self.SQL_USERS_GET.format(','.join(map(str, users_ids))))
         rows = cur.fetchall()
-        users = []
-        for row in rows:
-            users.append(User(row))
         con.close()
-        return users
+        return [User(row) for row in rows]
+
+    def get_all_users(self) -> List[User]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_USERS_GET_ALL)
+        rows = cur.fetchall()
+        con.close()
+        return [User(row) for row in rows]
 
     def get_user_by_username(self, username) -> Optional[User]:
         con = sqlite3.connect(self._db_path)
@@ -249,11 +277,51 @@ class Database:
         con.commit()
         con.close()
 
-    def get_sum_lemons(self) -> Optional[int]:
+    def get_sum_lemons(self) -> (int, int):
         con = sqlite3.connect(self._db_path)
         cur = con.cursor()
-        cur.execute(self.SQL_USER_SUM_LEMONS)
-        row = cur.fetchone()
+        cur.execute(self.SQL_COUNT_USED_LEMONS)
+        row1 = cur.fetchone()
+        cur.execute(self.SQL_COUNT_LEMONS)
+        row2 = cur.fetchone()
         con.commit()
         con.close()
-        return int(row[0]) if row else None
+        return int(row1[0]), int(row2[0])
+
+    def truncate_lemons(self):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_TRUNCATE_LEMONS)
+        con.commit()
+        con.close()
+
+    def insert_lemons(self, files: List[str]):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        for file in files:
+            cur.execute(self.SQL_LEMONS_ADD, (file, ))
+        con.commit()
+        con.close()
+
+    def get_all_lemons(self) -> List[Lemon]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_LEMONS_GET_ALL)
+        rows = cur.fetchall()
+        con.close()
+        return [Lemon(row) for row in rows]
+
+    def get_nth_user_lemon(self, user_id: int, n: int) -> Optional[Lemon]:
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_LEMONS_GET_NTH, (user_id, n))
+        row = cur.fetchone()
+        con.close()
+        return Lemon(row) if row else None
+
+    def update_lemon_owner(self, lemon_id: int, user_id: int):
+        con = sqlite3.connect(self._db_path)
+        cur = con.cursor()
+        cur.execute(self.SQL_UPDATE_LEMON_OWNER, (user_id, lemon_id))
+        con.commit()
+        con.close()

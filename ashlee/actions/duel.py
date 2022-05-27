@@ -14,7 +14,7 @@ class Duel(Action):
         self.duels = {}
 
     def get_description(self) -> str:
-        return 'дуэль за лимоны'
+        return 'дуэль на дайсах'
 
     def get_name(self) -> str:
         return emoji.LEMON + ' Дуэль'
@@ -59,9 +59,9 @@ class Duel(Action):
         result1 = dice1
         result2 = dice2
         if result1 > result2:
-            winner, looser = u1, u2
+            winner = u1
         elif result2 > result1:
-            winner, looser = u2, u1
+            winner = u2
         else:
             self.duels[chat_id]['r'][user1] = None
             self.duels[chat_id]['r'][user2] = None
@@ -71,15 +71,11 @@ class Duel(Action):
             return
 
         self.duels.pop(chat_id)
-        mode_text = f" отбирает 1 {emoji.LEMON} у проигравшего" if duel['m'] else ''
-        if duel['m']:
-            self.db.update_user_lemons(looser.id, looser.lemons - 1)
-            self.db.update_user_lemons(winner.id, winner.lemons + 1)
         self.bot.send_message(chat_id,
                               "<b>Результаты:</b>\n"
                               f"<i>{utils.user_name(u1)}:</i> {dice1}\n"
                               f"<i>{utils.user_name(u2)}:</i> {dice2}\n"
-                              f"<b>Победитель:</b> {utils.user_name(winner, True)}{mode_text}!",
+                              f"<b>Победитель:</b> {utils.user_name(winner, True)}!",
                               reply_markup=ReplyKeyboardRemove(), parse_mode='HTML')
 
     def btn_pressed(self, call: CallbackQuery):
@@ -90,23 +86,15 @@ class Duel(Action):
 
         sender_id = int(call.data.split(':').pop())
         sender = self.db.get_user(sender_id)
-        sl = sender.lemons if sender else 0
         recipient_id = call.from_user.id
-        recipient = self.db.get_user(recipient_id)
-        rl = recipient.lemons if recipient else 0
-        lemons_mode = sl > 0 and rl > 0
-        self.duels[call.message.chat.id] = {'m': lemons_mode, 'r': {sender_id: None, recipient_id: None}}
-        if lemons_mode:
-            mode_text = f"Победитель отберёт {emoji.LEMON} у проигравшего!"
-        else:
-            mode_text = "У участников недостаточно лимонов для ставок"
+        self.duels[call.message.chat.id] = {'r': {sender_id: None, recipient_id: None}}
 
         self.bot.edit_message_text(f"{call.message.text}\n{emoji.CHECK} Вызов принят! ",
                                    call.message.chat.id, call.message.message_id, reply_markup=None)
         self.bot.reply_to(call.message.reply_to_message,
                           f"{utils.user_name(sender, True, True)} и "
                           f"{utils.user_name(call.from_user, True, True)} "
-                          f"отправьте в чат дайсы {emoji.DICE} чтобы сразиться в кости!\n" + mode_text,
+                          f"отправьте в чат дайсы {emoji.DICE} чтобы сразиться в кости!",
                           reply_markup=ReplyKeyboardMarkup(one_time_keyboard=True).add(emoji.DICE))
 
     @Action.save_data

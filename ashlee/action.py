@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from telebot import TeleBot
 from telebot.apihelper import ApiException
-from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import Message, CallbackQuery
 
 from ashlee import constants, emoji
 from ashlee.database import Database
@@ -119,48 +119,11 @@ class SudoAction(Action, ABC):
     def _try_process_action(self, message: Message) -> bool:
         pass
 
-    def btn_pressed(self, call: CallbackQuery):
-        if call.data.endswith('sudo'):
-            kb = InlineKeyboardMarkup([[
-                InlineKeyboardButton(f"{emoji.CHECK} Да", callback_data=self.get_callback_start() + 'yes'),
-                InlineKeyboardButton(f"{emoji.CANCEL} Отмена", callback_data=self.get_callback_start() + 'cancel'),
-            ]])
-            self.bot.edit_message_text(
-                f"{call.message.text}\nВы действительно хотите потратить {emoji.LEMON} и отправить запрещёнку?",
-                call.message.chat.id, call.message.message_id, reply_markup=kb
-            )
-            return
-        elif call.data.endswith('cancel'):
-            self.bot.edit_message_text(f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!",
-                                       call.message.chat.id, call.message.message_id, reply_markup=None)
-            return
-        elif call.data.endswith('yes'):
-            if not call.message.reply_to_message:
-                return
-            user = self.db.get_user(call.message.reply_to_message.from_user.id)
-            if user.lemons > 0:
-                self.bot.edit_message_text(f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!\n"
-                                           f"Но тем у кого много лимонов закон не писан...",
-                                           call.message.chat.id, call.message.message_id, reply_markup=None)
-                if self._try_process_action(call.message.reply_to_message):
-                    self.db.update_user_lemons(user.id, user.lemons - 1)
-            else:
-                self.bot.edit_message_text(f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!",
-                                           call.message.chat.id, call.message.message_id, reply_markup=None)
-
     @Action.save_data
     def call(self, message: Message):
         settings = self.db.get_chat_settings(message.chat.id)
         if settings and not settings.__getattribute__(self._get_settings_attr()):
-            user = self.db.get_user(message.from_user.id)
-            if user.lemons > 0:
-                kb = InlineKeyboardMarkup([[
-                    InlineKeyboardButton(f"{emoji.LEMON} Потратить лимон и всё равно отправить",
-                                         callback_data=self.get_callback_start() + 'sudo')
-                ]])
-            else:
-                kb = None
-            self.bot.reply_to(message, f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!", reply_markup=kb)
+            self.bot.reply_to(message, f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!")
             return
 
         self._try_process_action(message)

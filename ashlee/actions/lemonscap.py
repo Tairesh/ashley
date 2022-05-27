@@ -15,7 +15,7 @@ class Lemonscap(Action):
         return emoji.LEMON + ' Капитализация'
 
     def get_cmds(self) -> List[str]:
-        return ['lemons_price', 'lemons_cap', 'lemonscap']
+        return ['lemons_cap', 'lemonscap']
 
     def get_keywords(self) -> List[str]:
         return []
@@ -23,8 +23,8 @@ class Lemonscap(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
-        lemons_count = self.db.get_sum_lemons()
+        used, total = self.db.get_sum_lemons()
         self.bot.reply_to(message,
-                          f"Общее число лимонов в сети: <b>{lemons_count} {emoji.LEMON}</b>\n"
-                          f"Текущая стоимость {emoji.LEMON}: <b>100</b> ₽",
+                          f"Общее число лимонов в сети: <b>{total} {emoji.LEMON}</b>\n"
+                          f"Имеет владельцев: <b>{used} {emoji.LEMON}</b>\n",
                           parse_mode='HTML')

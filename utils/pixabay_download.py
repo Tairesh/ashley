@@ -1,18 +1,25 @@
 import json
 import os
+import sys
 
 import requests
 
 
-WORD = 'horse'
-FOLDER = 'horse'
-API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=" + WORD
+API_URL = "https://pixabay.com/api/?key=%KEY%&min_width=200&min_height=200&per_page=200&page={}&q=%WORD%"
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print('Argument not found')
+        exit()
+
+    word = sys.argv[1]
+    API_URL = API_URL.replace('%WORD%', word)
+
     with open(os.path.join('config', 'api_keys.json'), 'r') as fp:
         secrets = json.load(fp)
         API_URL = API_URL.replace('%KEY%', secrets['pixabay_apikey'])
+
 
     urls = []
     page = 1
@@ -30,7 +37,7 @@ if __name__ == "__main__":
     ll = len(urls)
     for i, url in enumerate(urls):
         file_name = url.split('/').pop()
-        if os.path.isfile(os.path.join('res', FOLDER, file_name)):
+        if os.path.isfile(os.path.join('res', word, file_name)):
             print(f"Skipping {i+1}/{ll} (already exists): {file_name}")
             continue
         ext = file_name.split('.').pop()
@@ -42,6 +49,6 @@ if __name__ == "__main__":
         if not response.ok:
             print(response)
         else:
-            with open(os.path.join('res', FOLDER, file_name), 'wb') as fp:
+            with open(os.path.join('res', word, file_name), 'wb') as fp:
                 fp.write(response.content)
                 print('Done!')
