@@ -52,7 +52,7 @@ class Lemons(Action):
                 message,
                 f"Вот твои лимоны, "
                 f"{utils.format_number(count, 'штук', 'штука', 'штуки')}: {', '.join(lemons)}"
-                f"\nПосмотреть лимоны по ID: `/lemon 1` покажет *{emoji.LEMON} LMN #1*",
+                f"\nПосмотреть лимоны по ID: `/lemon 1` покажет {emoji.LEMON} LMN #1",
                 parse_mode='Markdown',
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(f"{emoji.LEMON} Посмотреть все", callback_data="lemons:view_all")

@@ -6,7 +6,7 @@ from typing import List, Set, Optional
 class User:
     def __init__(self, row):
         self.id, self.first_name, self.last_name, self.username, \
-            self.language, self.status, self.lemons, self.date_time = row
+            self.language, self.status, self.date_time = row
 
 
 class Chat:
@@ -40,11 +40,9 @@ class Database:
         username TEXT,
         language TEXT,
         status INTEGER NOT NULL DEFAULT 1,
-        lemons INTEGER NOT NULL DEFAULT 0,
         date_time DATETIME DEFAULT CURRENT_TIMESTAMP
     )'''
     SQL_CREATE_USERS_NAME_INDEX = '''CREATE UNIQUE INDEX IF NOT EXISTS users_username ON users (username)'''
-    SQL_CREATE_USERS_LEMONS_INDEX = '''CREATE INDEX IF NOT EXISTS users_lemons ON users (lemons)'''
     SQL_CREATE_USERS_STATUS_INDEX = '''CREATE INDEX IF NOT EXISTS users_status ON users (status)'''
     SQL_CREATE_CHATS = '''CREATE TABLE chats (
         chat_id INTEGER NOT NULL PRIMARY KEY,
@@ -83,13 +81,13 @@ class Database:
     SQL_USER_ADD = 'INSERT INTO users (user_id, first_name, last_name, username, language) VALUES (?, ?, ?, ?, ?)'
     SQL_USER_UPDATE = 'UPDATE users SET first_name = ?, last_name = ?, username = ?, language = ? WHERE user_id = ?'
     SQL_USER_UPDATE_LEMONS = 'UPDATE users SET lemons = ? WHERE user_id = ?'
-    SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+    SQL_USER_GET = 'SELECT user_id, first_name, last_name, username, language, status, date_time ' \
                    'FROM users WHERE user_id = ?'
-    SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+    SQL_USER_GET_BY_UN = 'SELECT user_id, first_name, last_name, username, language, status, date_time ' \
                          'FROM users WHERE lower(username) = ?'
-    SQL_USERS_GET = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+    SQL_USERS_GET = 'SELECT user_id, first_name, last_name, username, language, status, date_time ' \
                     'FROM users WHERE user_id IN ({})'
-    SQL_USERS_GET_ALL = 'SELECT user_id, first_name, last_name, username, language, status, lemons, date_time ' \
+    SQL_USERS_GET_ALL = 'SELECT user_id, first_name, last_name, username, language, status, date_time ' \
                         'FROM users WHERE status=1'
 
     SQL_CHAT_EXISTS = '''SELECT EXISTS (
@@ -132,7 +130,6 @@ class Database:
             cur.execute(self.SQL_CREATE_USERS)
             con.commit()
         cur.execute(self.SQL_CREATE_USERS_NAME_INDEX)
-        cur.execute(self.SQL_CREATE_USERS_LEMONS_INDEX)
         cur.execute(self.SQL_CREATE_USERS_STATUS_INDEX)
         con.commit()
         if 'chats' not in tables:
