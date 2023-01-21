@@ -1,3 +1,4 @@
+import logging
 from typing import List
 import random
 import urllib.request
@@ -79,7 +80,8 @@ class Anime(SudoAction):
                 elif ext == 'mp4':
                     self.bot.send_video(message.chat.id, url, reply_to_message_id=message.message_id)
                     return True
-            except ApiException:
+            except ApiException as exception:
+                logging.error(f"{exception} - {url}")
                 continue
 
         self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
