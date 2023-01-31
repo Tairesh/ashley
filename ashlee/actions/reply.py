@@ -8,6 +8,8 @@ from telebot.types import Message
 from ashlee import emoji, utils
 from ashlee.action import Action
 
+history = {}
+
 
 class Reply(Action):
 
@@ -34,33 +36,26 @@ class Reply(Action):
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = "I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, " \
-                 "I will give you the answer.\n\nQ: What is human life expectancy in the United States?\nA: Human " \
-                 "life expectancy in the United States is 78 years.\n\nQ: Who was president of the United States in " \
-                 "1955?\nA: Dwight D. Eisenhower was president of the United States in 1955.\n\nQ: Which party did he " \
-                 "belong to?\nA: He belonged to the Republican Party.\n\nQ: What is the square root of banana?\nA: " \
-                 "Unknown\n\nQ: How does a telescope work?\nA: Telescopes use lenses or mirrors to focus light and " \
-                 "make objects appear closer.\n\nQ: Where were the 1992 Olympics held?\nA: The 1992 Olympics were " \
-                 "held in Barcelona, Spain.\n\nQ: How many squigs are in a bonk?\nA: I have no idea.\n\nQ: " + text +\
-                 "\nA:"
+        prompt = "I am Ashley, a highly intelligent bot-girl with soul. I know English and Russian but prefer Russian." \
+                 "You can ask me anything!\n\nQ: Что такое #уясосало?\nA: Это бан!\n\nQ: Who was president of the " \
+                 "United States in 1955?\nA: Dwight D. Eisenhower was president of the United States in 1955.\n\n" \
+                 "Q: Which party did he belong to?\nA: He belonged to the Republican Party.\n\nQ: How does a " \
+                 "telescope work?\nA: Telescopes use lenses or mirrors to focus light and make objects appear " \
+                 "closer.\n\nQ: How many squigs are in a bonk?\nA: I have no idea what it is."
+        if message.chat.id not in history:
+            history[message.chat.id] = []
+        for q, a in history[message.chat.id]:
+            prompt += "\n\nQ: " + q + "\nA: " + a
+        prompt += "\n\nQ: " + text + "\nA: "
         response = openai.Completion.create(
-          model="text-davinci-003",
-          prompt=prompt,
-          temperature=1,
-          max_tokens=1000,
+            model="text-davinci-003",
+            prompt=prompt,
+            temperature=1,
+            max_tokens=1000,
         )
         sentence = response['choices'][0]['text']
-        # sentence = None
-        # if text:
-        #     sl = len(text) // 200
-        #     if sl < 2:
-        #         sl = 2
-        #     elif sl > 20:
-        #         sl = 20
-        #     sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, sentences_limit=sl)
-        # if not sentence:
-        #     sentence = pepe.generate_sentence(self.tgb.redis)[0]
-        # sentence = pepe.capitalise(sentence)
+        history[message.chat.id].append((text, sentence))
+
         consumed_time = time() - start_time
         dt = 1.0 - consumed_time
         if dt >= 0:
