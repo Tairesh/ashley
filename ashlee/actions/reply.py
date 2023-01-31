@@ -52,7 +52,7 @@ class Reply(Action):
                 model="text-davinci-003",
                 prompt=prompt,
                 temperature=1,
-                max_tokens=300,
+                max_tokens=500,
             )
             sentence = response['choices'][0]['text']
             history[message.chat.id].append((text, sentence))
