@@ -36,7 +36,7 @@ class Reply(Action):
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = "I am Ashley, a highly intelligent bot-girl with soul. I know English and Russian but prefer Russian." \
+        prompt = "I am Ashley, a highly intelligent bot-girl with soul." \
                  "You can ask me anything!\n\nQ: Что такое #уясосало?\nA: Это бан!\n\nQ: Who was president of the " \
                  "United States in 1955?\nA: Dwight D. Eisenhower was president of the United States in 1955.\n\n" \
                  "Q: Which party did he belong to?\nA: He belonged to the Republican Party.\n\nQ: How does a " \
@@ -44,7 +44,7 @@ class Reply(Action):
                  "closer.\n\nQ: How many squigs are in a bonk?\nA: I have no idea what it is."
         if message.chat.id not in history:
             history[message.chat.id] = []
-        for q, a in history[message.chat.id]:
+        for q, a in history[message.chat.id][-5::]:
             prompt += "\n\nQ: " + q + "\nA: " + a
         prompt += "\n\nQ: " + text + "\nA: "
         response = openai.Completion.create(
