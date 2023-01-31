@@ -3,5 +3,6 @@
   "google_apikey": "AAAAAAAAAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAA",
   "openweathermap_appid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "pixabay_apikey": "123456789-aaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "nasa_apikey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  "nasa_apikey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "openai": "sk-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 }

@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from logging.handlers import TimedRotatingFileHandler
 
 import redis
+import openai
 
 from ashlee.database import Database
 from ashlee.telegrambot import TelegramBot
@@ -90,6 +91,7 @@ class Ashlee:
         self.db = Database(self.args.database)
         self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
         self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.redis, self.args.clean, self.args.debug)
+        openai.api_key = self.api_keys['openai']
 
     # Configure logging
     def _init_logger(self, logfile, level):
