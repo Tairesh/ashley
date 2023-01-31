@@ -47,14 +47,17 @@ class Reply(Action):
         for q, a in history[message.chat.id][-5::]:
             prompt += "\n\nQ: " + q + "\nA: " + a
         prompt += "\n\nQ: " + text + "\nA: "
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            temperature=1,
-            max_tokens=1000,
-        )
-        sentence = response['choices'][0]['text']
-        history[message.chat.id].append((text, sentence))
+        try:
+            response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=prompt,
+                temperature=1,
+                max_tokens=300,
+            )
+            sentence = response['choices'][0]['text']
+            history[message.chat.id].append((text, sentence))
+        except openai.error.InvalidRequestError as e:
+            sentence = "Произошла ошибка: " + str(e)
 
         consumed_time = time() - start_time
         dt = 1.0 - consumed_time
