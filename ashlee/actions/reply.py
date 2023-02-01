@@ -49,7 +49,7 @@ class Reply(Action):
         prompt += "\n\nQ: " + text + "\nA: "
         try:
             response = openai.Completion.create(
-                model="text-davinci-003",
+                model="text-ada-001",
                 prompt=prompt,
                 temperature=1,
                 max_tokens=500,
