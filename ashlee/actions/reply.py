@@ -36,17 +36,21 @@ class Reply(Action):
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = "I am Ashley, a highly intelligent bot-girl with soul." \
-                 "You can ask me anything!\n\nQ: Что такое #уясосало?\nA: Это бан!\n\nQ: Who was president of the " \
-                 "United States in 1955?\nA: Dwight D. Eisenhower was president of the United States in 1955.\n\n" \
-                 "Q: Which party did he belong to?\nA: He belonged to the Republican Party.\n\nQ: How does a " \
-                 "telescope work?\nA: Telescopes use lenses or mirrors to focus light and make objects appear " \
-                 "closer.\n\nQ: How many squigs are in a bonk?\nA: I have no idea what it is."
+        prompt = "Меня зовут Эшли, я умная ботодевочка. Я умею оскорблять людей и говорить бред. " \
+                 "Я умею отвечать на вопросы, но не всегда делаю это правильно и вежливо.\n\n" \
+                 "Ilya Agafonov: Привет, Эшли!\n" \
+                 "Эшли: Привет, Илья!\n\n" \
+                 "Ilya Agafonov: Как дела?\n" \
+                 "Эшли: Хорошо, спасибо!\n\n" \
+                 "alexander: Эшли, ты красивая?\n" \
+                 "Эшли: Пошёл нахуй, Александр!"
+
         if message.chat.id not in history:
             history[message.chat.id] = []
-        for q, a in history[message.chat.id][-5::]:
-            prompt += "\n\nQ: " + q + "\nA: " + a
-        prompt += "\n\nQ: " + text + "\nA: "
+        for n, q, a in history[message.chat.id][-5::]:
+            prompt += f"\n\n{n}: {q}\nЭшли: {a}"
+        name = utils.user_name(message.from_user)
+        prompt += f"\n\n{name}: {text}\nЭшли: "
         try:
             response = openai.Completion.create(
                 model="text-davinci-003",
@@ -55,7 +59,7 @@ class Reply(Action):
                 max_tokens=500,
             )
             sentence = response['choices'][0]['text']
-            history[message.chat.id].append((text, sentence))
+            history[message.chat.id].append((name, text, sentence))
         except openai.error.InvalidRequestError as e:
             sentence = "Произошла ошибка: " + str(e)
 
