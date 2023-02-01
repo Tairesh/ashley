@@ -29,4 +29,4 @@ class Restart(Action):
     @Action.only_master
     def call(self, message: Message):
         self.bot.reply_to(message, 'OK, master')
-        os.system('sudo systemctl restart ashlee.service')
+        os.system('sudo systemctl restart ashleybot.service')
