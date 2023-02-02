@@ -17,31 +17,33 @@ class Boobs(SudoAction):
         return True
 
     def _get_label(self) -> str:
-        return 'Порно'
+        return "Порно"
 
     def _get_settings_attr(self) -> str:
-        return 'enabled_porn'
+        return "enabled_porn"
 
     @SudoAction.send_uploading_photo
     def _try_process_action(self, message: Message) -> bool:
-        data = json.loads(requests.get(self.API_URL).content.decode('utf-8'))[0]
-        url = self.MEDIA_SERVER + data['preview']
-        caption = data['model']
+        data = json.loads(requests.get(self.API_URL).content.decode("utf-8"))[0]
+        url = self.MEDIA_SERVER + data["preview"]
+        caption = data["model"]
 
-        self.bot.send_photo(message.chat.id, url, caption, reply_to_message_id=message.message_id)
+        self.bot.send_photo(
+            message.chat.id, url, caption, reply_to_message_id=message.message_id
+        )
         return True
 
     def get_description(self) -> str:
         return "случайные сиськи с oboobs.ru"
 
     def get_keywords(self) -> List[str]:
-        return ['сиськи']
+        return ["сиськи"]
 
     def get_cmds(self) -> List[str]:
-        return ['boobs']
+        return ["boobs"]
 
     def get_name(self) -> str:
         return emoji.STRAWBERRY + " Boobs"
 
     def get_callback_start(self) -> str:
-        return 'boobs:'
+        return "boobs:"

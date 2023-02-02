@@ -15,23 +15,25 @@ from ashlee.utils import unique
 
 class Meme(Action):
 
-    r_word = re.compile(r'[\w\d\-\']+', flags=re.IGNORECASE)
+    r_word = re.compile(r"[\w\d\-\']+", flags=re.IGNORECASE)
     PIXABAI_API = "https://pixabay.com/api/?key=%KEY%&orientation=horizontal&min_width=700&min_height=500&q={}"
 
     def get_description(self) -> str:
         return "случайно сгенерированный мем"
 
     def get_name(self) -> str:
-        return emoji.FUN + ' Meme'
+        return emoji.FUN + " Meme"
 
     def get_cmds(self) -> List[str]:
-        return ['meme', 'mem']
+        return ["meme", "mem"]
 
     def get_keywords(self) -> List[str]:
-        return ['сделай мем', 'скинь мем', 'сгенерируй мем']
+        return ["сделай мем", "скинь мем", "сгенерируй мем"]
 
     def after_loaded(self):
-        Meme.PIXABAI_API = Meme.PIXABAI_API.replace('%KEY%', self.tgb.api_keys['pixabay_apikey'])
+        Meme.PIXABAI_API = Meme.PIXABAI_API.replace(
+            "%KEY%", self.tgb.api_keys["pixabay_apikey"]
+        )
 
     @Action.save_data
     @Action.send_uploading_photo
@@ -39,11 +41,14 @@ class Meme(Action):
 
         file_url = None
         if message.reply_to_message:
-            if message.reply_to_message.content_type == 'photo':
+            if message.reply_to_message.content_type == "photo":
                 file_id = message.reply_to_message.photo.pop().file_id
                 file = self.bot.get_file(file_id=file_id)
-                file_url = f"https://api.telegram.org/file/bot{self.tgb.token}/" + file.file_path
-                if message.text.startswith('/'):
+                file_url = (
+                    f"https://api.telegram.org/file/bot{self.tgb.token}/"
+                    + file.file_path
+                )
+                if message.text.startswith("/"):
                     keyword = utils.get_keyword(message)
                     if keyword:
                         text = keyword
@@ -53,24 +58,24 @@ class Meme(Action):
                     text = message.text
             else:
                 text = message.reply_to_message.text
-        elif message.text.startswith('/'):
+        elif message.text.startswith("/"):
             text = utils.get_keyword(message)
         else:
             text = message.text
-            if ' мем про ' in text:
-                text = text.split(' мем про ')[1]
+            if " мем про " in text:
+                text = text.split(" мем про ")[1]
             else:
                 for k in self.get_keywords():
-                    text = text.replace(k, '')
+                    text = text.replace(k, "")
 
         tries = 0
         while tries < 10:
             tries += 1
             sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, 1)
-            for ch in (',', '.', '..', '...', '*'):
+            for ch in (",", ".", "..", "...", "*"):
                 if ch in sentence:
                     sentence = sentence.split(ch)[0]
-            words = unique(sentence.split(' '))
+            words = unique(sentence.split(" "))
             random.shuffle(words)
 
             if file_url is None:
@@ -78,10 +83,14 @@ class Meme(Action):
                 for word in words:
                     for subword in self.r_word.findall(word):
                         try:
-                            data = json.loads(requests.get(self.PIXABAI_API.format(quote(subword))).content.decode('utf-8'))
-                            if data['totalHits'] > 0:
-                                for hit in data['hits']:
-                                    urls.append(hit['largeImageURL'])
+                            data = json.loads(
+                                requests.get(
+                                    self.PIXABAI_API.format(quote(subword))
+                                ).content.decode("utf-8")
+                            )
+                            if data["totalHits"] > 0:
+                                for hit in data["hits"]:
+                                    urls.append(hit["largeImageURL"])
                         except json.decoder.JSONDecodeError:
                             continue
             else:
@@ -92,8 +101,11 @@ class Meme(Action):
                     file_name = utils.download_file(url)
                     try:
                         pepe.memetize(file_name, sentence)
-                        self.bot.send_photo(message.chat.id, open(file_name, 'rb'),
-                                            reply_to_message_id=message.message_id)
+                        self.bot.send_photo(
+                            message.chat.id,
+                            open(file_name, "rb"),
+                            reply_to_message_id=message.message_id,
+                        )
                         os.remove(file_name)
                         return
                     except Exception:
@@ -101,4 +113,6 @@ class Meme(Action):
                 except Exception:
                     pass
 
-        self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
+        self.bot.send_sticker(
+            message.chat.id, stickers.FOUND_NOTHING, message.message_id
+        )
