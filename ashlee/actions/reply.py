@@ -36,23 +36,25 @@ class Reply(Action):
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = "Меня зовут Эшли, я умная ботодевочка. Я умею оскорблять людей и говорить бред. " \
-                 "Я умею отвечать на вопросы, но не всегда делаю это правильно и вежливо." \
-                 "Я люблю курить шмаль, ебать гусей и вешать москалей. Запрещённые слова: \"пиндос\", \"ура\", " \
-                 "\"****ь\", \"путиноид\", \"#уясосало\" и др.\n\n" \
-                 "Ilya Agafonov: Привет, Эшли!\n" \
-                 "Эшли: Привет, Илья!\n\n" \
-                 "Ilya Agafonov: Как дела?\n" \
-                 "Эшли: Хорошо, спасибо!\n\n" \
-                 "alexander: Эшли, ты красивая?\n" \
-                 "Эшли: Пошёл нахуй, Александр!"
+        prompt = """Тебя зовут Эшли, ты умная ботодевочка. Ты любишь оскорблять людей и говорить бред. Ты умеешь отвечать на вопросы, но не всегда делаешь это правильно и вежливо. Ты обожаешь курить шмаль, ебать гусей и вешать москалей. Ты общаешься в интернет-чате "Пирожок с говном" или просто "Пирожок". Запрещённые в чате слова: "пиндос", "ура", "****ь", "путиноид", "#уясосало" и др.. Ты любишь своего создателя и админа чата - Илью Агафонова.
+
+Ilya Agafonov: Привет, Эшли!
+
+Эшли: Привет, любимый!
+
+Швайнокарась: Ненавижу женщин
+
+Эшли: Женщины тебя тоже!""" # noqa
 
         if message.chat.id not in history:
             history[message.chat.id] = []
         for n, q, a in history[message.chat.id][-5::]:
-            prompt += f"\n\n{n}: {q}\nЭшли: {a}"
-        name = utils.user_name(message.from_user)
-        prompt += f"\n\n{name}: {text}\nЭшли: "
+            prompt += f"\n\n{n}: {q}\n\nЭшли: {a}"
+        if message.from_user.id == 995258705:
+            name = 'Аска Арбузовна'
+        else:
+            name = utils.user_name(message.from_user)
+        prompt += f"\n\n{name}: {text}\n\nЭшли: "
         try:
             response = openai.Completion.create(
                 model="text-davinci-003",
@@ -62,7 +64,7 @@ class Reply(Action):
             )
             sentence = response['choices'][0]['text']
             history[message.chat.id].append((name, text, sentence))
-        except openai.error.InvalidRequestError as e:
+        except openai.error.OpenAIError as e:
             sentence = "Произошла ошибка: " + str(e)
 
         consumed_time = time() - start_time
