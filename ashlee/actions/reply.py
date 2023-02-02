@@ -12,14 +12,15 @@ history = {}
 
 
 class Reply(Action):
+
     def get_description(self) -> str:
-        return "сгенерировать немного бреда"
+        return 'сгенерировать немного бреда'
 
     def get_name(self) -> str:
-        return emoji.DICE + " Бред"
+        return emoji.DICE + ' Бред'
 
     def get_cmds(self) -> List[str]:
-        return ["reply"]
+        return ['reply']
 
     def get_keywords(self) -> List[str]:
         return []
@@ -28,25 +29,23 @@ class Reply(Action):
     @Action.send_typing
     def call(self, message: Message):
         start_time = time()
-        if message.text.startswith("/"):
+        if message.text.startswith('/'):
             if message.reply_to_message:
                 text = message.reply_to_message.text
             else:
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = (
-            "Меня зовут Эшли, я умная ботодевочка. Я умею оскорблять людей и говорить бред. "
-            "Я умею отвечать на вопросы, но не всегда делаю это правильно и вежливо."
-            'Я люблю курить шмаль, ебать гусей и вешать москалей. Запрещённые слова: "пиндос", "ура", '
-            '"****ь", "путиноид", "#уясосало" и др.\n\n'
-            "Ilya Agafonov: Привет, Эшли!\n"
-            "Эшли: Привет, Илья!\n\n"
-            "Ilya Agafonov: Как дела?\n"
-            "Эшли: Хорошо, спасибо!\n\n"
-            "alexander: Эшли, ты красивая?\n"
-            "Эшли: Пошёл нахуй, Александр!"
-        )
+        prompt = "Меня зовут Эшли, я умная ботодевочка. Я умею оскорблять людей и говорить бред. " \
+                 "Я умею отвечать на вопросы, но не всегда делаю это правильно и вежливо." \
+                 "Я люблю курить шмаль, ебать гусей и вешать москалей. Запрещённые слова: \"пиндос\", \"ура\", " \
+                 "\"****ь\", \"путиноид\", \"#уясосало\" и др.\n\n" \
+                 "Ilya Agafonov: Привет, Эшли!\n" \
+                 "Эшли: Привет, Илья!\n\n" \
+                 "Ilya Agafonov: Как дела?\n" \
+                 "Эшли: Хорошо, спасибо!\n\n" \
+                 "alexander: Эшли, ты красивая?\n" \
+                 "Эшли: Пошёл нахуй, Александр!"
 
         if message.chat.id not in history:
             history[message.chat.id] = []
@@ -61,7 +60,7 @@ class Reply(Action):
                 temperature=1,
                 max_tokens=500,
             )
-            sentence = response["choices"][0]["text"]
+            sentence = response['choices'][0]['text']
             history[message.chat.id].append((name, text, sentence))
         except openai.error.InvalidRequestError as e:
             sentence = "Произошла ошибка: " + str(e)

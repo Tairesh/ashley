@@ -11,10 +11,10 @@ class Start(Action):
         return None
 
     def get_name(self) -> str:
-        return emoji.INFO + " Start"
+        return emoji.INFO + ' Start'
 
     def get_cmds(self) -> List[str]:
-        return ["start"]
+        return ['start']
 
     def get_keywords(self) -> List[str]:
         return []
@@ -22,9 +22,6 @@ class Start(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
-        self.bot.reply_to(
-            message,
-            f"{emoji.GOODBYE} Привет! Меня зовут Эшли, я умная рободевочка, умею переводить тексты, "
-            f"искать картинки, администировать чат, отвечать на вопросы, делать мемы и многое другое.\n"
-            f"Полный список моих команд доступен по команде /help",
-        )
+        self.bot.reply_to(message, f"{emoji.GOODBYE} Привет! Меня зовут Эшли, я умная рободевочка, умею переводить тексты, "
+                                   f"искать картинки, администировать чат, отвечать на вопросы, делать мемы и многое другое.\n"
+                                   f"Полный список моих команд доступен по команде /help")

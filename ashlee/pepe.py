@@ -6,40 +6,13 @@ from wand.color import Color
 from wand.drawing import Drawing
 
 
-r_alphabet = re.compile(r"[\w\d\-%#@^*_`]+|[.,:;?!><&/\\+=]+")
+r_alphabet = re.compile(r'[\w\d\-%#@^*_`]+|[.,:;?!><&/\\+=]+')
 
-END_MARK = (".", "!", "?", "\n", "end")
-NOSPACE_MARK = (
-    ".",
-    "!",
-    "?",
-    ":",
-    ",",
-    ";",
-    "...",
-    "..",
-    ";",
-    "!?",
-    "???",
-    "??",
-    "?!",
-    "end",
-    "\n",
-)
-CAPITALIZED = {
-    "эшли",
-    "єшли",
-    "ешлі",
-    "єшлі",
-    "илья",
-    "илье",
-    "илью",
-    "ильёй",
-    "прохор",
-    "прохору",
-    "прохора",
-    "прохором",
-}
+END_MARK = ('.', '!', '?', '\n', 'end')
+NOSPACE_MARK = ('.', '!', '?', ':', ',', ';', '...', '..', ';', '!?', '???', '??', '?!', 'end', '\n')
+CAPITALIZED = {'эшли', 'єшли', 'ешлі', 'єшлі',
+               'илья', 'илье', 'илью', 'ильёй',
+               'прохор', 'прохору', 'прохора', 'прохором'}
 
 
 def gen_tokens(text):
@@ -48,45 +21,32 @@ def gen_tokens(text):
 
 
 def gen_bigrams(tokens):
-    t0 = "$"
+    t0 = '$'
     for t1 in tokens:
-        if t0 == "$" and t1 in {
-            "эшли",
-            "єшли",
-            "ешлі",
-            "єшлі",
-            "эш",
-            "ashley",
-            ".",
-            ",",
-            "!",
-            ":",
-            ";",
-            "?",
-        }:
+        if t0 == '$' and t1 in {'эшли', 'єшли', 'ешлі', 'єшлі', 'эш', 'ashley', '.', ',', '!', ':', ';', '?'}:
             continue
         yield t0, t1
         if t1 in END_MARK:
-            yield t1, "$"
-            t0 = "$"
+            yield t1, '$'
+            t0 = '$'
         else:
             t0 = t1
 
 
 def gen_trigrams(tokens):
-    t0, t1 = "$", "$"
+    t0, t1 = '$', '$'
     for t2 in tokens:
         yield t0, t1, t2
         if t2 in END_MARK:
-            yield t1, t2, "$"
-            yield t2, "$", "$"
-            t0, t1 = "$", "$"
+            yield t1, t2, '$'
+            yield t2, '$', '$'
+            t0, t1 = '$', '$'
         else:
             t0, t1 = t1, t2
 
 
 def key(a, b):
-    return a + "->" + b
+    return a + '->' + b
 
 
 def train(db, text):
@@ -117,14 +77,14 @@ def capitalise(phrase):
     v = phrase.split()
     for x in v:
         if x in CAPITALIZED:
-            resp += " " + x.title()
+            resp += (" " + x.title())
         else:
-            resp += " " + x
+            resp += (" " + x)
 
     return resp
 
 
-def generate_sentence(db, start="", a="$", b="$") -> tuple:
+def generate_sentence(db, start='', a='$', b='$') -> tuple:
     sentence = start
     tries = 0
     used_keys = [b]
@@ -135,15 +95,15 @@ def generate_sentence(db, start="", a="$", b="$") -> tuple:
         a, b = b, random.choice(ar)
         if b not in used_keys:
             used_keys.append(b)
-        if b == "$" or b == "end":
+        if b == '$' or b == 'end':
             break
-        if b in NOSPACE_MARK or a == "$":
+        if b in NOSPACE_MARK or a == '$':
             sentence += b
         else:
-            sentence += " " + b
+            sentence += ' ' + b
         tries += 1
     if len(sentence) == 0:
-        sentence = "добро хуй сварился"
+        sentence = 'добро хуй сварился'
     return sentence, used_keys
 
 
@@ -153,19 +113,17 @@ def compile_sentences(db, sentences: list) -> str:
     elif len(sentences) == 0:
         sentence, _ = generate_sentence(db)
     else:
-        sentence = ""
+        sentence = ''
         i = 0
         for s in sentences:
-            if i < len(sentences) - 1:
+            if i < len(sentences)-1:
                 test_char = s[-1::]
-                if test_char == " ":
+                if test_char == ' ':
                     test_char = s[-2:-1:]
                 if test_char not in NOSPACE_MARK:
-                    endmark = (
-                        random.choice(("?", "!", "...", ",", " —", "\n", ":")) + " "
-                    )
+                    endmark = random.choice(('?', '!', '...', ',', ' —', '\n', ':')) + ' '
                 else:
-                    endmark = " "
+                    endmark = ' '
                 s += endmark
             sentence += s
             i += 1
@@ -185,15 +143,12 @@ def generate_sentence_by_text(db, text: str, sentences_limit: int = 0) -> str:
 
     if len(bigrams):
         for t0, t1 in bigrams:
-            if t1 == "$" or t0 in NOSPACE_MARK or t0 in usedkeys or t1 in usedkeys:
+            if t1 == '$' or t0 in NOSPACE_MARK or t0 in usedkeys or t1 in usedkeys:
                 continue
             if len(db.smembers(key(t0, t1))):
                 a, b = t0, t1
-                start = (
-                    (a if a != "$" else "")
-                    + (" " if b not in NOSPACE_MARK and a != "$" else "")
-                    + (b if b != "end" else "?")
-                )
+                start = (a if a != '$' else '') + (' ' if b not in NOSPACE_MARK and a != '$' else '') + (
+                    b if b != 'end' else '?')
                 s, used = generate_sentence(db, start, a, b)
                 sentences.append(s)
                 usedkeys.add(a)
@@ -211,22 +166,22 @@ def generate_sentence_by_text(db, text: str, sentences_limit: int = 0) -> str:
 
 
 def split_to_lines(sentence: str) -> list:
-    words = sentence.split(" ")
+    words = sentence.split(' ')
     lines = []
     current_line = []
     for word in words:
-        if len(current_line) == 0 or len(" ".join(current_line)) + len(word) < 25:
+        if len(current_line) == 0 or len(' '.join(current_line)) + len(word) < 25:
             current_line.append(word)
         else:
-            lines.append(" ".join(current_line))
+            lines.append(' '.join(current_line))
             current_line = [word]
     if len(current_line):
-        lines.append(" ".join(current_line))
+        lines.append(' '.join(current_line))
     return lines
 
 
 def _middle_color(img: Image) -> tuple:
-    blob = img.make_blob(format="RGB")
+    blob = img.make_blob(format='RGB')
     reds = []
     greens = []
     blues = []
@@ -249,8 +204,8 @@ def memetize(file_name, sentence):
 
         with Drawing() as context:
             lines = split_to_lines(sentence)
-            context.text_alignment = "center"
-            context.font = "res/fonts/lobster.ttf"
+            context.text_alignment = 'center'
+            context.font = 'res/fonts/lobster.ttf'
             max_len = len(max(lines, key=lambda el: len(el)))
             size = 1.5 * img.width / max_len
 
@@ -258,11 +213,11 @@ def memetize(file_name, sentence):
             metrics = context.get_font_metrics(img, sentence)
 
             x = int(img.width / 2)
-            y = int(img.height - metrics.character_height / 2)
+            y = int(img.height - metrics.character_height/2)
 
             for line in reversed(lines):
-                context.fill_color = Color("#000" if black else "#fff")
-                context.stroke_color = Color("#fff" if black else "#000")
+                context.fill_color = Color('#000' if black else '#fff')
+                context.stroke_color = Color('#fff' if black else '#000')
                 context.stroke_width = 2
                 context.text(x, y, line)
                 y -= int(metrics.character_height)
@@ -270,5 +225,5 @@ def memetize(file_name, sentence):
                     break
             context(img)
 
-            img.format = "jpeg"
+            img.format = 'jpeg'
             img.save(filename=file_name)
