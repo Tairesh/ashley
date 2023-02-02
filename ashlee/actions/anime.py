@@ -15,39 +15,39 @@ class Anime(SudoAction):
 
     API_URL = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={}"
     FUNNY_EXAMPLES = [
-        "loli",
-        "gay",
-        "rape",
-        "guro",
-        "horse",
-        "thicc",
-        "nsfw",
-        "webm",
+        'loli',
+        'gay',
+        'rape',
+        'guro',
+        'horse',
+        'thicc',
+        'nsfw',
+        'webm',
     ]
 
     def is_not_flood(self) -> bool:
         return True
 
     def _get_label(self) -> str:
-        return "Аниме"
+        return 'Аниме'
 
     def _get_settings_attr(self) -> str:
-        return "enabled_anime"
+        return 'enabled_anime'
 
     def get_description(self) -> str:
-        return "случайная картинка с gelbooru.com по тегу"
+        return 'случайная картинка с gelbooru.com по тегу'
 
     def get_keywords(self) -> List[str]:
-        return ["аниме"]
+        return ['аниме']
 
     def get_cmds(self) -> List[str]:
-        return ["anime", "a"]
+        return ['anime', 'a']
 
     def get_name(self) -> str:
         return emoji.SEARCH + " Аниме"
 
     def get_callback_start(self):
-        return "anime:"
+        return 'anime:'
 
     def after_loaded(self):
         if self.tgb.debug:
@@ -55,43 +55,34 @@ class Anime(SudoAction):
 
     @SudoAction.send_uploading_photo
     def _try_process_action(self, message) -> bool:
-        if message.text.startswith("/"):
+        if message.text.startswith('/'):
             keyword = utils.get_keyword(message)
             if not keyword:
                 cmd = utils.get_command(message)
                 req = random.choice(self.FUNNY_EXAMPLES)
-                self.bot.reply_to(
-                    message,
-                    f"Пример использования команды:\n`/{cmd} {req}`",
-                    parse_mode="Markdown",
-                )
+                self.bot.reply_to(message, f"Пример использования команды:\n`/{cmd} {req}`",
+                                  parse_mode='Markdown')
                 return False
         else:
-            keyword = "safe"
+            keyword = 'safe'
 
         request_url = self.API_URL.format(quote(keyword))
         root = ElementTree.parse(urllib.request.urlopen(request_url)).getroot()
-        posts = root.findall("post")
+        posts = root.findall('post')
         random.shuffle(posts)
         for post in posts:
-            url = post.find("file_url").text
-            ext = url.split(".").pop()
+            url = post.find('file_url').text
+            ext = url.split('.').pop()
             try:
-                if ext in {"jpg", "jpeg", "png"}:
-                    self.bot.send_photo(
-                        message.chat.id, url, reply_to_message_id=message.message_id
-                    )
+                if ext in {'jpg', 'jpeg', 'png'}:
+                    self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
                     return True
-                elif ext == "mp4":
-                    self.bot.send_video(
-                        message.chat.id, url, reply_to_message_id=message.message_id
-                    )
+                elif ext == 'mp4':
+                    self.bot.send_video(message.chat.id, url, reply_to_message_id=message.message_id)
                     return True
             except ApiException as exception:
                 logging.error(f"{exception} - {url}")
                 continue
 
-        self.bot.send_sticker(
-            message.chat.id, stickers.FOUND_NOTHING, message.message_id
-        )
+        self.bot.send_sticker(message.chat.id, stickers.FOUND_NOTHING, message.message_id)
         return False

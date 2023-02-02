@@ -8,14 +8,15 @@ from ashlee.action import Action
 
 
 class Cho(Action):
+
     def get_description(self) -> str:
-        return "чё?"
+        return 'чё?'
 
     def get_name(self) -> str:
-        return emoji.QUESTION + " Чё?"
+        return emoji.QUESTION + ' Чё?'
 
     def get_cmds(self) -> List[str]:
-        return ["cho"]
+        return ['cho']
 
     def get_keywords(self) -> List[str]:
         return []
@@ -23,8 +24,4 @@ class Cho(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
-        self.bot.reply_to(
-            message,
-            "чё"
-            + random.choice(("", "", "", "", "", "", "?", "!", "?", "!", "!!!", "...")),
-        )
+        self.bot.reply_to(message, 'чё' + random.choice(('', '', '', '', '', '', '?', '!', '?', '!', '!!!', '...')))

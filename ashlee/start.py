@@ -20,10 +20,9 @@ def _parse_args():
         "-log",
         dest="logfile",
         help="path to logfile",
-        default=os.path.join("log", "ashleebot.log"),
+        default=os.path.join('log', 'ashleebot.log'),
         required=False,
-        metavar="FILE",
-    )
+        metavar="FILE")
 
     # Log level
     parser.add_argument(
@@ -33,8 +32,7 @@ def _parse_args():
         choices=[0, 10, 20, 30, 40, 50],
         help="Disabled, Debug, Info, Warning, Error, Critical",
         default=30,
-        required=False,
-    )
+        required=False)
 
     # Save logfile
     parser.add_argument(
@@ -43,8 +41,7 @@ def _parse_args():
         action="store_false",
         help="don't save logs to file",
         required=False,
-        default=True,
-    )
+        default=True)
 
     # Clean pending updates
     parser.add_argument(
@@ -53,23 +50,24 @@ def _parse_args():
         action="store_true",
         help="clean any pending telegram updates before polling",
         required=False,
-        default=False,
-    )
+        default=False)
 
     # Bot token
     parser.add_argument(
-        "-token", dest="token", help="Telegram bot token", required=False, default=None
-    )
+        "-token",
+        dest="token",
+        help="Telegram bot token",
+        required=False,
+        default=None)
 
     # Database path
     parser.add_argument(
         "-db",
         dest="database",
         help="path to SQLite database file",
-        default=os.path.join("database", "db.sqlite"),
+        default=os.path.join('database', 'db.sqlite'),
         required=False,
-        metavar="FILE",
-    )
+        metavar="FILE")
 
     # Debug mode
     parser.add_argument(
@@ -85,28 +83,22 @@ def _parse_args():
 
 
 class Ashlee:
+
     def __init__(self):
         self.args = _parse_args()
         self._init_logger(self.args.logfile, self.args.loglevel)
         self.api_keys = self._get_api_keys()
         self.db = Database(self.args.database)
-        self.redis = redis.StrictRedis(host="localhost", port=6379, db=0)
-        self.tgbot = TelegramBot(
-            self._get_bot_token(),
-            self.api_keys,
-            self.db,
-            self.redis,
-            self.args.clean,
-            self.args.debug,
-        )
-        openai.api_key = self.api_keys["openai"]
+        self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self.tgbot = TelegramBot(self._get_bot_token(), self.api_keys, self.db, self.redis, self.args.clean, self.args.debug)
+        openai.api_key = self.api_keys['openai']
 
     # Configure logging
     def _init_logger(self, logfile, level):
         logger = logging.getLogger()
         logger.setLevel(level)
 
-        log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+        log_format = '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
 
         # Log to console
         console_log = logging.StreamHandler()
@@ -122,7 +114,10 @@ class Ashlee:
             if not os.path.exists(log_path):
                 os.makedirs(log_path)
 
-            file_log = TimedRotatingFileHandler(logfile, when="H", encoding="utf-8")
+            file_log = TimedRotatingFileHandler(
+                logfile,
+                when="H",
+                encoding="utf-8")
 
             file_log.setFormatter(logging.Formatter(log_format))
             file_log.setLevel(level)
@@ -135,9 +130,9 @@ class Ashlee:
             return self.args.token
 
         try:
-            token_file = os.path.join("config", "token.txt")
+            token_file = os.path.join('config', 'token.txt')
             if os.path.isfile(token_file):
-                with open(token_file, "r", encoding="utf-8") as file:
+                with open(token_file, 'r', encoding='utf-8') as file:
                     return file.read()
             else:
                 raise SystemExit(f"ERROR: No token file found at '{token_file}'")
@@ -148,9 +143,9 @@ class Ashlee:
 
     def _get_api_keys(self):
         try:
-            keys_file = os.path.join("config", "api_keys.json")
+            keys_file = os.path.join('config', 'api_keys.json')
             if os.path.isfile(keys_file):
-                with open(keys_file, "r", encoding="utf-8") as file:
+                with open(keys_file, 'r', encoding='utf-8') as file:
                     return json.load(file)
             else:
                 raise SystemExit(f"ERROR: No api keys file found at '{keys_file}'")

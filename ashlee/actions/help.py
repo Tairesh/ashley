@@ -7,17 +7,18 @@ from ashlee.action import Action
 
 
 class Help(Action):
+
     def get_description(self) -> str:
         return "список команд"
 
     def get_name(self) -> str:
-        return emoji.INFO + " Help"
+        return emoji.INFO + ' Help'
 
     def get_cmds(self) -> List[str]:
-        return ["help"]
+        return ['help']
 
     def get_keywords(self) -> List[str]:
-        return ["помощь"]
+        return ['помощь']
 
     @Action.save_data
     @Action.send_typing
