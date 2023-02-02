@@ -17,25 +17,33 @@ class Pig(Action):
         return "случайная свинья"
 
     def get_keywords(self) -> List[str]:
-        return ['скинь свинью', 'покажи свинью', 'скинь хохла', 'покажи хохла']
+        return ["скинь свинью", "покажи свинью", "скинь хохла", "покажи хохла"]
 
     def get_cmds(self) -> List[str]:
-        return ['pig', ]
+        return [
+            "pig",
+        ]
 
     def get_name(self) -> str:
         return emoji.PIG + " Pig"
 
     def after_loaded(self):
-        self.API_URL = self.API_URL.replace('%KEY%', self.tgb.api_keys['pixabay_apikey'])
+        self.API_URL = self.API_URL.replace(
+            "%KEY%", self.tgb.api_keys["pixabay_apikey"]
+        )
 
     @Action.save_data
     @Action.send_uploading_photo
     def call(self, message: Message):
-        data = json.loads(requests.get(self.API_URL).content.decode('utf-8'))
+        data = json.loads(requests.get(self.API_URL).content.decode("utf-8"))
         hit = None
         while not hit:
-            hit = random.choice(data['hits'])
-            if not hit['largeImageURL'].endswith('.jpg'):
+            hit = random.choice(data["hits"])
+            if not hit["largeImageURL"].endswith(".jpg"):
                 hit = None  # skipping pngs and other formats
 
-        self.bot.send_photo(message.chat.id, hit['largeImageURL'], reply_to_message_id=message.message_id)
+        self.bot.send_photo(
+            message.chat.id,
+            hit["largeImageURL"],
+            reply_to_message_id=message.message_id,
+        )
