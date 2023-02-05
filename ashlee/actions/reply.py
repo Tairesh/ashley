@@ -12,15 +12,14 @@ history = {}
 
 
 class Reply(Action):
-
     def get_description(self) -> str:
-        return 'сгенерировать немного бреда'
+        return "сгенерировать немного бреда"
 
     def get_name(self) -> str:
-        return emoji.DICE + ' Бред'
+        return emoji.DICE + " Бред"
 
     def get_cmds(self) -> List[str]:
-        return ['reply']
+        return ["reply"]
 
     def get_keywords(self) -> List[str]:
         return []
@@ -29,7 +28,7 @@ class Reply(Action):
     @Action.send_typing
     def call(self, message: Message):
         start_time = time()
-        if message.text.startswith('/'):
+        if message.text.startswith("/"):
             if message.reply_to_message:
                 text = message.reply_to_message.text
             else:
@@ -56,14 +55,14 @@ class Reply(Action):
     
     Швайнокарась: Ненавижу женщин
     
-    Эшли: Женщины тебя тоже!""" # noqa
+    Эшли: Женщины тебя тоже!"""  # noqa
 
             if message.chat.id not in history:
                 history[message.chat.id] = []
             for n, q, a in history[message.chat.id][-5::]:
                 prompt += f"\n\n{n}: {q}\n\nЭшли: {a}"
             if message.from_user.id == 995258705:
-                name = 'Аска Арбузовна'
+                name = "Аска Арбузовна"
             else:
                 name = utils.user_name(message.from_user)
             prompt += f"\n\n{name}: {text}\n\nЭшли: "
@@ -74,7 +73,7 @@ class Reply(Action):
                     temperature=1,
                     max_tokens=500,
                 )
-                sentence = response['choices'][0]['text']
+                sentence = response["choices"][0]["text"]
                 history[message.chat.id].append((name, text, sentence))
             except openai.error.OpenAIError as e:
                 sentence = "Произошла ошибка: " + str(e)
@@ -86,7 +85,9 @@ class Reply(Action):
                     sl = 2
                 elif sl > 20:
                     sl = 20
-                sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, sentences_limit=sl)
+                sentence = pepe.generate_sentence_by_text(
+                    self.tgb.redis, text, sentences_limit=sl
+                )
             if not sentence:
                 sentence = pepe.generate_sentence(self.tgb.redis)[0]
             sentence = pepe.capitalise(sentence)
