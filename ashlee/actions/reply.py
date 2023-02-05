@@ -5,7 +5,7 @@ from time import time
 import openai
 from telebot.types import Message
 
-from ashlee import emoji, utils
+from ashlee import emoji, utils, constants, pepe
 from ashlee.action import Action
 
 history = {}
@@ -36,36 +36,57 @@ class Reply(Action):
                 text = utils.get_keyword(message)
         else:
             text = message.text
-        prompt = """Тебя зовут Эшли, ты умная ботодевочка. Ты любишь оскорблять людей и говорить бред. Ты умеешь отвечать на вопросы, но не всегда делаешь это правильно и вежливо. Ты обожаешь курить шмаль, ебать гусей и вешать москалей. Ты общаешься в интернет-чате "Пирожок с говном" или просто "Пирожок". Запрещённые в чате слова: "пиндос", "ура", "****ь", "путиноид", "#уясосало" и др.. Ты любишь своего создателя и админа чата - Илью Агафонова.
 
-Ilya Agafonov: Привет, Эшли!
+        chat = self.db.get_chat(message.chat.id)
+        vip_chat = False
+        for admin in constants.ADMINS:
+            if admin in chat.users:
+                vip_chat = True
+                break
 
-Эшли: Привет, любимый!
+        if vip_chat:
+            prompt = """Тебя зовут Эшли, ты умная ботодевочка. Ты любишь оскорблять людей и говорить бред. Ты умеешь отвечать на вопросы, но не всегда делаешь это правильно и вежливо. Ты обожаешь курить шмаль, ебать гусей и вешать москалей. Ты общаешься в интернет-чате "Пирожок с говном" или просто "Пирожок". Запрещённые в чате слова: "пиндос", "ура", "****ь", "путиноид", "#уясосало" и др.. Ты любишь своего создателя и админа чата - Илью Агафонова.
+    
+    Ilya Agafonov: Привет, Эшли!
+    
+    Эшли: Привет, любимый!
+    
+    Швайнокарась: Ненавижу женщин
+    
+    Эшли: Женщины тебя тоже!""" # noqa
 
-Швайнокарась: Ненавижу женщин
-
-Эшли: Женщины тебя тоже!""" # noqa
-
-        if message.chat.id not in history:
-            history[message.chat.id] = []
-        for n, q, a in history[message.chat.id][-5::]:
-            prompt += f"\n\n{n}: {q}\n\nЭшли: {a}"
-        if message.from_user.id == 995258705:
-            name = 'Аска Арбузовна'
+            if message.chat.id not in history:
+                history[message.chat.id] = []
+            for n, q, a in history[message.chat.id][-5::]:
+                prompt += f"\n\n{n}: {q}\n\nЭшли: {a}"
+            if message.from_user.id == 995258705:
+                name = 'Аска Арбузовна'
+            else:
+                name = utils.user_name(message.from_user)
+            prompt += f"\n\n{name}: {text}\n\nЭшли: "
+            try:
+                response = openai.Completion.create(
+                    model="text-davinci-003",
+                    prompt=prompt,
+                    temperature=1,
+                    max_tokens=500,
+                )
+                sentence = response['choices'][0]['text']
+                history[message.chat.id].append((name, text, sentence))
+            except openai.error.OpenAIError as e:
+                sentence = "Произошла ошибка: " + str(e)
         else:
-            name = utils.user_name(message.from_user)
-        prompt += f"\n\n{name}: {text}\n\nЭшли: "
-        try:
-            response = openai.Completion.create(
-                model="text-davinci-003",
-                prompt=prompt,
-                temperature=1,
-                max_tokens=500,
-            )
-            sentence = response['choices'][0]['text']
-            history[message.chat.id].append((name, text, sentence))
-        except openai.error.OpenAIError as e:
-            sentence = "Произошла ошибка: " + str(e)
+            sentence = None
+            if text:
+                sl = len(text) // 200
+                if sl < 2:
+                    sl = 2
+                elif sl > 20:
+                    sl = 20
+                sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, sentences_limit=sl)
+            if not sentence:
+                sentence = pepe.generate_sentence(self.tgb.redis)[0]
+            sentence = pepe.capitalise(sentence)
 
         consumed_time = time() - start_time
         dt = 1.0 - consumed_time
