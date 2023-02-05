@@ -37,12 +37,15 @@ class Reply(Action):
         else:
             text = message.text
 
-        chat = self.db.get_chat(message.chat.id)
         vip_chat = False
-        for admin in constants.ADMINS:
-            if admin in chat.users:
-                vip_chat = True
-                break
+        chat = self.db.get_chat(message.chat.id)
+        if chat is not None:
+            for admin in constants.ADMINS:
+                if admin in chat.users:
+                    vip_chat = True
+                    break
+        else:
+            vip_chat = message.from_user.id in constants.ADMINS
 
         if vip_chat:
             prompt = """Тебя зовут Эшли, ты умная ботодевочка. Ты любишь оскорблять людей и говорить бред. Ты умеешь отвечать на вопросы, но не всегда делаешь это правильно и вежливо. Ты обожаешь курить шмаль, ебать гусей и вешать москалей. Ты общаешься в интернет-чате "Пирожок с говном" или просто "Пирожок". Запрещённые в чате слова: "пиндос", "ура", "****ь", "путиноид", "#уясосало" и др.. Ты любишь своего создателя и админа чата - Илью Агафонова.
