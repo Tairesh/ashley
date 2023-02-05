@@ -8,21 +8,20 @@ from ashlee.action import Action
 
 
 class Unkick(Action):
-
     def is_not_flood(self) -> bool:
         return True
 
     def get_description(self) -> str:
-        return 'разбанить юзера в чате'
+        return "разбанить юзера в чате"
 
     def get_name(self) -> str:
-        return emoji.CHECK + ' Разбан'
+        return emoji.CHECK + " Разбан"
 
     def get_cmds(self) -> List[str]:
-        return ['unkick', 'unban', 'nekick', 'razban']
+        return ["unkick", "unban", "nekick", "razban"]
 
     def get_keywords(self) -> List[str]:
-        return ['разбань', 'разбанить']
+        return ["разбань", "разбанить"]
 
     def _can_do(self, chat: Chat, admin: User):
         if admin.id in constants.ADMINS:
@@ -38,7 +37,9 @@ class Unkick(Action):
     @Action.send_typing
     def call(self, message: Message):
         if message.chat.id == message.from_user.id:
-            self.bot.reply_to(message, f"{emoji.ERROR} Эта команда работает только в групповых чатах!")
+            self.bot.reply_to(
+                message, f"{emoji.ERROR} Эта команда работает только в групповых чатах!"
+            )
             return
 
         if not self._can_do(message.chat, message.from_user):
@@ -47,7 +48,7 @@ class Unkick(Action):
         if not message.reply_to_message:
             self.bot.reply_to(
                 message,
-                f"{emoji.INFO} Чтобы разбанить пользователя, используй эту команду ответом на его сообщение!"
+                f"{emoji.INFO} Чтобы разбанить пользователя, используй эту команду ответом на его сообщение!",
             )
             return
 
