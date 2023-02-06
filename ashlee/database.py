@@ -157,14 +157,14 @@ class Database:
         # Check if user already exists
         cur.execute(self.SQL_USER_EXISTS, [user.id])
         # Add user if he doesn't exist
-        if cur.fetchone()[0] != 1:
-            cur.execute(self.SQL_USER_ADD,
-                        (user.id, user.first_name, user.last_name, user.username, user.language_code))
-            con.commit()
-        else:
-            cur.execute(self.SQL_USER_UPDATE,
-                        (user.first_name, user.last_name, user.username, user.language_code, user.id))
-            con.commit()
+        # if cur.fetchone()[0] != 1:
+        #     cur.execute(self.SQL_USER_ADD,
+        #                 (user.id, user.first_name, user.last_name, user.username, user.language_code))
+        #     con.commit()
+        # else:
+        #     cur.execute(self.SQL_USER_UPDATE,
+        #                 (user.first_name, user.last_name, user.username, user.language_code, user.id))
+        #     con.commit()
 
         chat_id = None
 
