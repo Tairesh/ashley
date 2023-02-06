@@ -8,21 +8,20 @@ from ashlee.action import Action
 
 
 class Kick(Action):
-
     def is_not_flood(self) -> bool:
         return True
 
     def get_description(self) -> str:
-        return 'кикнуть юзера из чата'
+        return "кикнуть юзера из чата"
 
     def get_name(self) -> str:
-        return emoji.CANCEL + ' Бан'
+        return emoji.CANCEL + " Бан"
 
     def get_cmds(self) -> List[str]:
-        return ['kick', 'ban', 'psyop']
+        return ["kick", "ban", "psyop"]
 
     def get_keywords(self) -> List[str]:
-        return ['забань', 'кикни', 'забанить', 'кикнуть']
+        return ["забань", "кикни", "забанить", "кикнуть"]
 
     def _can_kick(self, chat: Chat, admin: User):
         if admin.id in constants.ADMINS:
@@ -38,7 +37,9 @@ class Kick(Action):
     @Action.send_typing
     def call(self, message: Message):
         if message.chat.id == message.from_user.id:
-            self.bot.reply_to(message, f"{emoji.ERROR} Эта команда работает только в групповых чатах!")
+            self.bot.reply_to(
+                message, f"{emoji.ERROR} Эта команда работает только в групповых чатах!"
+            )
             return
 
         if not self._can_kick(message.chat, message.from_user):
@@ -47,19 +48,25 @@ class Kick(Action):
         if not message.reply_to_message:
             self.bot.reply_to(
                 message,
-                f"{emoji.INFO} Чтобы забанить пользователя, используй эту команду ответом на его сообщение!"
+                f"{emoji.INFO} Чтобы забанить пользователя, используй эту команду ответом на его сообщение!",
             )
             return
 
         user = message.reply_to_message.from_user
         if user.id in constants.ADMINS:
-            self.bot.reply_to(message, f"{emoji.ERROR} Этого пользователя нельзя забанить!")
+            self.bot.reply_to(
+                message, f"{emoji.ERROR} Этого пользователя нельзя забанить!"
+            )
             return
 
         try:
-            name = 'Psy-op' if message.text.startswith('/psyop') else utils.user_name(user, True)
+            name = (
+                "Psy-op"
+                if message.text.startswith("/psyop")
+                else utils.user_name(user, True)
+            )
             self.bot.kick_chat_member(message.chat.id, user.id)
-            if message.text.startswith('/kick'):
+            if message.text.startswith("/kick"):
                 self.bot.unban_chat_member(message.chat.id, user.id)
             self.bot.reply_to(message, f"{name} был забанен")
         except ApiException:

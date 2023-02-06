@@ -65,11 +65,12 @@ class Action(ABC):
         def _send_typing_action(self, message: Message):
             chat_id = message.chat.id
             try:
-                self.tgb.bot.send_chat_action(chat_id=chat_id, action='typing')
+                self.tgb.bot.send_chat_action(chat_id=chat_id, action="typing")
             except ApiException as ex:
                 logging.error(f"{ex} - {message}")
 
             return func(self, message)
+
         return _send_typing_action
 
     @classmethod
@@ -77,11 +78,12 @@ class Action(ABC):
         def _send_uploading_photo_action(self, message: Message):
             chat_id = message.chat.id
             try:
-                self.tgb.bot.send_chat_action(chat_id=chat_id, action='upload_photo')
+                self.tgb.bot.send_chat_action(chat_id=chat_id, action="upload_photo")
             except ApiException as ex:
                 logging.error(f"{ex} - {message}")
 
             return func(self, message)
+
         return _send_uploading_photo_action
 
     @classmethod
@@ -93,6 +95,7 @@ class Action(ABC):
                 text = message.content_type
             self.tgb.db.save_cmd(message.from_user, message.chat, text)
             return func(self, message)
+
         return _save_data
 
     @classmethod
@@ -105,7 +108,6 @@ class Action(ABC):
 
 
 class SudoAction(Action, ABC):
-
     @abstractmethod
     def _get_label(self) -> str:
         pass
@@ -122,7 +124,9 @@ class SudoAction(Action, ABC):
     def call(self, message: Message):
         settings = self.db.get_chat_settings(message.chat.id)
         if settings and not settings.__getattribute__(self._get_settings_attr()):
-            self.bot.reply_to(message, f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!")
+            self.bot.reply_to(
+                message, f"{emoji.ERROR} {self._get_label()} запрещено в этом чате!"
+            )
             return
 
         self._try_process_action(message)

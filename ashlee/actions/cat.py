@@ -16,10 +16,10 @@ class Cat(Action):
         return "случайное фото кота"
 
     def get_keywords(self) -> List[str]:
-        return ['скинь кота', 'покажи кота']
+        return ["скинь кота", "покажи кота"]
 
     def get_cmds(self) -> List[str]:
-        return ['cat', 'catgif']
+        return ["cat", "catgif"]
 
     def get_name(self) -> str:
         return emoji.CAT + " Cats"
@@ -27,13 +27,19 @@ class Cat(Action):
     @Action.save_data
     @Action.send_uploading_photo
     def call(self, message: Message):
-        if message.text and message.text.startswith('/catgif'):
-            mime_type = 'gif'
+        if message.text and message.text.startswith("/catgif"):
+            mime_type = "gif"
         else:
-            mime_type = 'jpg'
-        data = json.loads(requests.get(self.API_URL.format(mime_type)).content.decode('utf-8'))[0]
-        url = data['url']
-        if url.endswith('.gif'):
-            self.bot.send_video(message.chat.id, url, reply_to_message_id=message.message_id)
+            mime_type = "jpg"
+        data = json.loads(
+            requests.get(self.API_URL.format(mime_type)).content.decode("utf-8")
+        )[0]
+        url = data["url"]
+        if url.endswith(".gif"):
+            self.bot.send_video(
+                message.chat.id, url, reply_to_message_id=message.message_id
+            )
         else:
-            self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
+            self.bot.send_photo(
+                message.chat.id, url, reply_to_message_id=message.message_id
+            )

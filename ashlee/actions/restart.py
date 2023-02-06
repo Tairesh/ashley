@@ -8,7 +8,6 @@ from ashlee.action import Action
 
 
 class Restart(Action):
-
     def is_not_flood(self) -> bool:
         return True
 
@@ -16,10 +15,10 @@ class Restart(Action):
         return None
 
     def get_name(self) -> str:
-        return emoji.REPEAT + ' Restart'
+        return emoji.REPEAT + " Restart"
 
     def get_cmds(self) -> List[str]:
-        return ['restart']
+        return ["restart"]
 
     def get_keywords(self) -> List[str]:
         return []
@@ -28,5 +27,5 @@ class Restart(Action):
     @Action.send_typing
     @Action.only_master
     def call(self, message: Message):
-        self.bot.reply_to(message, 'OK, master')
-        os.system('sudo systemctl restart ashleybot.service')
+        self.bot.reply_to(message, "OK, master")
+        os.system("sudo systemctl restart ashleybot.service")

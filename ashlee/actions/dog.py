@@ -16,10 +16,10 @@ class Dog(Action):
         return "случайное фото собаки"
 
     def get_keywords(self) -> List[str]:
-        return ['скинь собаку', 'покажи собаку']
+        return ["скинь собаку", "покажи собаку"]
 
     def get_cmds(self) -> List[str]:
-        return ['dog']
+        return ["dog"]
 
     def get_name(self) -> str:
         return emoji.DOG + " Dogs"
@@ -27,9 +27,13 @@ class Dog(Action):
     @Action.save_data
     @Action.send_uploading_photo
     def call(self, message: Message):
-        data = json.loads(requests.get(self.API_URL).content.decode('utf-8'))
-        url = data['message']
-        if url.endswith('.gif'):
-            self.bot.send_video(message.chat.id, url, reply_to_message_id=message.message_id)
+        data = json.loads(requests.get(self.API_URL).content.decode("utf-8"))
+        url = data["message"]
+        if url.endswith(".gif"):
+            self.bot.send_video(
+                message.chat.id, url, reply_to_message_id=message.message_id
+            )
         else:
-            self.bot.send_photo(message.chat.id, url, reply_to_message_id=message.message_id)
+            self.bot.send_photo(
+                message.chat.id, url, reply_to_message_id=message.message_id
+            )

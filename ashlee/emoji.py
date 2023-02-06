@@ -1,4 +1,3 @@
-
 INFO = "ℹ"
 ERROR = "‼"
 WARNING = "⚠️"
