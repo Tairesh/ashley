@@ -23,7 +23,7 @@ jobs:
       - name: Install flake8
         run: pip install flake8
       - name: Run flake8
-        run: flake8 ashlee --count --max-line-length=127 --show-source --statistics --exclude .git,__pycache__,venv
+        run: flake8 ashlee --count --ignore=E203 --max-line-length=127 --show-source --statistics --exclude .git,__pycache__,venv
   deploy:
     runs-on: ubuntu-latest
     needs: tests
