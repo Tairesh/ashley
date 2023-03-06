@@ -32,23 +32,22 @@ class What(Action):
             photo = message.reply_to_message.photo.pop()
             file = self.bot.get_file(photo.file_id)
             file_bytes = self.bot.download_file(file.file_path)
-            with open('tmpimage', 'wb') as f:
+            with open("tmpimage", "wb") as f:
                 f.write(file_bytes)
 
-            client = replicate.Client(api_token=self.tgb.api_keys['replicate'])
+            client = replicate.Client(api_token=self.tgb.api_keys["replicate"])
             model = client.models.get("salesforce/blip")
-            version = model.versions.get("2e1dddc8621f72155f24cf2e0adbde548458d3cab9f00c0139eea840d0ac4746")
+            version = model.versions.get(
+                "2e1dddc8621f72155f24cf2e0adbde548458d3cab9f00c0139eea840d0ac4746"
+            )
             inputs = {
                 # Input image
-                'image': open('tmpimage', 'rb'), # file_bytes,
-
+                "image": open("tmpimage", "rb"),  # file_bytes,
                 # Choose a task.
-                'task': "image_captioning",
-
+                "task": "image_captioning",
                 # Type question for the input image for visual question answering
                 # task.
                 # 'question': ...,
-
                 # Type caption for the input image for image text matching task.
                 # 'caption': ...,
             }
@@ -58,4 +57,4 @@ class What(Action):
         except Exception as e:
             self.bot.reply_to(message, "Произошла ошибка: " + str(e))
 
-        os.remove('tmpimage')
+        os.remove("tmpimage")
