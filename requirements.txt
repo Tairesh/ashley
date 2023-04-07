@@ -6,4 +6,4 @@ wand~=0.6.11
 dice~=3.1.2
 wikipedia~=1.4.0
 openai~=0.27.2
-replicate~=0.5.2
+replicate~=0.7.0
