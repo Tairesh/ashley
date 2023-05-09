@@ -37,7 +37,9 @@ class Reply(Action):
             text = message.text
 
         vip_chat = False
-        if message.chat.id in {-1001642918976, }:
+        if message.chat.id in {
+            -1001642918976,
+        }:
             vip_chat = True
         chat = self.db.get_chat(message.chat.id)
         if chat is not None:
