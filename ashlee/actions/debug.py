@@ -38,7 +38,11 @@ class Debug(Action):
             self.bot.reply_to(
                 message,
                 f"Chat in DB: "
-                f"<code>{utils.escape(str(chat_db.__dict__)) if chat_db else 'None'}</code>\n\n"
+                f"<code>{utils.escape(str(chat_db.__dict__)) if chat_db else 'None'}</code>"
+                parse_mode="HTML",
+            )
+            self.bot.reply_to(
+                message,
                 f"Chat in TG: <code>{utils.escape(str(chat_tg))}</code>",
                 parse_mode="HTML",
             )
