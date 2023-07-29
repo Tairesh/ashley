@@ -289,13 +289,7 @@ class TelegramBot:
 
                 text = None
                 user_name = utils.user_name(member, True, True, True, "HTML")
-                if message.chat.id == -1001323036018:  # Dwarf Fortress
-                    text = (
-                        "Приветствуем мигрантов в нашей бурно <s>деградирующей</s> развивающейся крепости\n\n"
-                        f"{user_name} отправьте любое сообщение в чат в течение"
-                        f" 120 секунд чтобы подтвердить что вы не эльф, иначе вы будете забанены"
-                    )
-                elif message.chat.id == -1001150487023:  # Cataclysm DDA
+                if message.chat.id == -1001150487023:  # Cataclysm DDA
                     text = (
                         f"{user_name} ты зашёл в чат Cataclysm DDA, "
                         f"перед тобой {emoji.SOAP} <code>soap (10)</code> со стола и "
