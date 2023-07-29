@@ -75,7 +75,10 @@ class Reply(Action):
                 sentence = response["choices"][0]["text"]
                 history[message.chat.id].append((name, text, sentence))
             except openai.error.OpenAIError as e:
-                sentence = "Произошла ошибка: " + str(e)
+                if message.chat.id in constants.ADMINS:
+                    sentence = "Произошла ошибка: " + str(e)
+                else:
+                    return
         else:
             sentence = None
             if text:
