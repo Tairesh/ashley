@@ -5,6 +5,7 @@ import re
 from typing import List
 from urllib.parse import quote
 
+import openai
 import requests
 from telebot.types import Message
 
@@ -71,7 +72,13 @@ class Meme(Action):
         tries = 0
         while tries < 10:
             tries += 1
-            sentence = pepe.generate_sentence_by_text(self.tgb.redis, text, 1)
+            response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=f"Придумай смешную подпись к мему на тему {text} без кавычек не длинее четырёх слов",
+                temperature=1,
+                max_tokens=30,
+            )
+            sentence = response["choices"][0]["text"]
             for ch in (",", ".", "..", "...", "*"):
                 if ch in sentence:
                     sentence = sentence.split(ch)[0]
