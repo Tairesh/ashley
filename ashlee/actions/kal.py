@@ -39,6 +39,7 @@ class Kal(Action):
         for word in words:
             search = first_syllable.search(word)
             if not search:
+                new_words.append(word)
                 continue
 
             match = search.group(1)
