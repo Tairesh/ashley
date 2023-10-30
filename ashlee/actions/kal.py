@@ -6,7 +6,9 @@ from telebot.types import Message
 from ashlee import emoji, utils
 from ashlee.action import Action
 
-first_syllable = re.compile(r"([цкнгшщзхфвпрлджчсмтб]+[аоеияуюыэё]+)\w", re.UNICODE | re.IGNORECASE)
+first_syllable = re.compile(
+    r"([цкнгшщзхфвпрлджчсмтб]+[аоеияуюыэё]+)\w", re.UNICODE | re.IGNORECASE
+)
 
 
 class Kal(Action):
