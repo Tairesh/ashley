@@ -172,3 +172,7 @@ def random_file(files_dir):
 
 def unique(ar: list) -> list:
     return list(set(ar))
+
+
+def get_text(message: Message) -> str:
+    return message.text or message.caption or ""

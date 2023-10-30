@@ -3,7 +3,7 @@ from typing import List
 
 from telebot.types import Message
 
-from ashlee import emoji
+from ashlee import emoji, utils
 from ashlee.action import Action
 
 first_syllable = re.compile(r"([цкнгшщзхфвпрлджчсмтб]+[аоеияуюыэё]+)\w", re.UNICODE | re.IGNORECASE)
@@ -28,12 +28,15 @@ class Kal(Action):
     @Action.save_data
     @Action.send_typing
     def call(self, message: Message):
-        if not message.reply_to_message or not message.reply_to_message.text:
+        if not message.reply_to_message:
             self.bot.reply_to(message, "💩")
-
             return
 
-        text = message.reply_to_message.text
+        text = utils.get_text(message.reply_to_message)
+        if not text:
+            self.bot.reply_to(message, "💩")
+            return
+
         words = text.split(" ")
         new_words = []
         for word in words:
