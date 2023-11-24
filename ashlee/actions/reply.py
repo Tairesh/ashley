@@ -48,7 +48,7 @@ class Reply(Action):
                     vip_chat = True
                     break
         else:
-            title = message.from_user.first_name + ' ' + message.from_user.last_name
+            title = message.from_user.first_name + " " + message.from_user.last_name
             vip_chat = message.from_user.id in constants.ADMINS
 
         if vip_chat:
