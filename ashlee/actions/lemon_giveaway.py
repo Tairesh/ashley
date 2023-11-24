@@ -48,7 +48,6 @@ class Lemon_giveaway(Action):
             message.chat.id,
             open(join(Lemons.DIR, lemon.image), "rb"),
             f"{emoji.LEMON} LMN #{lemon.id}\n<b>Free</b>",
-            reply_to_message_id=message.message_id,
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(
                 [
