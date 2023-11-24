@@ -15,6 +15,7 @@ r_ashley = re.compile(
     flags=re.IGNORECASE,
 )
 
+PEEROJOQUE_CHAT_ID = -1001298015134
 
 def get_command(message: Message):
     return message.text.split(" ")[0].split("@")[0][1:].lower()
