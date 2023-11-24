@@ -3,7 +3,12 @@ import random
 from os.path import join
 from typing import List, Optional
 
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from telebot.types import (
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    CallbackQuery,
+)
 
 from ashlee import emoji, utils, stickers
 from ashlee.action import Action
@@ -18,7 +23,6 @@ class Lemon_giveaway(Action):
 
     def get_name(self) -> str:
         return emoji.LEMON + " Бесплатный лимон"
-
 
     def get_cmds(self) -> List[str]:
         return ["lemon_giveaway"]
@@ -37,7 +41,11 @@ class Lemon_giveaway(Action):
             return
 
         if datetime.date.day == self.last_giveaway:
-            self.bot.reply_to(message, "Сегодня больше бесплатных лимонов не будет, приходите завтра! " + emoji.LEMON)
+            self.bot.reply_to(
+                message,
+                "Сегодня больше бесплатных лимонов не будет, приходите завтра! "
+                + emoji.LEMON,
+            )
             return
 
         self.last_giveaway = datetime.date.day
