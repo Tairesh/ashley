@@ -1,4 +1,4 @@
-pyTelegramBotAPI==4.14.0
+pyTelegramBotAPI==4.14.1
 requests==2.31.0
 google~=3.0.0
 redis==5.0.1
