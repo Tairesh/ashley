@@ -5,5 +5,5 @@ redis==5.0.1
 wand~=0.6.11
 dice==4.0.0
 wikipedia~=1.4.0
-openai==0.28.1
+openai==1.7.0
 replicate==0.15.4
