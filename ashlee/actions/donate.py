@@ -10,11 +10,10 @@ class Donate(Action):
 
     TEXT = """PayPal: https://paypal.me/tairesh
 DonationAlerts: https://www.donationalerts.com/r/tairesh
-Visa: 4274320052232272
-Sberbank: `+79826151298`
+Mastercard: 5269880025123035
+Sberbank/Alfabank: `+79826151298`
 YooMoney: https://sobe.ru/na/ashleybot
-Monero: `4A2CkxBUVNGDSNb94FhTkpexG3evMpeVWJ4tsBDy4TLXiqTQ1Jh1CVCHUojYzHbgad7cmBphtxKW8eRVorvK5FPu4K8UhaB`
-or text me @tairesh"""
+or text me @tairesh to ask for more options"""
 
     def get_description(self) -> str:
         return "реквизиты для донатов"
