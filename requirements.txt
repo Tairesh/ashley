@@ -1,5 +1,5 @@
 pyTelegramBotAPI==4.31.0
-requests==2.33.0
+requests==2.33.1
 google~=3.0.0
 redis==5.2.1
 wand~=0.6.11
