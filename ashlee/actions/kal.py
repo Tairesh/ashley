@@ -43,13 +43,13 @@ class Kal(Action):
         new_words = []
         for word in words:
             search = first_syllable.search(word)
-            if not search:
-                new_words.append(word)
-                continue
-
-            match = search.group(1)
-            if match:
-                new_words.append(word.replace(str(match), "кал", 1))
+            if search:
+                match = search.group(1)
+                new_word = word.replace(str(match), "кал", 1)
+            else:
+                new_word = "кал" + word[1:]
+                
+            new_words.append(new_word)
 
         result = " ".join(new_words)
         self.bot.reply_to(message, result)
