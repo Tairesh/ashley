@@ -46,8 +46,11 @@ class Kal(Action):
             if search:
                 match = search.group(1)
                 new_word = word.replace(str(match), "кал", 1)
-            else:
+            elif len(word) > 2:
                 new_word = "кал" + word[1:]
+            else:
+                # short words 💩
+                new_word = word
                 
             new_words.append(new_word)
 
